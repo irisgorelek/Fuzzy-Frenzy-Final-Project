@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "BoardConfig")]
 public class BoardConfig : ScriptableObject
 {
-    public int _weidth { get; private set; }
-    public int _height { get; private set; }
-    public List<Animal> _animals;
+    public int weidth; //{ get; }
+    public int height; //{ get; }
+    public List<Animal> animals;
 }

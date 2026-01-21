@@ -1,5 +1,7 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,11 +14,11 @@ public class Board
 
     public Board(BoardConfig config)
     {
-        _width = config._weidth;
-        _height = config._height;
+        _width = config.weidth;
+        _height = config.height;
 
         // Get the allowed animals for the level
-        _allowedAnimals = new List<Animal>(config._animals);
+        _allowedAnimals = new List<Animal>(config.animals);
 
         _grid = new Animal[_width, _height];
     }
@@ -51,35 +53,144 @@ public class Board
     }
 
     // Try to swap the animals between 2 touching cells
-    public void TrySwapCells(Vector2Int cell1, Vector2Int cell2)
+    public bool TrySwapCells(Vector2Int cell1, Vector2Int cell2)
     {
+        bool didSwap = false;
+
         // Swap the cells and check what happens
         if((IsCellInBounds(cell1) && IsCellInBounds(cell2)) && AreCellsNeighbours(cell1, cell2))
         {
             Animal temp = _grid[cell1.x, cell1.y];
             _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
             _grid[cell2.x, cell2.y] = temp;
+
+            List<Vector2Int> matches = MatchesFound();
+
+            // If there were no matches found return the cells back to what they were
+            if (matches.Count == 0)
+            {
+                _grid[cell2.x, cell2.y] = _grid[cell1.x, cell1.y];
+                _grid[cell1.x, cell1.y] = temp;
+                return didSwap;
+            }
+
+            didSwap = true;
+
+            while (matches.Count > 0)
+            {
+                ClearMatches(matches);
+                matches = MatchesFound();
+            }
         }
 
-        List<Vector2Int> matches = MatchesFound();
-
-        // If there were no matches found return the cells back to what they were
-        if (MatchesFound() == null)
-        {
-            Animal temp = _grid[cell1.x, cell1.y];
-            _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
-            _grid[cell2.x, cell2.y] = temp;
-            return;
-        }
-
-        ClearMatches(matches);
+        return didSwap;
     }
 
-    // Find matches on the board and return if found any
+    // Find matches on the board and return a list of matches found
     private List<Vector2Int> MatchesFound()
     {
-        // TODO: find matches logic
-        return null;
+        HashSet<Vector2Int> matchedCells = new HashSet<Vector2Int>(); // Prevent coordinates duplicates
+        List<Vector2Int> matchesList = new List<Vector2Int>();
+        int sameAnimalCounter = 1;
+
+        for (int x = 0; x < _width; x++)
+        {
+            sameAnimalCounter = 1;  
+
+            for (int y = 1; y < _height; y++)
+            {
+                if (_grid[x, y] == null || _grid[x, y - 1] == null)
+                {
+                    if (sameAnimalCounter >= 3)
+                    {
+                        int endY = y - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                            matchedCells.Add(new Vector2Int(x, endY - i));
+                    }
+                    sameAnimalCounter = 1;
+                    continue;
+                }                
+
+                if (_grid[x, y] == _grid[x, y - 1])
+                {
+                    sameAnimalCounter++;
+                }
+                else
+                {
+                    if (sameAnimalCounter >= 3) // If the same animal appeared 3+ times in a row add the cells to the list
+                    {
+                        int endY = y - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                        {
+                            matchedCells.Add(new Vector2Int(x, endY - i));
+                        }
+                    }
+
+                    sameAnimalCounter = 1;
+                }
+            }
+
+            // Flush a run that continues to the bottom of the column
+            if (sameAnimalCounter >= 3)
+            {
+                int endY = _height - 1;
+                for (int i = 0; i < sameAnimalCounter; i++)
+                {
+                    matchedCells.Add(new Vector2Int(x, endY - i));
+                }
+            }
+        }
+
+        for (int y = 0; y < _height; y++)
+        {
+            sameAnimalCounter = 1;
+
+            for (int x = 1; x < _width; x++)
+            {
+                // Break on nulls (and flush any run that ended at y-1)
+                if (_grid[x, y] == null || _grid[x - 1, y] == null)
+                {
+                    if (sameAnimalCounter >= 3)
+                    {
+                        int endX = x - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                            matchedCells.Add(new Vector2Int(endX - i, y));
+                    }
+                    sameAnimalCounter = 1;
+                    continue;
+                }
+
+                if (_grid[x - 1, y] == _grid[x, y])
+                {
+                    sameAnimalCounter++;
+                }
+                else // If the animal changed, add the matching cells to the list
+                {
+                    if (sameAnimalCounter >= 3) // If the same animal appeared 3+ times in a row add the cells to the list
+                    {
+                        int endX = x - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                        {
+                            matchedCells.Add(new Vector2Int(endX - i, y));
+                        }
+                    }
+
+                    sameAnimalCounter = 1;
+                }
+            }
+
+            // Flush a run that continues to the end of the row
+            if (sameAnimalCounter >= 3)
+            {
+                int endX = _width - 1;
+                for (int i = 0; i < sameAnimalCounter; i++)
+                {
+                    matchedCells.Add(new Vector2Int(endX - i, y));
+                }
+            }
+        }
+
+        return matchedCells.ToList();
     }
 
     // Clear the found matches
@@ -126,16 +237,10 @@ public class Board
         {
             for (int y = 0; y < _height; y++) // Rows
             {
-                var cell = new Vector2Int(x, y);
+                if (_grid[x, y] != null)
+                    continue;
 
-                Animal chosen = _allowedAnimals[Random.Range(0, _allowedAnimals.Count)];
-
-                if (_grid[x, y] == null)
-                {
-                    _grid[x, y] = chosen;
-                }
-
-
+                _grid[x, y] = _allowedAnimals[Random.Range(0, _allowedAnimals.Count)]; // If the cell is empty, add a random animal
             }
         }
     }

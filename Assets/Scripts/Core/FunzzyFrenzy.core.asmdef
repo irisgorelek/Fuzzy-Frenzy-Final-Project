@@ -1,3 +1,16 @@
 {
-	"name": "FunzzyFrenzy.core"
+    "name": "FunzzyFrenzy.core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f66a6c3aba0e15241b7cd59688384ee8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

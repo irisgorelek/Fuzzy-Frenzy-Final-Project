@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "FunzzyFrenzy.core"
+        "FunzzyFrenzy.core",
+        "FuzzyFrenzy.Data"
     ],
     "includePlatforms": [
         "Editor"

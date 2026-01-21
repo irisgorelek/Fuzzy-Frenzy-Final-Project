@@ -12,11 +12,21 @@ public class Board
     private Animal[,] _grid;
     private int _width;
     private int _height;
+    private int _points = 0;
+    private int _matchedAnimals = 0;
+
+    public int CurrentPoints => _points;
+    public int AnimalsCount => _matchedAnimals;
+
+    public int _pointGoal { get; private set; }
+    public int _matchedAnimalsGoal { get; private set; }
 
     public Board(BoardConfig config)
     {
         _width = config.weidth;
         _height = config.height;
+        _pointGoal = config.pointGoal;
+        _matchedAnimalsGoal = config.matchedAnimals;
 
         // Get the allowed animals for the level
         _allowedAnimals = new List<Animal>(config.animals);
@@ -199,6 +209,11 @@ public class Board
     {
         for(int i = 0; i< matches.Count; i++)
         {
+            // Count the amount of points added and the amount of animals matched
+            Debug.LogWarning($"Clearing: {_grid[matches[i].x, matches[i].y]}");
+            _points += _grid[matches[i].x, matches[i].y]._points;
+            _matchedAnimals++;
+
             _grid[matches[i].x, matches[i].y] = null;
         }
 

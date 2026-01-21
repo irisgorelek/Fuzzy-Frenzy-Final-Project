@@ -7,5 +7,7 @@ public class BoardConfig : ScriptableObject
 {
     public int weidth; 
     public int height;
+    public int pointGoal;
+    public int matchedAnimals;
     public List<Animal> animals;
 }

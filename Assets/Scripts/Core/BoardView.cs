@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class BoardView : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class BoardView : MonoBehaviour
     [SerializeField] Color _selectedColor, _normalColor; // For highlighting 
     [SerializeField] private Sprite _defaultSprite; // For null animals
     [SerializeField] private GridLayoutGroup gridLayout;
+    [SerializeField] private TextMeshProUGUI _points;
+    [SerializeField] private TextMeshProUGUI _animalsCount;
 
     private Dictionary<Vector2Int, CellView> _cells = new();
     int _width, _height;
@@ -85,10 +88,36 @@ public class BoardView : MonoBehaviour
             }
         }
     }
-
-    public void ApplyHighlight(Vector2Int? coord)
+    public void SwapCellVisuals(Vector2Int a, Vector2Int b)
     {
+        if (!_cells.ContainsKey(a) || !_cells.ContainsKey(b))
+        {
+            Debug.LogWarning($"SwapCellVisuals failed: {a} or {b} not found");
+            return;
+        }
 
+        var aView = _cells[a];
+        var bView = _cells[b];
+
+        Debug.Log($"Swapping visuals {a} <-> {b}");
+        Debug.Log($"Before: A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
+
+        var aSprite = aView.CurrentSprite;
+        var aColor = aView.CurrentColor;
+
+        aView.SetSprite(bView.CurrentSprite, bView.CurrentColor);
+        bView.SetSprite(aSprite, aColor);
+        Debug.Log($"After:  A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
+    }
+    public void SetScore(int points, int totalPoints)
+    {
+        Debug.LogWarning($"Set Score: {points} / {totalPoints}");
+        _points.text = $"{points} / {totalPoints}";
+    }
+    public void SetMatchedAnimals(int animals)
+    {
+        Debug.LogWarning($"Set Score: {animals}");
+        _animalsCount.text = $"Animals: {animals}";
     }
     private void OnCellPointerDown(Vector2Int coord, Vector2 screenPos)
     {
@@ -109,7 +138,6 @@ public class BoardView : MonoBehaviour
         TryCommitSwipe(screenPos);
 
         _gestureActive = false;
-        //_swipeCommitted = false;
     }
     private void TryCommitSwipe(Vector2 currentScreenPos)
     {
@@ -135,29 +163,10 @@ public class BoardView : MonoBehaviour
 
         SwapRequested?.Invoke(_startCell, to);
     }
-    public void SwapCellVisuals(Vector2Int a, Vector2Int b)
-    {
-        if (!_cells.ContainsKey(a) || !_cells.ContainsKey(b))
-        {
-            Debug.LogWarning($"SwapCellVisuals failed: {a} or {b} not found");
-            return;
-        }
-
-        var aView = _cells[a];
-        var bView = _cells[b];
-
-        Debug.Log($"Swapping visuals {a} <-> {b}");
-        Debug.Log($"Before: A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
-
-        var aSprite = aView.CurrentSprite;
-        var aColor = aView.CurrentColor;
-
-        aView.SetSprite(bView.CurrentSprite, bView.CurrentColor);
-        bView.SetSprite(aSprite, aColor);
-        Debug.Log($"After:  A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
-    }
+    
     private bool IsInBounds(Vector2Int cell)
     {
         return cell.x >= 0 && cell.x < _width && cell.y >= 0 && cell.y < _height;
     }
+    
 }

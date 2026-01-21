@@ -1,15 +1,21 @@
 using System;
 using UnityEngine;
 using System.Threading.Tasks;
+using Codice.Client.BaseCommands.Merge;
 
 public class BoardController : MonoBehaviour
 {
     [SerializeField] private BoardConfig _cfg;
     [SerializeField] private BoardView _view;
+    [SerializeField] private GameObject _levelClearedPopup;
 
     private Board _board;
-    private Vector2Int? _selectedCell;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
+
+    private void Awake()
+    {
+        _levelClearedPopup.gameObject.SetActive(false);
+    }
 
     public void Start()
     {
@@ -19,6 +25,7 @@ public class BoardController : MonoBehaviour
         }
 
         InitializeGame();
+        _view.SetScore(0, _board._pointGoal);
     }
 
     private void OnEnable()
@@ -38,7 +45,7 @@ public class BoardController : MonoBehaviour
         // Technical
         _board = new Board(_cfg);
         _board.Initialize();
-
+        
         // Visual
         _view.Build(_cfg.weidth, _cfg.height);
         _view.AssignSprites(_board);
@@ -55,7 +62,7 @@ public class BoardController : MonoBehaviour
         _view.SwapCellVisuals(from, to);
 
         // Let the swap show in unity
-        await WaitFrames(30);
+        await WaitFrames(10);
 
         bool swapped = _board.SwapCellsRaw(from, to);
 
@@ -95,8 +102,18 @@ public class BoardController : MonoBehaviour
             // Resolve clear + gravity + refill
             _board.ResolveMatches(matches);
 
+            // Points + Amount of animals matched
+            _view.SetScore(_board.CurrentPoints, _board._pointGoal);
+            _view.SetMatchedAnimals(_board.AnimalsCount);
+
             // Redraw
             _view.AssignSprites(_board);
+
+            if (_board.CurrentPoints >= _board._pointGoal || _board.AnimalsCount >= _board._matchedAnimalsGoal)
+            {
+                // End game pop up
+                _levelClearedPopup.gameObject.SetActive(true);
+            }
 
             // Check again
             matches = _board.FindMatches();

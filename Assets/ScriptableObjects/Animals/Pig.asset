@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: FuzzyFrenzy.Data::Animal
   _id: pig
   _sprite: {fileID: -2135585597343286014, guid: 5aa8b770bc43046bc8d993d0d5b7f4a5, type: 3}
-  _points: 0
+  _points: 3
   color: {r: 1, g: 0, b: 0.546082, a: 1}

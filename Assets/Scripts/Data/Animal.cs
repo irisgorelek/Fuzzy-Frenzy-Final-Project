@@ -4,7 +4,8 @@ using UnityEngine.UI;
 [CreateAssetMenu(menuName = "Animal")]
 public class Animal : ScriptableObject
 {
-    [SerializeField] private string _id;
-    [SerializeField] private Sprite _sprite;
-    [SerializeField] private int _points;
+    public string _id;
+    public Sprite _sprite;
+    public int _points;
+    public Color color;
 }

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ee029291298beba4984d3a96b6ec8ef3, type: 3}
-  m_Name: Sheep
-  m_EditorClassIdentifier: Assembly-CSharp::Animal
-  _id: sheep
-  _sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+  m_Name: Pig
+  m_EditorClassIdentifier: FuzzyFrenzy.Data::Animal
+  _id: pig
+  _sprite: {fileID: -2135585597343286014, guid: 5aa8b770bc43046bc8d993d0d5b7f4a5, type: 3}
   _points: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
+  color: {r: 1, g: 0, b: 0.546082, a: 1}

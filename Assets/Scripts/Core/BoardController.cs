@@ -11,14 +11,11 @@ public class BoardController : MonoBehaviour
     private Vector2Int? _selectedCell;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
 
-    //private int cellSelectionCounter = 0;
-    //private Vector2Int firstCell;
-
     public void Start()
     {
         if(_cfg == null || _view == null)
         {
-            Debug.LogError("Error: Either cfg or view weren't inserted");
+            Debug.LogError("Error: Either cfg or view weren't inserted in the board controller");
         }
 
         InitializeGame();
@@ -47,7 +44,6 @@ public class BoardController : MonoBehaviour
         _view.AssignSprites(_board);
     }
 
-
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
     {
         Debug.Log($"SwapRequested: {from} -> {to}");
@@ -61,26 +57,50 @@ public class BoardController : MonoBehaviour
         // Let the swap show in unity
         await WaitFrames(30);
 
-        // Ask the model if it was valid(model will revert internally if invalid)
-        bool valid = _board.TrySwapCells(from, to);
+        bool swapped = _board.SwapCellsRaw(from, to);
 
-        if (valid)
+        if (!swapped)
         {
-            // TODO: Trigger animations
-
-            // redraw whole board from model (temporary, until animations)
-            _view.AssignSprites(_board);
-
+            // Out of bounds / not neighbors
+            _view.SwapCellVisuals(from, to); // swap back
+            _isBusy = false;
+            return;
         }
-        else
+
+        // Check if the swap didn't produce any match
+        if (!_board.HasAnyMatch())
         {
-            // revert visuals (swap back)
+            // The swap was invalid. Swap back in model and view
+            _board.SwapCellsRaw(from, to);
             _view.SwapCellVisuals(from, to);
+            _isBusy = false;
+            return;
         }
 
-        //_view.AssignSprites(_board); // TODO: Probably should make it await for animation
+        // The swap was valid. Resolve cascades with pacing
+        _view.AssignSprites(_board); // sync view to model after swap
+        await ResolveCascadesAsync(25);
 
         _isBusy = false;
+    }
+
+    private async Task ResolveCascadesAsync(int framesBetweenSteps)
+    {
+        var matches = _board.FindMatches();
+        while (matches.Count > 0)
+        {
+            // Let the player see the current state before clearing
+            await WaitFrames(framesBetweenSteps);
+
+            // Resolve clear + gravity + refill
+            _board.ResolveMatches(matches);
+
+            // Redraw
+            _view.AssignSprites(_board);
+
+            // Check again
+            matches = _board.FindMatches();
+        }
     }
 
     private async Task WaitFrames(int frameCount)

@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -314,5 +315,29 @@ public class Board
         }
 
         return false;
+    }
+
+    public List<Vector2Int> FindMatches()
+    {
+        return MatchesFound();
+    }
+
+    public void ResolveMatches(List<Vector2Int> matches)
+    {
+        ClearMatches(matches);
+    }
+
+    public bool SwapCellsRaw(Vector2Int cell1, Vector2Int cell2)
+    {
+        if (!(IsCellInBounds(cell1) && IsCellInBounds(cell2))) return false;
+        if (!AreCellsNeighbours(cell1, cell2)) return false;
+
+        // Swapping the values with a tupple
+        (_grid[cell2.x, cell2.y], _grid[cell1.x, cell1.y]) = (_grid[cell1.x, cell1.y], _grid[cell2.x, cell2.y]);
+        return true;
+    }
+    public bool HasAnyMatch()
+    {
+        return MatchesFound().Count > 0;
     }
 }

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 953c74891f3de8543b62a618dc45cc53, type: 3}
+  m_Name: ShopItem_PowerNap
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemDefinition
+  itemId: extra_moves_power_nap
+  displayName: Power Nap
+  description: Gain extra moves when used in a level.
+  icon: {fileID: 0}
+  currency: 0
+  price: 150
+  itemType: 2
+  boosterEffect: 0
+  boosterAmountGranted: 1
+  livesAmountGranted: 1
+  extraMovesGranted: 3

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.CompilerServices;
 
 public class BoardView : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] private GridLayoutGroup gridLayout;
     [SerializeField] private TextMeshProUGUI _points;
     [SerializeField] private TextMeshProUGUI _animalsCount;
+    [SerializeField] private TextMeshProUGUI _movesCountText;
 
     private Dictionary<Vector2Int, CellView> _cells = new();
     int _width, _height;
@@ -169,4 +171,8 @@ public class BoardView : MonoBehaviour
         return cell.x >= 0 && cell.x < _width && cell.y >= 0 && cell.y < _height;
     }
     
+    public void SetMovesText(int movesLeft)
+    {
+        _movesCountText.text = movesLeft.ToString();
+    }
 }

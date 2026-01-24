@@ -10,4 +10,5 @@ public class BoardConfig : ScriptableObject
     public int pointGoal;
     public int matchedAnimals;
     public List<Animal> animals;
+    public int maxMoves;
 }

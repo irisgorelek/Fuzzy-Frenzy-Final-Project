@@ -1,20 +1,22 @@
-using System;
 using UnityEngine;
 using System.Threading.Tasks;
-using Codice.Client.BaseCommands.Merge;
 
 public class BoardController : MonoBehaviour
 {
     [SerializeField] private BoardConfig _cfg;
     [SerializeField] private BoardView _view;
     [SerializeField] private GameObject _levelClearedPopup;
+    [SerializeField] private GameObject _levelLostPopup;
+    [SerializeField] private MoveCounter _moveCounter;
 
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
+    private bool _isLevelOver = false;
 
     private void Awake()
     {
         _levelClearedPopup.gameObject.SetActive(false);
+        _levelLostPopup.gameObject.SetActive(false);
     }
 
     public void Start()
@@ -32,18 +34,27 @@ public class BoardController : MonoBehaviour
     {
         if (_view != null)
             _view.SwapRequested += OnSwapRequested;
+        if (_moveCounter != null && _view != null)
+        {
+            _moveCounter.OnMovesChanged += _view.SetMovesText;
+            _view.SetMovesText(_moveCounter.MovesLeft);
+        }
+
     }
 
     private void OnDisable()
     {
         if (_view != null)
             _view.SwapRequested -= OnSwapRequested;
+        if (_moveCounter != null && _view != null)
+            _moveCounter.OnMovesChanged -= _view.SetMovesText;
     }
 
     public void InitializeGame()
     {
         // Technical
         _board = new Board(_cfg);
+        _moveCounter.InitializeMoves(_cfg.maxMoves);
         _board.Initialize();
         
         // Visual
@@ -54,7 +65,7 @@ public class BoardController : MonoBehaviour
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
     {
         Debug.Log($"SwapRequested: {from} -> {to}");
-        if (_isBusy) return;
+        if (_isBusy || _moveCounter.MovesLeft <= 0 || _isLevelOver) return;
 
         _isBusy = true;
 
@@ -84,11 +95,29 @@ public class BoardController : MonoBehaviour
             return;
         }
 
+        _moveCounter.UseMove();
+
         // The swap was valid. Resolve cascades with pacing
         _view.AssignSprites(_board); // sync view to model after swap
+        
         await ResolveCascadesAsync(25);
 
+        if (_isLevelOver)
+        {
+            _isBusy = false;
+            return;
+        }
+
+        if (_moveCounter.MovesLeft <= 0)
+        {
+            _isLevelOver = true;
+            if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
+            _isBusy = false;
+            return;
+        }
+
         _isBusy = false;
+
     }
 
     private async Task ResolveCascadesAsync(int framesBetweenSteps)
@@ -113,6 +142,8 @@ public class BoardController : MonoBehaviour
             {
                 // End game pop up
                 _levelClearedPopup.gameObject.SetActive(true);
+                _isLevelOver = true;
+                return;
             }
 
             // Check again

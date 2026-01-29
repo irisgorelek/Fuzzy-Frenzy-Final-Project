@@ -29,6 +29,9 @@ public class BoardView : MonoBehaviour
     private Vector2 _startScreenPos;
     private const float SwipeThresholdPixels = 45f;
 
+    public void ShowPoints(bool show) => _points.gameObject.SetActive(show);
+    public void ShowAnimals(bool show) => _animalsCount.gameObject.SetActive(show);
+
     public void Build(int width, int height)
     {
         _width = width;
@@ -116,10 +119,10 @@ public class BoardView : MonoBehaviour
         Debug.LogWarning($"Set Score: {points} / {totalPoints}");
         _points.text = $"{points} / {totalPoints}";
     }
-    public void SetMatchedAnimals(int animals)
+    public void SetMatchedAnimals(int animals, int goal)
     {
         Debug.LogWarning($"Set Score: {animals}");
-        _animalsCount.text = $"Animals: {animals}";
+        _animalsCount.text = $"{animals} / {goal}";
     }
     private void OnCellPointerDown(Vector2Int coord, Vector2 screenPos)
     {
@@ -158,7 +161,7 @@ public class BoardView : MonoBehaviour
 
         var to = _startCell + dir;
 
-        _swipeCommitted = true; // IMPORTANT: commit once per gesture
+        _swipeCommitted = true; // Commit once per gesture
 
         if (!IsInBounds(to))
             return;

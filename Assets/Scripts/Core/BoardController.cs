@@ -21,13 +21,13 @@ public class BoardController : MonoBehaviour
 
     public void Start()
     {
-        if(_cfg == null || _view == null)
-        {
+        if (_cfg == null || _view == null)
             Debug.LogError("Error: Either cfg or view weren't inserted in the board controller");
-        }
 
         InitializeGame();
-        _view.SetScore(0, _board._pointGoal);
+
+        // Show initial goal/progress
+        UpdateGoalUI();
     }
 
     private void OnEnable()
@@ -39,13 +39,13 @@ public class BoardController : MonoBehaviour
             _moveCounter.OnMovesChanged += _view.SetMovesText;
             _view.SetMovesText(_moveCounter.MovesLeft);
         }
-
     }
 
     private void OnDisable()
     {
         if (_view != null)
             _view.SwapRequested -= OnSwapRequested;
+
         if (_moveCounter != null && _view != null)
             _moveCounter.OnMovesChanged -= _view.SetMovesText;
     }
@@ -98,7 +98,7 @@ public class BoardController : MonoBehaviour
         _moveCounter.UseMove();
 
         // The swap was valid. Resolve cascades with pacing
-        _view.AssignSprites(_board); // sync view to model after swap
+        _view.AssignSprites(_board); // Sync view to model after swap
         
         await ResolveCascadesAsync(25);
 
@@ -132,15 +132,13 @@ public class BoardController : MonoBehaviour
             _board.ResolveMatches(matches);
 
             // Points + Amount of animals matched
-            _view.SetScore(_board.CurrentPoints, _board._pointGoal);
-            _view.SetMatchedAnimals(_board.AnimalsCount);
+            UpdateGoalUI();
 
             // Redraw
             _view.AssignSprites(_board);
 
-            if (_board.CurrentPoints >= _board._pointGoal || _board.AnimalsCount >= _board._matchedAnimalsGoal)
+            if (_board.IsGoalReached)
             {
-                // End game pop up
                 _levelClearedPopup.gameObject.SetActive(true);
                 _isLevelOver = true;
                 return;
@@ -148,6 +146,22 @@ public class BoardController : MonoBehaviour
 
             // Check again
             matches = _board.FindMatches();
+        }
+    }
+
+    private void UpdateGoalUI()
+    {
+        if (_board.GoalType == PointsOrMatches.points)
+        {
+            _view.ShowPoints(true); // Show the points text
+            _view.ShowAnimals(false); // Don't show the animals text
+            _view.SetScore(_board.CurrentPoints, _board.GoalAmount);
+        }
+        else
+        {
+            _view.ShowPoints(false); // Don't show the points text
+            _view.ShowAnimals(true); // Show the animals text
+            _view.SetMatchedAnimals(_board.MatchedAnimals, _board.GoalAmount);
         }
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using static BoardConfig;
 using Random = UnityEngine.Random;
 
 public class Board
@@ -12,25 +13,34 @@ public class Board
     private Animal[,] _grid;
     private int _width;
     private int _height;
+
     private int _points = 0;
     private int _matchedAnimals = 0;
 
-    public int CurrentPoints => _points;
-    public int AnimalsCount => _matchedAnimals;
+    private int _goalAmount = 0;
+    private PointsOrMatches _goalType;
 
-    public int _pointGoal { get; private set; }
-    public int _matchedAnimalsGoal { get; private set; }
+    public int CurrentPoints => _points;
+    public int MatchedAnimals => _matchedAnimals;
+
+    public int GoalAmount => _goalAmount;
+    public PointsOrMatches GoalType => _goalType;
+
+    public bool IsGoalReached =>
+        _goalType == PointsOrMatches.points
+            ? _points >= _goalAmount
+            : _matchedAnimals >= _goalAmount;
 
     public Board(BoardConfig config)
     {
         _width = config.weidth;
         _height = config.height;
-        _pointGoal = config.pointGoal;
-        _matchedAnimalsGoal = config.matchedAnimals;
+
+        _goalAmount = config.goal;
+        _goalType = config.goalType;
 
         // Get the allowed animals for the level
         _allowedAnimals = new List<Animal>(config.animals);
-
         _grid = new Animal[_width, _height];
     }
 
@@ -207,11 +217,12 @@ public class Board
     // Clear the found matches
     private void ClearMatches(List<Vector2Int> matches)
     {
-        for(int i = 0; i< matches.Count; i++)
+        for (int i = 0; i < matches.Count; i++)
         {
-            // Count the amount of points added and the amount of animals matched
-            Debug.LogWarning($"Clearing: {_grid[matches[i].x, matches[i].y]}");
-            _points += _grid[matches[i].x, matches[i].y]._points;
+            var a = _grid[matches[i].x, matches[i].y];
+            if (a == null) continue;
+
+            _points += a._points;
             _matchedAnimals++;
 
             _grid[matches[i].x, matches[i].y] = null;

@@ -6,6 +6,7 @@ public class ShopDebugPurchase : MonoBehaviour
     [SerializeField] private GameBootstrapper bootstrapper;
     [SerializeField] private ShopItemDefinition freeSwitchItem;
     [SerializeField] private ShopItemDefinition powerNapItem;
+    [SerializeField] private ShopItemDefinition lifeItem;
 
     private void Update()
     {
@@ -33,6 +34,15 @@ public class ShopDebugPurchase : MonoBehaviour
         {
             bootstrapper.Shop.IsBeforeLevel = !bootstrapper.Shop.IsBeforeLevel;
             Debug.Log($"IsBeforeLevel = {bootstrapper.Shop.IsBeforeLevel}");
+        }
+
+        if (Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame)
+        {
+            bool ok = bootstrapper.Shop.TryBuy(lifeItem, out var reason);
+            var s = bootstrapper.Economy.State;
+            Debug.Log(ok
+                ? $"BOUGHT LIFE! Lives={s.currentLives}/{s.maxLives}, Coins={s.coins}"
+                : $"BUY LIFE FAILED: {reason} (Lives={s.currentLives}/{s.maxLives}, Coins={s.coins})");
         }
     }
 }

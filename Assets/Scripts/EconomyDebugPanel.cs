@@ -32,14 +32,17 @@ public class EconomyDebugPanel : MonoBehaviour
 
         if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)
         {
-            bootstrapper.Economy.TrySpendLifeForLevelStart();
-            Debug.Log($"Last life timestamp: {bootstrapper.Economy.State.lastLifeTimestampUtcSeconds}");
+            bool ok = bootstrapper.Economy.TrySpendLifeForLevelStart();
+            Debug.Log(ok
+                ? $"START LEVEL: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}"
+                : $"NO LIVES: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}");
         }
 
         if (Keyboard.current != null && Keyboard.current.tKey.wasPressedThisFrame)
         {
             bootstrapper.Economy.ApplyLifeRegen();
-            Debug.Log($"Currnt lives now: {bootstrapper.Economy.State.currentLives}");
+            Debug.Log($"REGEN CHECK: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}");
         }
+
     }
 }

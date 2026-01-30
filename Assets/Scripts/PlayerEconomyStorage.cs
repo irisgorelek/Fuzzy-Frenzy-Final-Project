@@ -29,7 +29,10 @@ public static class PlayerEconomyStorage
         var data = new SaveData
         {
             coins = state.coins,
-            powerNapCount = state.powerNapCount
+            powerNapCount = state.powerNapCount,
+            maxLives = state.maxLives,
+            currentLives = state.currentLives,
+            lastLifeTimestampUtcSeconds = state.lastLifeTimestampUtcSeconds
         };
 
         foreach (var kvp in state.boosters)
@@ -57,6 +60,17 @@ public static class PlayerEconomyStorage
         {
             var data = JsonUtility.FromJson<SaveData>(json);
             state.coins = data.coins;
+            // maxLives: if missing in old save, default to 3
+            state.maxLives = (data.maxLives <= 0) ? 3 : data.maxLives;
+
+            // currentLives: allow 0 as valid!
+            // If field missing in old saves, JsonUtility will also give 0,
+            // so we need a better signal.
+            // We'll treat "missing old save" as: lastLifeTimestampUtcSeconds == 0 AND currentLives == 0
+            bool looksLikeOldSave = (data.lastLifeTimestampUtcSeconds == 0 && data.currentLives == 0);
+
+            state.currentLives = looksLikeOldSave ? state.maxLives : Mathf.Clamp(data.currentLives, 0, state.maxLives);
+            state.lastLifeTimestampUtcSeconds = data.lastLifeTimestampUtcSeconds;
             state.powerNapCount = data.powerNapCount;
 
             state.boosters.Clear();

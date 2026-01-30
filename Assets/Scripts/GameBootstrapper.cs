@@ -8,6 +8,7 @@ public class GameBootstrapper : MonoBehaviour
     private void Awake()
     {
         Economy = new EconomyContext();
+        Economy.InitializeLivesIfNeeded();
         Shop = new ShopService(Economy);
     }
 }

@@ -155,4 +155,24 @@ public class EconomyContext
         return (long)System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
 
+    // Timer for regain
+    public bool TryGetTimeUntilNextLife(out int secondsRemaining)
+    {
+        ApplyLifeRegen();
+
+        if (State.currentLives >= State.maxLives)
+        {
+            secondsRemaining = 0;
+            return false; // full
+        }
+
+        long now = GetUtcNowSeconds();
+        long elapsed = now - State.lastLifeTimestampUtcSeconds;
+
+        int regenSeconds = LifeRegenMinutes * 60;
+        int remaining = regenSeconds - (int)(elapsed % regenSeconds);
+
+        secondsRemaining = Mathf.Max(0, remaining);
+        return true;
+    }
 }

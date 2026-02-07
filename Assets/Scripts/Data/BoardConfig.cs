@@ -7,6 +7,7 @@ public enum PointsOrMatches { points, matches }
 [CreateAssetMenu(menuName = "BoardConfig")]
 public class BoardConfig : ScriptableObject
 {
+    public int level;
     public int weidth; 
     public int height;
     public PointsOrMatches goalType = PointsOrMatches.points;

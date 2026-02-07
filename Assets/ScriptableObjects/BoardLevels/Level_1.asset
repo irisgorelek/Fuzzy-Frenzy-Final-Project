@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b4517038998984ea2c758914b1c2b1, type: 3}
+  m_Name: Level_1
+  m_EditorClassIdentifier: Assembly-CSharp::BoardConfig
+  level: 1
+  weidth: 5
+  height: 5
+  goalType: 0
+  goal: 100
+  animals:
+  - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
+  - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
+  - {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
+  - {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+  maxMoves: 5

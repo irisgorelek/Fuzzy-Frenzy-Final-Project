@@ -17,10 +17,12 @@ public class BoardView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _movesCountText;
 
     private Dictionary<Vector2Int, CellView> _cells = new();
-    int _width, _height;
+    public bool SwapsEnabled = true;
+    public int _width, _height;
 
 
     public event Action<Vector2Int, Vector2Int> SwapRequested;
+    public event Action<Vector2Int> CellTapped;
 
     // Swipe state
     private bool _gestureActive;
@@ -142,11 +144,15 @@ public class BoardView : MonoBehaviour
     {
         TryCommitSwipe(screenPos);
 
+        // If no swipe happened, treat it as a tap
+        if (!_swipeCommitted)
+            CellTapped?.Invoke(coord);
+
         _gestureActive = false;
     }
     private void TryCommitSwipe(Vector2 currentScreenPos)
     {
-        if (!_gestureActive || _swipeCommitted) return;
+        if (!_gestureActive || _swipeCommitted || !SwapsEnabled) return;
 
         Vector2 delta = currentScreenPos - _startScreenPos;
 

@@ -1,5 +1,8 @@
 using UnityEngine;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class BoardController : MonoBehaviour
 {
@@ -12,6 +15,9 @@ public class BoardController : MonoBehaviour
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
     private bool _isLevelOver = false;
+
+    public int GetWidth() => _cfg.weidth;
+    public int GetHeight() => _cfg.height;
 
     private void Awake()
     {
@@ -118,6 +124,33 @@ public class BoardController : MonoBehaviour
 
         _isBusy = false;
 
+    }
+
+    public async void TryRemoveCellsFromGrid(List<Vector2Int> cells)
+    {
+        for (int i = 0; i < cells.Count; i++)
+        {
+            TryRemoveCell(cells[i]);
+        }
+
+        _board.ApplyGravity();
+        _board.Refill();
+
+        _view.AssignSprites(_board);
+
+        await ResolveCascadesAsync(25);
+    }
+
+    private void TryRemoveCell(Vector2Int cell)
+    {
+        if (!_board.IsCellInBounds(cell))
+        {
+            Debug.Log($"The cell [x:{cell.x}, y: {cell.y}] is not in bounds, couldn't remove");
+            return;
+        }
+
+        _board.ClearGridCell(cell);
+        UpdateGoalUI();
     }
 
     private async Task ResolveCascadesAsync(int framesBetweenSteps)

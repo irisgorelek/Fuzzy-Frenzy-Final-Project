@@ -233,7 +233,7 @@ public class Board
     }
 
     // Apply gravity to the cells
-    private void ApplyGravity()
+    public void ApplyGravity()
     {
         for (int x = 0; x < _width; x++)
         {
@@ -258,7 +258,7 @@ public class Board
     }
 
     // Refill the empty cells
-    private void Refill()
+    public void Refill()
     {
         for (int x = 0; x < _width; x++) // Columns
         {
@@ -293,7 +293,7 @@ public class Board
     }
     
     // Check if the cell is in the grid
-    private bool IsCellInBounds(Vector2Int cell)
+    public bool IsCellInBounds(Vector2Int cell)
     {
         if ((0 <= cell.x && cell.x < _width) && (0 <= cell.y && cell.y < _height))
         {
@@ -365,5 +365,15 @@ public class Board
     public bool HasAnyMatch()
     {
         return MatchesFound().Count > 0;
+    }
+
+    public void ClearGridCell(Vector2Int cell)
+    {
+        if (_grid[cell.x, cell.y] == null) 
+            return;
+
+        _points += _grid[cell.x, cell.y]._points;
+        _matchedAnimals++;
+        _grid[cell.x, cell.y] = null;
     }
 }

@@ -29,6 +29,7 @@ public class MoveCounter : MonoBehaviour
 
     public void AddOneMove()
     {
+        Debug.Log("Adding move");
         _movesLeft++;
         OnMovesChanged?.Invoke(_movesLeft);
     }

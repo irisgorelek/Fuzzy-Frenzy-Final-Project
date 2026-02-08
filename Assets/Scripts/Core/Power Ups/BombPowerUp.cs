@@ -35,7 +35,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void ArmBomb()
+    private void ArmBomb()
     {
         if (_armed) return;
 
@@ -45,7 +45,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _boardView.CellTapped += OnCellTapped;  // subscribe
         Debug.Log("Armed bomb");
     }
-    public void UnarmBomb()
+    private void UnarmBomb()
     {
         if (!_armed) return;
 
@@ -63,8 +63,10 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         Debug.Log($"Clicked with bomb x: {coord.x}, y:{coord.y}");
 
-        _armed = false;
-        _boardView.CellTapped -= OnCellTapped; // unsubscribe
+        UnarmBomb();
+
+        ToggleHighlight(false);
+
         TryUseBomb(coord);
     }
 
@@ -94,7 +96,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
     }
 
-    public void UpdateCurrentAmount()
+    public void AddOneToCurrentAmount()
     {
         SaveManager.Instance.Add(PowerUpType.Bomb);
         _amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();

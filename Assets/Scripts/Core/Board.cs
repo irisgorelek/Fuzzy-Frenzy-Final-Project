@@ -2,9 +2,9 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using static BoardConfig;
 using Random = UnityEngine.Random;
 
 public class Board
@@ -71,40 +71,6 @@ public class Board
                 _grid[x, y] = chosen;
             }
         }
-    }
-
-    // Try to swap the animals between 2 touching cells
-    public bool TrySwapCells(Vector2Int cell1, Vector2Int cell2)
-    {
-        bool didSwap = false;
-
-        // Swap the cells and check what happens
-        if((IsCellInBounds(cell1) && IsCellInBounds(cell2)) && AreCellsNeighbours(cell1, cell2))
-        {
-            Animal temp = _grid[cell1.x, cell1.y];
-            _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
-            _grid[cell2.x, cell2.y] = temp;
-
-            List<Vector2Int> matches = MatchesFound();
-
-            // If there were no matches found return the cells back to what they were
-            if (matches.Count == 0)
-            {
-                _grid[cell2.x, cell2.y] = _grid[cell1.x, cell1.y];
-                _grid[cell1.x, cell1.y] = temp;
-                return didSwap;
-            }
-
-            didSwap = true;
-
-            while (matches.Count > 0)
-            {
-                ClearMatches(matches);
-                matches = MatchesFound();
-            }
-        }
-
-        return didSwap;
     }
 
     // Find matches on the board and return a list of matches found
@@ -376,4 +342,43 @@ public class Board
         _matchedAnimals++;
         _grid[cell.x, cell.y] = null;
     }
+
+
+    // Try to swap the animals between 2 touching cells
+    //public bool TrySwapCells(Vector2Int cell1, Vector2Int cell2, bool checkForMatches = true)
+    //{
+    //    bool didSwap = false;
+
+    //    // Swap the cells and check what happens
+    //    if((IsCellInBounds(cell1) && IsCellInBounds(cell2)) && AreCellsNeighbours(cell1, cell2))
+    //    {
+    //        Animal temp = _grid[cell1.x, cell1.y];
+    //        _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
+    //        _grid[cell2.x, cell2.y] = temp;
+
+    //        List<Vector2Int> matches = MatchesFound();
+
+    //        // If there were no matches found return the cells back to what they were
+    //        if (matches.Count == 0 || checkForMatches == false)
+    //        {
+    //            _grid[cell2.x, cell2.y] = _grid[cell1.x, cell1.y];
+    //            _grid[cell1.x, cell1.y] = temp;
+    //            return didSwap;
+    //        }
+
+    //        didSwap = true;
+
+    //        HandleMatches(matches);
+    //    }
+
+    //    return didSwap;
+    //}
+    //private void HandleMatches(List<Vector2Int> matches) 
+    //{
+    //    while (matches.Count > 0)
+    //    {
+    //        ClearMatches(matches);
+    //        matches = MatchesFound();
+    //    }
+    //}
 }

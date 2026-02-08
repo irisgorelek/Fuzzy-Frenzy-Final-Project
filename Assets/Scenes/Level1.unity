@@ -2505,7 +2505,7 @@ PrefabInstance:
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _cfg
       value: 
-      objectReference: {fileID: 11400000, guid: 0334a87f3c1580f4d8bbd160f256839c, type: 2}
+      objectReference: {fileID: 11400000, guid: 993a19669a67e9a40a312e9099a99296, type: 2}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _moveCounter
       value: 

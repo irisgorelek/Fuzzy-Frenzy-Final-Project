@@ -2,9 +2,9 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using static BoardConfig;
 using Random = UnityEngine.Random;
 
 public class Board
@@ -71,40 +71,6 @@ public class Board
                 _grid[x, y] = chosen;
             }
         }
-    }
-
-    // Try to swap the animals between 2 touching cells
-    public bool TrySwapCells(Vector2Int cell1, Vector2Int cell2)
-    {
-        bool didSwap = false;
-
-        // Swap the cells and check what happens
-        if((IsCellInBounds(cell1) && IsCellInBounds(cell2)) && AreCellsNeighbours(cell1, cell2))
-        {
-            Animal temp = _grid[cell1.x, cell1.y];
-            _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
-            _grid[cell2.x, cell2.y] = temp;
-
-            List<Vector2Int> matches = MatchesFound();
-
-            // If there were no matches found return the cells back to what they were
-            if (matches.Count == 0)
-            {
-                _grid[cell2.x, cell2.y] = _grid[cell1.x, cell1.y];
-                _grid[cell1.x, cell1.y] = temp;
-                return didSwap;
-            }
-
-            didSwap = true;
-
-            while (matches.Count > 0)
-            {
-                ClearMatches(matches);
-                matches = MatchesFound();
-            }
-        }
-
-        return didSwap;
     }
 
     // Find matches on the board and return a list of matches found
@@ -233,7 +199,7 @@ public class Board
     }
 
     // Apply gravity to the cells
-    private void ApplyGravity()
+    public void ApplyGravity()
     {
         for (int x = 0; x < _width; x++)
         {
@@ -258,7 +224,7 @@ public class Board
     }
 
     // Refill the empty cells
-    private void Refill()
+    public void Refill()
     {
         for (int x = 0; x < _width; x++) // Columns
         {
@@ -293,7 +259,7 @@ public class Board
     }
     
     // Check if the cell is in the grid
-    private bool IsCellInBounds(Vector2Int cell)
+    public bool IsCellInBounds(Vector2Int cell)
     {
         if ((0 <= cell.x && cell.x < _width) && (0 <= cell.y && cell.y < _height))
         {
@@ -366,4 +332,53 @@ public class Board
     {
         return MatchesFound().Count > 0;
     }
+
+    public void ClearGridCell(Vector2Int cell)
+    {
+        if (_grid[cell.x, cell.y] == null) 
+            return;
+
+        _points += _grid[cell.x, cell.y]._points;
+        _matchedAnimals++;
+        _grid[cell.x, cell.y] = null;
+    }
+
+
+    // Try to swap the animals between 2 touching cells
+    //public bool TrySwapCells(Vector2Int cell1, Vector2Int cell2, bool checkForMatches = true)
+    //{
+    //    bool didSwap = false;
+
+    //    // Swap the cells and check what happens
+    //    if((IsCellInBounds(cell1) && IsCellInBounds(cell2)) && AreCellsNeighbours(cell1, cell2))
+    //    {
+    //        Animal temp = _grid[cell1.x, cell1.y];
+    //        _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
+    //        _grid[cell2.x, cell2.y] = temp;
+
+    //        List<Vector2Int> matches = MatchesFound();
+
+    //        // If there were no matches found return the cells back to what they were
+    //        if (matches.Count == 0 || checkForMatches == false)
+    //        {
+    //            _grid[cell2.x, cell2.y] = _grid[cell1.x, cell1.y];
+    //            _grid[cell1.x, cell1.y] = temp;
+    //            return didSwap;
+    //        }
+
+    //        didSwap = true;
+
+    //        HandleMatches(matches);
+    //    }
+
+    //    return didSwap;
+    //}
+    //private void HandleMatches(List<Vector2Int> matches) 
+    //{
+    //    while (matches.Count > 0)
+    //    {
+    //        ClearMatches(matches);
+    //        matches = MatchesFound();
+    //    }
+    //}
 }

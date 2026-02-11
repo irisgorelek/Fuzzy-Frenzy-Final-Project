@@ -7,20 +7,35 @@ using System.Runtime.CompilerServices;
 
 public class BoardView : MonoBehaviour
 {
+    [Header("Grid")]
     [SerializeField] private RectTransform _boardParent;
-    [SerializeField] private GameObject _cell;
-    [SerializeField] Color _selectedColor, _normalColor; // For highlighting 
-    [SerializeField] private Sprite _defaultSprite; // For null animals
     [SerializeField] private GridLayoutGroup gridLayout;
+    public bool SwapsEnabled = true;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject _cell;
+
+    [Header("Highlighting")] // For highlighting
+    [SerializeField] Color _selectedColor;
+    [SerializeField] Color _normalColor;
+
+    [Header("Sprite")]
+    [SerializeField] private Sprite _defaultSprite; // For null animals
+
+    [Header("On Screen Texts")]
     [SerializeField] private TextMeshProUGUI _points;
     [SerializeField] private TextMeshProUGUI _animalsCount;
     [SerializeField] private TextMeshProUGUI _movesCountText;
+    [SerializeField] private TextMeshProUGUI _timerPowerUp;
+
 
     private Dictionary<Vector2Int, CellView> _cells = new();
-    int _width, _height;
+    public int _width {get; set;}
+    public int _height {get; set;}
 
 
     public event Action<Vector2Int, Vector2Int> SwapRequested;
+    public event Action<Vector2Int> CellTapped;
 
     // Swipe state
     private bool _gestureActive;
@@ -142,11 +157,15 @@ public class BoardView : MonoBehaviour
     {
         TryCommitSwipe(screenPos);
 
+        // If no swipe happened, treat it as a tap
+        if (!_swipeCommitted)
+            CellTapped?.Invoke(coord);
+
         _gestureActive = false;
     }
     private void TryCommitSwipe(Vector2 currentScreenPos)
     {
-        if (!_gestureActive || _swipeCommitted) return;
+        if (!_gestureActive || _swipeCommitted || !SwapsEnabled) return;
 
         Vector2 delta = currentScreenPos - _startScreenPos;
 
@@ -177,5 +196,15 @@ public class BoardView : MonoBehaviour
     public void SetMovesText(int movesLeft)
     {
         _movesCountText.text = movesLeft.ToString();
+    }
+
+    public void SetTimerVisible(bool visible)
+    {
+        _timerPowerUp.gameObject.SetActive(visible);
+    }
+
+    public void SetTimerSeconds(int seconds)
+    {
+        _timerPowerUp.text = $"Timer: {seconds}";
     }
 }

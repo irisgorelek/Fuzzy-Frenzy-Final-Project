@@ -1,17 +1,32 @@
 using UnityEngine;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using TMPro;
 
 public class BoardController : MonoBehaviour
 {
+    [Header("Board Parameters")] 
     [SerializeField] private BoardConfig _cfg;
     [SerializeField] private BoardView _view;
+    [SerializeField] private MoveCounter _moveCounter;
+
+    [Header("On Screen Pop Ups")]
     [SerializeField] private GameObject _levelClearedPopup;
     [SerializeField] private GameObject _levelLostPopup;
-    [SerializeField] private MoveCounter _moveCounter;
 
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
     private bool _isLevelOver = false;
+
+    // Timer bomb parameters
+    public bool IsTimerBombActive { get; private set; }
+    private float _timerBombEndTime;
+    private bool _timerBombResolving;
+
+    public int GetWidth() => _cfg.weidth;
+    public int GetHeight() => _cfg.height;
 
     private void Awake()
     {
@@ -30,6 +45,22 @@ public class BoardController : MonoBehaviour
         UpdateGoalUI();
     }
 
+    private void Update()
+    {
+        if (!IsTimerBombActive || _timerBombResolving)
+        {
+            return;
+        }
+
+        UpdateTimerUI();
+
+        if (Time.time >= _timerBombEndTime)
+        {
+            EndTimerBomb();
+        }
+    }
+
+
     private void OnEnable()
     {
         if (_view != null)
@@ -39,6 +70,8 @@ public class BoardController : MonoBehaviour
             _moveCounter.OnMovesChanged += _view.SetMovesText;
             _view.SetMovesText(_moveCounter.MovesLeft);
         }
+
+        _view.SetTimerVisible(false);
     }
 
     private void OnDisable()
@@ -65,8 +98,21 @@ public class BoardController : MonoBehaviour
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
     {
         Debug.Log($"SwapRequested: {from} -> {to}");
-        if (_isBusy || _moveCounter.MovesLeft <= 0 || _isLevelOver) return;
+        if (_isBusy || _isLevelOver) return;
+        if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
 
+        // Do if activated timer power up
+        if (IsTimerBombActive)
+        {
+            bool swapped = _board.SwapCellsRaw(from, to);
+            if (!swapped) return;
+
+            _view.SwapCellVisuals(from, to);
+            return;
+        }
+
+
+        // Do if normal gameplay
         _isBusy = true;
 
         // Show the swap immediately even if invalid
@@ -75,9 +121,9 @@ public class BoardController : MonoBehaviour
         // Let the swap show in unity
         await WaitFrames(10);
 
-        bool swapped = _board.SwapCellsRaw(from, to);
+        bool swappedNormal = _board.SwapCellsRaw(from, to);
 
-        if (!swapped)
+        if (!swappedNormal)
         {
             // Out of bounds / not neighbors
             _view.SwapCellVisuals(from, to); // swap back
@@ -118,6 +164,66 @@ public class BoardController : MonoBehaviour
 
         _isBusy = false;
 
+    }
+
+    public async void TryRemoveCellsFromGrid(List<Vector2Int> cells)
+    {
+        for (int i = 0; i < cells.Count; i++)
+        {
+            TryRemoveCell(cells[i]);
+        }
+
+        _board.ApplyGravity();
+        _board.Refill();
+
+        _view.AssignSprites(_board);
+
+        await ResolveCascadesAsync(25);
+    }
+
+    public void StartTimerBomb(float durationSeconds)
+    {
+        if (_isLevelOver) return;
+
+        IsTimerBombActive = true;
+        _timerBombResolving = false;
+        _timerBombEndTime = Time.time + durationSeconds;
+
+        _view.SetTimerVisible(true);
+        UpdateTimerUI();
+
+        // allow swiping during the timer
+        _view.SwapsEnabled = true;
+    }
+
+    private async void EndTimerBomb()
+    {
+        _timerBombResolving = true;
+        IsTimerBombActive = false;
+
+        _view.SetTimerVisible(false);
+
+        // freeze input while resolving
+        _view.SwapsEnabled = false;
+        _isBusy = true;
+
+        await ResolveCascadesAsync(25);
+
+        _isBusy = false;
+        _view.SwapsEnabled = true;
+        _timerBombResolving = false;
+    }
+
+    private void TryRemoveCell(Vector2Int cell)
+    {
+        if (!_board.IsCellInBounds(cell))
+        {
+            Debug.Log($"The cell [x:{cell.x}, y: {cell.y}] is not in bounds, couldn't remove");
+            return;
+        }
+
+        _board.ClearGridCell(cell);
+        UpdateGoalUI();
     }
 
     private async Task ResolveCascadesAsync(int framesBetweenSteps)
@@ -169,5 +275,13 @@ public class BoardController : MonoBehaviour
     {
         for (int i = 0; i < frameCount; i++)
             await Task.Yield();
+    }
+    private void UpdateTimerUI()
+    {
+        float remaining = _timerBombEndTime - Time.time;
+        remaining = Mathf.Max(0f, remaining);
+
+        int seconds = Mathf.CeilToInt(remaining);
+        _view.SetTimerSeconds(seconds);
     }
 }

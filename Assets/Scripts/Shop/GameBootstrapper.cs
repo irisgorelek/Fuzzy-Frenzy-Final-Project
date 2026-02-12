@@ -7,6 +7,8 @@ public class GameBootstrapper : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);      // for next scenes
+
         Economy = new EconomyContext();
         Economy.InitializeLivesIfNeeded();
         Shop = new ShopService(Economy);

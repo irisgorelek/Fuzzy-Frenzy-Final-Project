@@ -8,6 +8,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     [SerializeField] private BoardController _board;
     [SerializeField] private BoardView _boardView;
     [SerializeField] private TextMeshProUGUI _amount;
+    [SerializeField] private PowerUpEventChannelSO _powerUpChannel;
 
     private bool _armed;
 
@@ -93,6 +94,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         }
 
         _board.TryRemoveCellsFromGrid(affected);
+        _powerUpChannel.RaiseEvent("bomb");
         _amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
     }
 

@@ -5,6 +5,8 @@ public class AchievementsManager : MonoBehaviour
 {
     [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannel;
     [SerializeField] private AnimalsDestroyedEventChannelSO _animalDestroyedChannel;
+    [SerializeField] private PowerUpEventChannelSO _powerUpChannel;
+
     [SerializeField] private List<AchievementSO> _achievements;
     [SerializeField] private LevelsData _allLevels;
 
@@ -18,17 +20,19 @@ public class AchievementsManager : MonoBehaviour
 
     private void OnEnable()
     {
-        _levelCompletedChannel.OnEventRaised += AddCompletedLevel;
+        _levelCompletedChannel.OnEventRaised += OnLevelCompleted;
         _animalDestroyedChannel.OnEventRaised += OnAnimalDestroyed;
+        _powerUpChannel.OnEventRaised += OnPowerUpUsed;
     }
 
     private void OnDisable()
     {
-        _levelCompletedChannel.OnEventRaised -= AddCompletedLevel;
+        _levelCompletedChannel.OnEventRaised -= OnLevelCompleted;
         _animalDestroyedChannel.OnEventRaised -= OnAnimalDestroyed;
+        _powerUpChannel.OnEventRaised -= OnPowerUpUsed;
     }
 
-    private void AddCompletedLevel(int levelId)
+    private void OnLevelCompleted(int levelId)
     {
         _completedLevels.Add(levelId);
 
@@ -37,19 +41,14 @@ public class AchievementsManager : MonoBehaviour
 
     private void CheckForLevelAchievement()
     {
-        foreach (var achievement in _achievements)
+        foreach (var achievement in GetLocked(AchievementCategory.Level))
         {
-            if (achievement.Category != AchievementCategory.Level || _unlockedAchievements.Contains(achievement.Id)) continue; // skip if not a Level achievement or already unlocked
-            bool unlock = false;
+            bool unlock;
 
             if (achievement.Goal == 0) unlock = _completedLevels.Count >= _allLevels.Levels.Count; // finish all levels goal
-            else unlock = _completedLevels.Count >= achievement.Goal; //  check if total unique completed levels are higher than required goal
+            else unlock = _completedLevels.Count >= achievement.Goal; // check if total unique completed levels are higher than required goal
 
-            if (unlock)
-            {
-                _unlockedAchievements.Add(achievement.Id);
-                Debug.Log($"Achievement unlocked: {achievement.Title}");
-            }
+            if (unlock) Unlock(achievement);
         }
     }
 
@@ -66,9 +65,8 @@ public class AchievementsManager : MonoBehaviour
 
     private void CheckForAnimalAchievements()
     {
-        foreach (var achievement in _achievements)
+        foreach (var achievement in GetLocked(AchievementCategory.Animal))
         {
-            if (achievement.Category != AchievementCategory.Animal || _unlockedAchievements.Contains(achievement.Id)) continue;
             bool unlock = false;
 
             if (achievement.Goal == 0) unlock = _discoveredAnimals.Count >= TotalAnimalTypes; // discover all animals achievement
@@ -82,11 +80,33 @@ public class AchievementsManager : MonoBehaviour
                 else unlock = _totalDestroyedAnimals >= achievement.Goal; // general animals achievement
             }
 
-            if (unlock)
-            {
-                _unlockedAchievements.Add(achievement.Id);
-                Debug.Log($"Achievement unlocked: {achievement.Title}");
-            }
+            if (unlock) Unlock(achievement);
+        }
+    }
+
+    private void OnPowerUpUsed(string powerUpName)
+    {
+        foreach (var achievement in _achievements)
+        {
+            if (achievement.Category != AchievementCategory.PowerUp || _unlockedAchievements.Contains(achievement.Id)) continue;
+
+            if (achievement.PowerUpName == powerUpName) Unlock(achievement);
+        }
+    }
+
+    private void Unlock(AchievementSO achievement)
+    {
+        _unlockedAchievements.Add(achievement.Id);
+        Debug.Log($"Achievement unlocked: {achievement.Title}");
+    }
+
+    private IEnumerable<AchievementSO> GetLocked(AchievementCategory category)
+    {
+        foreach (var achievement in _achievements)
+        {
+            if (achievement.Category != category) continue;
+            if (_unlockedAchievements.Contains(achievement.Id)) continue;
+            yield return achievement;
         }
     }
 

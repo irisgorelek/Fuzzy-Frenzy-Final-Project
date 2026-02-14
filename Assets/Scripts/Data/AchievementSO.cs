@@ -17,6 +17,7 @@ public class AchievementSO : ScriptableObject
     [SerializeField] private Sprite _icon;
     [SerializeField] private AchievementCategory _category;
     [SerializeField] private int _goal;
+    [SerializeField] private string _animalId;
 
     public string Id => _id;
     public string Title => _title;
@@ -24,4 +25,5 @@ public class AchievementSO : ScriptableObject
     public Sprite Icon => _icon;
     public AchievementCategory Category => _category;
     public int Goal => _goal;
+    public string AnimalId => _animalId;
 }

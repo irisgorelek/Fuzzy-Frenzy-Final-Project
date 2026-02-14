@@ -2475,8 +2475,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::AchievementsManager
   _levelCompletedChannel: {fileID: 11400000, guid: b4b5f4c95a2d7c24d9425c8fdc68f566, type: 2}
+  _animalDestroyedChannel: {fileID: 11400000, guid: cccd6c098b480ba4e862180a638d5016, type: 2}
   _achievements:
   - {fileID: 11400000, guid: acc7a1cced8fb5d42b135b9b2616d67b, type: 2}
+  - {fileID: 11400000, guid: 51762c74610d25e409017c55d09a8477, type: 2}
+  - {fileID: 11400000, guid: 2e2a67f1476d02c42848ef5aa308574e, type: 2}
+  - {fileID: 11400000, guid: 2bb2df279c6d8234ab92a4bde165803d, type: 2}
+  - {fileID: 11400000, guid: 9a3b3f487a151fb47969dcf3eddd2eb1, type: 2}
   _allLevels: {fileID: 11400000, guid: 9567066a3c289c54a9a420eb7e66cea4, type: 2}
 --- !u!1 &1436932845
 GameObject:
@@ -3438,6 +3443,10 @@ PrefabInstance:
       propertyPath: _levelCompletedChannelSO
       value: 
       objectReference: {fileID: 11400000, guid: b4b5f4c95a2d7c24d9425c8fdc68f566, type: 2}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: _animalsDestroyedChannelSO
+      value: 
+      objectReference: {fileID: 11400000, guid: cccd6c098b480ba4e862180a638d5016, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

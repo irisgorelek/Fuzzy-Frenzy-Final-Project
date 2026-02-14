@@ -17,6 +17,7 @@ public class BoardController : MonoBehaviour
     [SerializeField] private GameObject _levelLostPopup;
 
     [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannelSO;
+    [SerializeField] private AnimalsDestroyedEventChannelSO _animalsDestroyedChannelSO;
 
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
@@ -89,6 +90,12 @@ public class BoardController : MonoBehaviour
     {
         // Technical
         _board = new Board(_cfg);
+
+        _board.OnAnimalsDestroyed = (animalId, amount) =>
+        {
+            _animalsDestroyedChannelSO.RaiseEvent(animalId, amount);
+        };
+
         _moveCounter.InitializeMoves(_cfg.maxMoves);
         _board.Initialize();
         

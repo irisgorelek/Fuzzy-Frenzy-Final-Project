@@ -16,6 +16,8 @@ public class BoardController : MonoBehaviour
     [SerializeField] private GameObject _levelClearedPopup;
     [SerializeField] private GameObject _levelLostPopup;
 
+    [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannelSO;
+
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
     private bool _isLevelOver = false;
@@ -245,6 +247,7 @@ public class BoardController : MonoBehaviour
 
             if (_board.IsGoalReached)
             {
+                _levelCompletedChannelSO.RaiseEvent(_cfg.level);
                 _levelClearedPopup.gameObject.SetActive(true);
                 _isLevelOver = true;
                 return;

@@ -2430,6 +2430,54 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1435826032
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1435826033}
+  - component: {fileID: 1435826034}
+  m_Layer: 0
+  m_Name: AchievementManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1435826033
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435826032}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1435826034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435826032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b7d0f21329be534a925bdf4c0308d1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::AchievementsManager
+  _levelCompletedChannel: {fileID: 11400000, guid: b4b5f4c95a2d7c24d9425c8fdc68f566, type: 2}
+  _achievements:
+  - {fileID: 11400000, guid: acc7a1cced8fb5d42b135b9b2616d67b, type: 2}
+  _allLevels: {fileID: 11400000, guid: 9567066a3c289c54a9a420eb7e66cea4, type: 2}
 --- !u!1 &1436932845
 GameObject:
   m_ObjectHideFlags: 0
@@ -3386,6 +3434,10 @@ PrefabInstance:
       propertyPath: _levelClearedPopup
       value: 
       objectReference: {fileID: 1109928810}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: _levelCompletedChannelSO
+      value: 
+      objectReference: {fileID: 11400000, guid: b4b5f4c95a2d7c24d9425c8fdc68f566, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3458,3 +3510,4 @@ SceneRoots:
   - {fileID: 1173018492}
   - {fileID: 190064115}
   - {fileID: 7888111197399659646}
+  - {fileID: 1435826033}

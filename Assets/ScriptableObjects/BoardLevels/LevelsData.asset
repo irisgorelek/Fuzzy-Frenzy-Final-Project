@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f880e41b35439243b8511acd135fcf9, type: 3}
+  m_Name: LevelsData
+  m_EditorClassIdentifier: FuzzyFrenzy.Data::LevelsData
+  _levelsList:
+  - {fileID: 11400000, guid: 0334a87f3c1580f4d8bbd160f256839c, type: 2}
+  - {fileID: 11400000, guid: 993a19669a67e9a40a312e9099a99296, type: 2}

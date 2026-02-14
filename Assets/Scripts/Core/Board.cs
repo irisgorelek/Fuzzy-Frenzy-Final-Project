@@ -29,6 +29,7 @@ public class Board
             : _matchedAnimals >= _goalAmount;
 
     public Action<string, int> OnAnimalsDestroyed;
+    public Action<int> OnScoreAdded;
 
     public Board(BoardConfig config)
     {
@@ -183,6 +184,7 @@ public class Board
     private void ClearMatches(List<Vector2Int> matches)
     {
         var destroyedByAnimal = new Dictionary<string, int>();
+        int pointsGainedThisClear = 0;
 
         for (int i = 0; i < matches.Count; i++)
         {
@@ -190,6 +192,7 @@ public class Board
             if (a == null) continue;
 
             _points += a._points;
+            pointsGainedThisClear += a._points;
             _matchedAnimals++;
 
             string animalId = a._id;
@@ -201,6 +204,9 @@ public class Board
 
             _grid[matches[i].x, matches[i].y] = null;
         }
+
+        if (pointsGainedThisClear > 0)
+            OnScoreAdded?.Invoke(pointsGainedThisClear);
 
         foreach (var kvp in destroyedByAnimal)
         {

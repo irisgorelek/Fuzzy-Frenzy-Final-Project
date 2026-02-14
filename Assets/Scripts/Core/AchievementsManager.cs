@@ -6,6 +6,7 @@ public class AchievementsManager : MonoBehaviour
     [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannel;
     [SerializeField] private AnimalsDestroyedEventChannelSO _animalDestroyedChannel;
     [SerializeField] private PowerUpEventChannelSO _powerUpChannel;
+    [SerializeField] private ScoreEventChannelSO _scoreChannel;
 
     [SerializeField] private List<AchievementSO> _achievements;
     [SerializeField] private LevelsData _allLevels;
@@ -16,6 +17,7 @@ public class AchievementsManager : MonoBehaviour
     private Dictionary<string, int> _destroyedAnimals = new();
 
     private int _totalDestroyedAnimals = 0;
+    private int _totalPointsEarned = 0;
     private const int TotalAnimalTypes = 5;
 
     private void OnEnable()
@@ -23,6 +25,7 @@ public class AchievementsManager : MonoBehaviour
         _levelCompletedChannel.OnEventRaised += OnLevelCompleted;
         _animalDestroyedChannel.OnEventRaised += OnAnimalDestroyed;
         _powerUpChannel.OnEventRaised += OnPowerUpUsed;
+        _scoreChannel.OnEventRaised += OnAddedScore;
     }
 
     private void OnDisable()
@@ -30,6 +33,7 @@ public class AchievementsManager : MonoBehaviour
         _levelCompletedChannel.OnEventRaised -= OnLevelCompleted;
         _animalDestroyedChannel.OnEventRaised -= OnAnimalDestroyed;
         _powerUpChannel.OnEventRaised -= OnPowerUpUsed;
+        _scoreChannel.OnEventRaised -= OnAddedScore;
     }
 
     private void OnLevelCompleted(int levelId)
@@ -81,6 +85,21 @@ public class AchievementsManager : MonoBehaviour
             }
 
             if (unlock) Unlock(achievement);
+        }
+    }
+
+    private void OnAddedScore(int amount)
+    {
+        _totalPointsEarned += amount;
+        CheckForScoreAchievements();
+    }
+
+    private void CheckForScoreAchievements()
+    {
+        foreach (var achievement in GetLocked(AchievementCategory.Score))
+        {
+            if (_totalPointsEarned >= achievement.Goal)
+                Unlock(achievement);
         }
     }
 

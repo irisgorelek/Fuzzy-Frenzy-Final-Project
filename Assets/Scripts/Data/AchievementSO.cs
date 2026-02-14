@@ -4,7 +4,8 @@ public enum AchievementCategory
 {
     Level,
     Animal,
-    PowerUp
+    PowerUp,
+    Score
 }
 
 

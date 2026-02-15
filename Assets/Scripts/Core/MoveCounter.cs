@@ -26,4 +26,11 @@ public class MoveCounter : MonoBehaviour
         if (_movesLeft == 0)
             OnMovesOver?.Invoke(); // player finished his last move
     }
+
+    public void AddOneMove()
+    {
+        Debug.Log("Adding move");
+        _movesLeft++;
+        OnMovesChanged?.Invoke(_movesLeft);
+    }
 }

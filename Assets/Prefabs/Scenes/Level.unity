@@ -3445,11 +3445,19 @@ PrefabInstance:
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _cfg
       value: 
-      objectReference: {fileID: 11400000, guid: 0334a87f3c1580f4d8bbd160f256839c, type: 2}
+      objectReference: {fileID: 11400000, guid: 2f0b4ebfb6dabcd46b1e31758913978e, type: 2}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _timer
       value: 
       objectReference: {fileID: 1436932847}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: _locator
+      value: 
+      objectReference: {fileID: 1684133699}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: _rewards
+      value: 
+      objectReference: {fileID: 11400000, guid: a6392ad77278dd645814309c94016c5e, type: 2}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _moveCounter
       value: 
@@ -3519,6 +3527,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5648867210672973612, guid: 181a1ff56ecba1944948b3d9b5ddedd9, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3534,3 +3546,4 @@ SceneRoots:
   - {fileID: 1173018492}
   - {fileID: 190064115}
   - {fileID: 519948547}
+  - {fileID: 7888111197399659646}

@@ -9,6 +9,8 @@ public class EconomyContext
 
     // UI can subscribe to this later
     public event Action OnChanged;
+    public int GetBoosterCount(BoosterEffectType type) => State.GetBoosterCount(type);
+    public int GetExtraMoveCount() => State.extraMoveCount;
 
     public EconomyContext()
     {
@@ -46,19 +48,39 @@ public class EconomyContext
         return ok;
     }
 
-    public void AddBooster(BoosterEffectType type, int amount)
+    public void AddBooster(BoosterEffectType type, int amount =1)
     {
         State.AddBooster(type, amount);
         Save();
         OnChanged?.Invoke();
     }
 
-    public void AddPowerNap(int amount)
+    public bool TryConsumeBooster(BoosterEffectType type, int amount = 1)
     {
-        State.AddPowerNap(amount);
+        int current = State.GetBoosterCount(type);
+        if (current < amount) return false;
+
+        State.boosters[type] = current - amount;
+        Save();
+        OnChanged?.Invoke();
+        return true;
+    }
+
+    public void AddExtraMove(int amount = 1)     // ?
+    {
+        State.AddExtraMoves(amount);
         Save();
         OnChanged?.Invoke();
     }
+    public bool TryConsumeExtraMove(int amount = 1)
+    {
+        if (State.extraMoveCount < amount) return false;
+        State.extraMoveCount -= amount;
+        Save();
+        OnChanged?.Invoke();
+        return true;
+    }
+
 
     /// <summary>
     /// Life / energy logic

@@ -17,7 +17,7 @@ MonoBehaviour:
   description: Free animal swapping for a limited time.
   icon: {fileID: 0}
   currency: 0
-  price: 0
+  price: 300
   itemType: 0
   boosterEffect: 3
   boosterAmountGranted: 1

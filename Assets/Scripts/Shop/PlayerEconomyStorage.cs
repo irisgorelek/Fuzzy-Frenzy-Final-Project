@@ -17,7 +17,7 @@ public static class PlayerEconomyStorage
     private class SaveData
     {
         public int coins;
-        public int powerNapCount;
+        public int extraMoveCount;
         public List<BoosterEntry> boosters = new List<BoosterEntry>();
         public int maxLives;
         public int currentLives;
@@ -29,7 +29,7 @@ public static class PlayerEconomyStorage
         var data = new SaveData
         {
             coins = state.coins,
-            powerNapCount = state.powerNapCount,
+            extraMoveCount = state.extraMoveCount,
             maxLives = state.maxLives,
             currentLives = state.currentLives,
             lastLifeTimestampUtcSeconds = state.lastLifeTimestampUtcSeconds
@@ -71,7 +71,7 @@ public static class PlayerEconomyStorage
 
             state.currentLives = looksLikeOldSave ? state.maxLives : Mathf.Clamp(data.currentLives, 0, state.maxLives);
             state.lastLifeTimestampUtcSeconds = data.lastLifeTimestampUtcSeconds;
-            state.powerNapCount = data.powerNapCount;
+            state.extraMoveCount = data.extraMoveCount;
 
             state.boosters.Clear();
             if (data.boosters != null)

@@ -14,8 +14,8 @@ public enum ShopItemType
 
 public enum BoosterEffectType
 {
-    FreeSwitch,
-    SniffCandy,
+    //FreeSwitch,
+    //SniffCandy,
     FuzzyBlast,
     TimerBomb
 }

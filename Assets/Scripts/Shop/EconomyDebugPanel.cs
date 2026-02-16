@@ -13,11 +13,11 @@ public class EconomyDebugPanel : MonoBehaviour
             Debug.Log($"Coins now: {bootstrapper.Economy.State.coins}");
         }
 
-        if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
-        {
-            bootstrapper.Economy.AddBooster(BoosterEffectType.FreeSwitch, 1);
-            Debug.Log($"FreeSwitch now: {bootstrapper.Economy.State.GetBoosterCount(BoosterEffectType.FreeSwitch)}");
-        }
+        //if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+        //{
+        //    bootstrapper.Economy.AddBooster(BoosterEffectType.FreeSwitch, 1);
+        //    Debug.Log($"FreeSwitch now: {bootstrapper.Economy.State.GetBoosterCount(BoosterEffectType.FreeSwitch)}");
+        //}
 
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
@@ -27,7 +27,7 @@ public class EconomyDebugPanel : MonoBehaviour
 
         if (Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame)
         {
-            Debug.Log($"ExtraMoves now: {bootstrapper.Economy.State.powerNapCount}");
+            Debug.Log($"ExtraMoves now: {bootstrapper.Economy.State.extraMoveCount}");
         }
 
         if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b4517038998984ea2c758914b1c2b1, type: 3}
   m_Name: Level_2
   m_EditorClassIdentifier: FuzzyFrenzy.Data::BoardConfig
-  level: 2
+  levelIndex: 2
   weidth: 6
   height: 7
   goalType: 1

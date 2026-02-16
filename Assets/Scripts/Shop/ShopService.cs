@@ -55,7 +55,7 @@ public class ShopService
 
             case ShopItemType.ExtraMoves:
                 // Buying gives you +1 Power Nap item (a consumable)
-                economy.AddPowerNap(1);
+                economy.AddExtraMove(1);
                 break;
 
             case ShopItemType.Lives:

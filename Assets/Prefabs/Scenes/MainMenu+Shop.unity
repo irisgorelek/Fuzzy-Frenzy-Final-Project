@@ -214,8 +214,8 @@ MonoBehaviour:
   contentRoot: {fileID: 1821579337}
   rowPrefab: {fileID: 1571497025589357637, guid: bffd25e26e39dc74a84e5de8511aae41, type: 3}
   items:
-  - {fileID: 11400000, guid: 32647bee8336dd74baff43d526c2fa4b, type: 2}
-  - {fileID: 11400000, guid: f5af1af43f5c57b458a88dbee4c209c3, type: 2}
+  - {fileID: 11400000, guid: 499729b5b52148c4d99a30036378b6be, type: 2}
+  - {fileID: 11400000, guid: 5b0b03b310362c142b2ac4d7d2313d4d, type: 2}
   - {fileID: 11400000, guid: 57dd489e6d80bf3409239fa5136292a5, type: 2}
 --- !u!1 &100496506
 GameObject:
@@ -435,6 +435,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 380741215}
   m_CullTransparentMesh: 1
+--- !u!1 &694843892
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 694843893}
+  - component: {fileID: 694843895}
+  m_Layer: 0
+  m_Name: SceneLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &694843893
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 694843892}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 137.12016, y: 1121.9323, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &694843895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 694843892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 679cd67536d66a14da95a17ad81a7e17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::SceneLoader
+  levelSceneName: Level
 --- !u!1 &831559794
 GameObject:
   m_ObjectHideFlags: 0
@@ -1124,7 +1169,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1236256923}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 694843895}
+        m_TargetAssemblyTypeName: SceneLoader, FunzzyFrenzy.core
+        m_MethodName: LoadLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1236256923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2641,3 +2698,4 @@ SceneRoots:
   - {fileID: 1573166758}
   - {fileID: 1710838854}
   - {fileID: 100496509}
+  - {fileID: 694843893}

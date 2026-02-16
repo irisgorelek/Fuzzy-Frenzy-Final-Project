@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 953c74891f3de8543b62a618dc45cc53, type: 3}
-  m_Name: ShopItem_PowerNap
+  m_Name: ShopItem_ExtraMoves
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemDefinition
-  itemId: extra_moves_power_nap
-  displayName: Power Nap
+  itemId: extra_moves
+  displayName: Extra Moves
   description: Gain extra moves when used in a level.
   icon: {fileID: 0}
   currency: 0
-  price: 150
+  price: 200
   itemType: 2
   boosterEffect: 0
   boosterAmountGranted: 1

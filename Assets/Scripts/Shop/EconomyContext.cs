@@ -12,6 +12,8 @@ public class EconomyContext
     public int GetBoosterCount(BoosterEffectType type) => State.GetBoosterCount(type);
     public int GetExtraMoveCount() => State.extraMoveCount;
 
+    private int _extraMovesPerUse = 3; // default fallback
+
     public EconomyContext()
     {
         State = PlayerEconomyStorage.LoadOrCreate();
@@ -66,6 +68,12 @@ public class EconomyContext
         return true;
     }
 
+    public void ConfigureExtraMoveStrength(int movesGranted)
+    {
+        if (movesGranted > 0)
+            _extraMovesPerUse = movesGranted;
+    }
+
     public void AddExtraMove(int amount = 1)     // check duplicate?
     {
         State.AddExtraMoves(amount);
@@ -73,12 +81,26 @@ public class EconomyContext
         OnChanged?.Invoke();
     }
 
-    public bool TryConsumeExtraMove(int amount = 1)
+    //public bool TryConsumeExtraMove(int amount = 1)
+    //{
+    //    if (State.extraMoveCount < amount) return false;
+    //    State.extraMoveCount -= amount;
+    //    Save();
+    //    OnChanged?.Invoke();
+    //    return true;
+    //}
+    public bool TryConsumeExtraMove(out int movesGranted)
     {
-        if (State.extraMoveCount < amount) return false;
-        State.extraMoveCount -= amount;
+        movesGranted = 0;
+
+        if (State.extraMoveCount <= 0)
+            return false;
+
+        State.extraMoveCount--;
         Save();
         OnChanged?.Invoke();
+
+        movesGranted = _extraMovesPerUse;
         return true;
     }
 

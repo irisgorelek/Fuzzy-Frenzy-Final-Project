@@ -7,7 +7,7 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
     [SerializeField] private MoveCounter moves;
     [SerializeField] private TextMeshProUGUI _amount;
 
-    [SerializeField] private ShopItemDefinition extraMoveItem;
+    //[SerializeField] private ShopItemDefinition extraMoveItem;
 
     private GameBootstrapper _bootstrapper;
 
@@ -40,19 +40,33 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if (_bootstrapper == null) return;
-        //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.ExtraMove, 1))
-        //    return;
 
-        if (!_bootstrapper.Economy.TryConsumeExtraMove(1))
+        if (!_bootstrapper.Economy.TryConsumeExtraMove(out int movesGranted))
+        {
+            RefreshAmount();
             return;
+        }
 
-        //moves.AddOneMove();
-        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.ExtraMove).ToString();
-        int movesToAdd = extraMoveItem.ExtraMovesGranted;
-        moves.AddMoves(movesToAdd);
-
+        moves.AddMoves(movesGranted);
         RefreshAmount();
     }
+
+    //public void OnPointerClick(PointerEventData eventData)
+    //{
+    //    if (_bootstrapper == null) return;
+    //    //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.ExtraMove, 1))
+    //    //    return;
+
+    //    if (!_bootstrapper.Economy.TryConsumeExtraMove(1))
+    //        return;
+
+    //    //moves.AddOneMove();
+    //    //_amount.text = SaveManager.Instance.GetCount(PowerUpType.ExtraMove).ToString();
+    //    int movesToAdd = extraMoveItem.ExtraMovesGranted;
+    //    moves.AddMoves(movesToAdd);
+
+    //    RefreshAmount();
+    //}
 
     public void AddOneToCurrentAmount()
     {

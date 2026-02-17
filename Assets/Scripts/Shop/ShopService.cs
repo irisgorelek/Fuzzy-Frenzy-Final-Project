@@ -59,7 +59,7 @@ public class ShopService
                 break;
 
             case ShopItemType.ExtraMoves:
-                // Buying gives you +1 Power Nap item (a consumable)
+                economy.ConfigureExtraMoveStrength(item.ExtraMovesGranted);     // extra move strengh logic
                 economy.AddExtraMove(1);
                 break;
 

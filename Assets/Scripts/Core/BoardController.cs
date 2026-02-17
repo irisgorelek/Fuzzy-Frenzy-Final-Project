@@ -262,7 +262,7 @@ public class BoardController : MonoBehaviour
 
             if (_board.IsGoalReached)
             {
-                _levelCompletedChannelSO.RaiseEvent(_cfg.level);
+                _levelCompletedChannelSO.RaiseEvent(_cfg.levelIndex);
                 int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
                 int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
                 int coins = _rewards.GetCoins(stars, _cfg.levelIndex);

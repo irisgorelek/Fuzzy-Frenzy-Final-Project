@@ -1,0 +1,1998 @@
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\Board.cs
+================================================================================
+
+using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
+public class Board
+{
+    private List<Animal> _allowedAnimals; // Which animals are allowed on the board
+    private Animal[,] _grid;
+    private int _width;
+    private int _height;
+
+    private int _points = 0;
+    private int _matchedAnimals = 0;
+
+    private int _goalAmount = 0;
+    private PointsOrMatches _goalType;
+
+    public int CurrentPoints => _points;
+    public int MatchedAnimals => _matchedAnimals;
+
+    public int GoalAmount => _goalAmount;
+    public PointsOrMatches GoalType => _goalType;
+
+    public bool IsGoalReached =>
+        _goalType == PointsOrMatches.points
+            ? _points >= _goalAmount
+            : _matchedAnimals >= _goalAmount;
+
+    public Board(BoardConfig config)
+    {
+        _width = config.weidth;
+        _height = config.height;
+
+        _goalAmount = config.goal;
+        _goalType = config.goalType;
+
+        // Get the allowed animals for the level
+        _allowedAnimals = new List<Animal>(config.animals);
+        _grid = new Animal[_width, _height];
+    }
+
+    public void Initialize()
+    {
+        if (_allowedAnimals == null || _allowedAnimals.Count == 0)
+            throw new InvalidOperationException("Board has no allowed animals. Check BoardConfig.");
+
+        const int MaxPlacementAttempts = 20;
+
+        // Fill the grid with animals
+        for (int x = 0; x < _width; x++) // Columns
+        {
+            for (int y = 0; y < _height; y++) // Rows
+            {
+                var cell = new Vector2Int(x, y);
+
+                int attempts = 0;
+                Animal chosen;
+
+                do
+                {
+                    chosen = _allowedAnimals[Random.Range(0, _allowedAnimals.Count)];
+                    attempts++;
+                }
+                while (WouldCreateInitialMatches(cell, chosen) && attempts < MaxPlacementAttempts);
+
+                _grid[x, y] = chosen;
+            }
+        }
+    }
+
+    // Find matches on the board and return a list of matches found
+    private List<Vector2Int> MatchesFound()
+    {
+        HashSet<Vector2Int> matchedCells = new HashSet<Vector2Int>(); // Prevent coordinates duplicates
+        List<Vector2Int> matchesList = new List<Vector2Int>();
+        int sameAnimalCounter = 1;
+
+        for (int x = 0; x < _width; x++)
+        {
+            sameAnimalCounter = 1;  
+
+            for (int y = 1; y < _height; y++)
+            {
+                if (_grid[x, y] == null || _grid[x, y - 1] == null)
+                {
+                    if (sameAnimalCounter >= 3)
+                    {
+                        int endY = y - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                            matchedCells.Add(new Vector2Int(x, endY - i));
+                    }
+                    sameAnimalCounter = 1;
+                    continue;
+                }                
+
+                if (_grid[x, y] == _grid[x, y - 1])
+                {
+                    sameAnimalCounter++;
+                }
+                else
+                {
+                    if (sameAnimalCounter >= 3) // If the same animal appeared 3+ times in a row add the cells to the list
+                    {
+                        int endY = y - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                        {
+                            matchedCells.Add(new Vector2Int(x, endY - i));
+                        }
+                    }
+
+                    sameAnimalCounter = 1;
+                }
+            }
+
+            // Flush a run that continues to the bottom of the column
+            if (sameAnimalCounter >= 3)
+            {
+                int endY = _height - 1;
+                for (int i = 0; i < sameAnimalCounter; i++)
+                {
+                    matchedCells.Add(new Vector2Int(x, endY - i));
+                }
+            }
+        }
+
+        for (int y = 0; y < _height; y++)
+        {
+            sameAnimalCounter = 1;
+
+            for (int x = 1; x < _width; x++)
+            {
+                // Break on nulls (and flush any run that ended at y-1)
+                if (_grid[x, y] == null || _grid[x - 1, y] == null)
+                {
+                    if (sameAnimalCounter >= 3)
+                    {
+                        int endX = x - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                            matchedCells.Add(new Vector2Int(endX - i, y));
+                    }
+                    sameAnimalCounter = 1;
+                    continue;
+                }
+
+                if (_grid[x - 1, y] == _grid[x, y])
+                {
+                    sameAnimalCounter++;
+                }
+                else // If the animal changed, add the matching cells to the list
+                {
+                    if (sameAnimalCounter >= 3) // If the same animal appeared 3+ times in a row add the cells to the list
+                    {
+                        int endX = x - 1;
+                        for (int i = 0; i < sameAnimalCounter; i++)
+                        {
+                            matchedCells.Add(new Vector2Int(endX - i, y));
+                        }
+                    }
+
+                    sameAnimalCounter = 1;
+                }
+            }
+
+            // Flush a run that continues to the end of the row
+            if (sameAnimalCounter >= 3)
+            {
+                int endX = _width - 1;
+                for (int i = 0; i < sameAnimalCounter; i++)
+                {
+                    matchedCells.Add(new Vector2Int(endX - i, y));
+                }
+            }
+        }
+
+        return matchedCells.ToList();
+    }
+
+    // Clear the found matches
+    private void ClearMatches(List<Vector2Int> matches)
+    {
+        for (int i = 0; i < matches.Count; i++)
+        {
+            var a = _grid[matches[i].x, matches[i].y];
+            if (a == null) continue;
+
+            _points += a._points;
+            _matchedAnimals++;
+
+            _grid[matches[i].x, matches[i].y] = null;
+        }
+
+        ApplyGravity();
+        Refill();
+    }
+
+    // Apply gravity to the cells
+    public void ApplyGravity()
+    {
+        for (int x = 0; x < _width; x++)
+        {
+            int writeY = _height - 1; // bottom-most position we can write into
+
+            // Scan from bottom to top
+            for (int y = _height - 1; y >= 0; y--)
+            {
+                var piece = _grid[x, y];
+                if (piece == null)
+                    continue;
+
+                if (y != writeY)
+                {
+                    _grid[x, writeY] = piece;
+                    _grid[x, y] = null;
+                }
+
+                writeY--;
+            }
+        }
+    }
+
+    // Refill the empty cells
+    public void Refill()
+    {
+        for (int x = 0; x < _width; x++) // Columns
+        {
+            for (int y = 0; y < _height; y++) // Rows
+            {
+                if (_grid[x, y] != null)
+                    continue;
+
+                _grid[x, y] = _allowedAnimals[Random.Range(0, _allowedAnimals.Count)]; // If the cell is empty, add a random animal
+            }
+        }
+    }
+
+    // Get an animal from a cell
+    public Animal GetAnimalFromCell(Vector2Int cell)
+    {
+        if (IsCellInBounds(cell))
+        {
+            return _grid[cell.x, cell.y];
+        }
+
+        return null;
+    }
+    
+    // Put an animal in a cell
+    public void SetAnimalInCell(Vector2Int cell, Animal animal)
+    {
+        if (IsCellInBounds(cell))
+        {
+            _grid[cell.x, cell.y] = animal;
+        }
+    }
+    
+    // Check if the cell is in the grid
+    public bool IsCellInBounds(Vector2Int cell)
+    {
+        if ((0 <= cell.x && cell.x < _width) && (0 <= cell.y && cell.y < _height))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Check if the cells are neighbours
+    private bool AreCellsNeighbours(Vector2Int cell1, Vector2Int cell2)
+    {
+        var dx = Math.Abs(cell1.x - cell2.x);
+        var dy = Math.Abs(cell1.y - cell2.y);
+
+        if (dx + dy == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Checks if there'll be intial matches (Before the player starts playing himself)
+    private bool WouldCreateInitialMatches(Vector2Int cell, Animal candidateAnimal)
+    {
+        // Horizontal check
+        if (cell.x >= 2)
+        {
+            if (_grid[cell.x - 1, cell.y] == candidateAnimal &&
+                _grid[cell.x - 2, cell.y] == candidateAnimal)
+            {
+                return true;
+            }
+        }
+
+        // Vertical check
+        if (cell.y >= 2)
+        {
+            if (_grid[cell.x, cell.y - 1] == candidateAnimal &&
+                _grid[cell.x, cell.y - 2] == candidateAnimal)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public List<Vector2Int> FindMatches()
+    {
+        return MatchesFound();
+    }
+
+    public void ResolveMatches(List<Vector2Int> matches)
+    {
+        ClearMatches(matches);
+    }
+
+    public bool SwapCellsRaw(Vector2Int cell1, Vector2Int cell2)
+    {
+        if (!(IsCellInBounds(cell1) && IsCellInBounds(cell2))) return false;
+        if (!AreCellsNeighbours(cell1, cell2)) return false;
+
+        // Swapping the values with a tupple
+        (_grid[cell2.x, cell2.y], _grid[cell1.x, cell1.y]) = (_grid[cell1.x, cell1.y], _grid[cell2.x, cell2.y]);
+        return true;
+    }
+    public bool HasAnyMatch()
+    {
+        return MatchesFound().Count > 0;
+    }
+
+    public void ClearGridCell(Vector2Int cell)
+    {
+        if (_grid[cell.x, cell.y] == null) 
+            return;
+
+        _points += _grid[cell.x, cell.y]._points;
+        _matchedAnimals++;
+        _grid[cell.x, cell.y] = null;
+    }
+
+
+    // Try to swap the animals between 2 touching cells
+    //public bool TrySwapCells(Vector2Int cell1, Vector2Int cell2, bool checkForMatches = true)
+    //{
+    //    bool didSwap = false;
+
+    //    // Swap the cells and check what happens
+    //    if((IsCellInBounds(cell1) && IsCellInBounds(cell2)) && AreCellsNeighbours(cell1, cell2))
+    //    {
+    //        Animal temp = _grid[cell1.x, cell1.y];
+    //        _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
+    //        _grid[cell2.x, cell2.y] = temp;
+
+    //        List<Vector2Int> matches = MatchesFound();
+
+    //        // If there were no matches found return the cells back to what they were
+    //        if (matches.Count == 0 || checkForMatches == false)
+    //        {
+    //            _grid[cell2.x, cell2.y] = _grid[cell1.x, cell1.y];
+    //            _grid[cell1.x, cell1.y] = temp;
+    //            return didSwap;
+    //        }
+
+    //        didSwap = true;
+
+    //        HandleMatches(matches);
+    //    }
+
+    //    return didSwap;
+    //}
+    //private void HandleMatches(List<Vector2Int> matches) 
+    //{
+    //    while (matches.Count > 0)
+    //    {
+    //        ClearMatches(matches);
+    //        matches = MatchesFound();
+    //    }
+    //}
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\BoardController.cs
+================================================================================
+
+using UnityEngine;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using TMPro;
+
+public class BoardController : MonoBehaviour
+{
+    [Header("Board Parameters")] 
+    [SerializeField] private BoardConfig _cfg;
+    [SerializeField] private BoardView _view;
+    [SerializeField] private MoveCounter _moveCounter;
+
+    [Header("On Screen Pop Ups")]
+    [SerializeField] private GameObject _levelClearedPopup;
+    [SerializeField] private GameObject _levelLostPopup;
+    [SerializeField] private int framesBetweenSteps = 100;
+
+    [Header("Rewards Configs")]
+    [SerializeField] private RewardsConfig _rewards;
+    [SerializeField] private BootstrapperLocator _locator; // to add coins
+
+    private Board _board;
+    private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
+    private bool _isLevelOver = false;
+
+    // Timer bomb parameters
+    public bool IsTimerBombActive { get; private set; }
+    private float _timerBombEndTime;
+    private bool _timerBombResolving;
+
+    public int GetWidth() => _cfg.weidth;
+    public int GetHeight() => _cfg.height;
+
+    private void Awake()
+    {
+        _levelClearedPopup.gameObject.SetActive(false);
+        _levelLostPopup.gameObject.SetActive(false);
+    }
+
+    public void Start()
+    {
+        if (_cfg == null || _view == null)
+            Debug.LogError("Error: Either cfg or view weren't inserted in the board controller");
+
+        InitializeGame();
+
+        // Show initial goal/progress
+        UpdateGoalUI();
+    }
+
+    private void Update()
+    {
+        if (!IsTimerBombActive || _timerBombResolving)
+        {
+            return;
+        }
+
+        UpdateTimerUI();
+
+        if (Time.time >= _timerBombEndTime)
+        {
+            EndTimerBomb();
+        }
+    }
+
+
+    private void OnEnable()
+    {
+        if (_view != null)
+            _view.SwapRequested += OnSwapRequested;
+        if (_moveCounter != null && _view != null)
+        {
+            _moveCounter.OnMovesChanged += _view.SetMovesText;
+            _view.SetMovesText(_moveCounter.MovesLeft);
+        }
+
+        _view.SetTimerVisible(false);
+    }
+
+    private void OnDisable()
+    {
+        if (_view != null)
+            _view.SwapRequested -= OnSwapRequested;
+
+        if (_moveCounter != null && _view != null)
+            _moveCounter.OnMovesChanged -= _view.SetMovesText;
+    }
+
+    public void InitializeGame()
+    {
+        // Technical
+        _board = new Board(_cfg);
+        _moveCounter.InitializeMoves(_cfg.maxMoves);
+        _board.Initialize();
+        
+        // Visual
+        _view.Build(_cfg.weidth, _cfg.height);
+        _view.AssignSprites(_board);
+    }
+
+    public async void OnSwapRequested(Vector2Int from, Vector2Int to)
+    {
+        Debug.Log($"SwapRequested: {from} -> {to}");
+        if (_isBusy || _isLevelOver) return;
+        if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
+
+        // Do if activated timer power up
+        if (IsTimerBombActive)
+        {
+            bool swapped = _board.SwapCellsRaw(from, to);
+            if (!swapped) return;
+
+            _view.SwapCellVisuals(from, to);
+            return;
+        }
+
+
+        // Do if normal gameplay
+        _isBusy = true;
+
+        // Show the swap immediately even if invalid
+        _view.SwapCellVisuals(from, to);
+
+        // Let the swap show in unity
+        await WaitFrames(10);
+
+        bool swappedNormal = _board.SwapCellsRaw(from, to);
+
+        if (!swappedNormal)
+        {
+            // Out of bounds / not neighbors
+            _view.SwapCellVisuals(from, to); // swap back
+            _isBusy = false;
+            return;
+        }
+
+        // Check if the swap didn't produce any match
+        if (!_board.HasAnyMatch())
+        {
+            // The swap was invalid. Swap back in model and view
+            _board.SwapCellsRaw(from, to);
+            _view.SwapCellVisuals(from, to);
+            _isBusy = false;
+            return;
+        }
+
+        _moveCounter.UseMove();
+
+        // The swap was valid. Resolve cascades with pacing
+        _view.AssignSprites(_board); // Sync view to model after swap
+        
+        await ResolveCascadesAsync(framesBetweenSteps);
+
+        if (_isLevelOver)
+        {
+            _isBusy = false;
+            return;
+        }
+
+        if (_moveCounter.MovesLeft <= 0)
+        {
+            _isLevelOver = true;
+            if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
+            _isBusy = false;
+            return;
+        }
+
+        _isBusy = false;
+
+    }
+
+    public async void TryRemoveCellsFromGrid(List<Vector2Int> cells)
+    {
+        for (int i = 0; i < cells.Count; i++)
+        {
+            TryRemoveCell(cells[i]);
+        }
+
+        _board.ApplyGravity();
+        _board.Refill();
+
+        _view.AssignSprites(_board);
+
+        await ResolveCascadesAsync(25);
+    }
+
+    public void StartTimerBomb(float durationSeconds)
+    {
+        if (_isLevelOver) return;
+
+        IsTimerBombActive = true;
+        _timerBombResolving = false;
+        _timerBombEndTime = Time.time + durationSeconds;
+
+        _view.SetTimerVisible(true);
+        UpdateTimerUI();
+
+        // allow swiping during the timer
+        _view.SwapsEnabled = true;
+    }
+
+    private async void EndTimerBomb()
+    {
+        _timerBombResolving = true;
+        IsTimerBombActive = false;
+
+        _view.SetTimerVisible(false);
+
+        // freeze input while resolving
+        _view.SwapsEnabled = false;
+        _isBusy = true;
+
+        await ResolveCascadesAsync(25);
+
+        _isBusy = false;
+        _view.SwapsEnabled = true;
+        _timerBombResolving = false;
+    }
+
+    private void TryRemoveCell(Vector2Int cell)
+    {
+        if (!_board.IsCellInBounds(cell))
+        {
+            Debug.Log($"The cell [x:{cell.x}, y: {cell.y}] is not in bounds, couldn't remove");
+            return;
+        }
+
+        _board.ClearGridCell(cell);
+        UpdateGoalUI();
+    }
+
+    private async Task ResolveCascadesAsync(int framesBetweenSteps)
+    {
+        var matches = _board.FindMatches();
+        while (matches.Count > 0)
+        {
+            // Let the player see the current state before clearing
+            await WaitFrames(framesBetweenSteps);
+
+            // Resolve clear + gravity + refill
+            _board.ResolveMatches(matches);
+
+            // Points + Amount of animals matched
+            UpdateGoalUI();
+
+            // Redraw
+            _view.AssignSprites(_board);
+
+            if (_board.IsGoalReached)
+            {
+                int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
+                int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
+                int coins = _rewards.GetCoins(stars, _cfg.levelIndex);
+
+                _locator.Bootstrapper.Economy.AddCoins(coins);
+
+                // TODO: pass stars/coins to the cleared popup UI
+                Debug.Log($"Level Cleared! Stars={stars}, Coins={coins}, MovesUsed={movesUsed}");
+
+                _levelClearedPopup.gameObject.SetActive(true);
+                _isLevelOver = true;
+                return;
+            }
+
+            // Check again
+            matches = _board.FindMatches();
+        }
+    }
+
+    private void UpdateGoalUI()
+    {
+        if (_board.GoalType == PointsOrMatches.points)
+        {
+            _view.ShowPoints(true); // Show the points text
+            _view.ShowAnimals(false); // Don't show the animals text
+            _view.SetScore(_board.CurrentPoints, _board.GoalAmount);
+        }
+        else
+        {
+            _view.ShowPoints(false); // Don't show the points text
+            _view.ShowAnimals(true); // Show the animals text
+            _view.SetMatchedAnimals(_board.MatchedAnimals, _board.GoalAmount);
+        }
+    }
+
+    private async Task WaitFrames(int frameCount)
+    {
+        for (int i = 0; i < frameCount; i++)
+            await Task.Yield();
+    }
+    private void UpdateTimerUI()
+    {
+        float remaining = _timerBombEndTime - Time.time;
+        remaining = Mathf.Max(0f, remaining);
+
+        int seconds = Mathf.CeilToInt(remaining);
+        _view.SetTimerSeconds(seconds);
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\BoardView.cs
+================================================================================
+
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System.Runtime.CompilerServices;
+
+public class BoardView : MonoBehaviour
+{
+    [Header("Grid")]
+    [SerializeField] private RectTransform _boardParent;
+    [SerializeField] private GridLayoutGroup gridLayout;
+    public bool SwapsEnabled = true;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject _cell;
+
+    [Header("Highlighting")] // For highlighting
+    [SerializeField] Color _selectedColor;
+    [SerializeField] Color _normalColor;
+
+    [Header("Sprite")]
+    [SerializeField] private Sprite _defaultSprite; // For null animals
+
+    [Header("On Screen Texts")]
+    [SerializeField] private TextMeshProUGUI _points;
+    [SerializeField] private TextMeshProUGUI _animalsCount;
+    [SerializeField] private TextMeshProUGUI _movesCountText;
+    [SerializeField] private TextMeshProUGUI _timerPowerUp;
+
+
+    private Dictionary<Vector2Int, CellView> _cells = new();
+    public int _width {get; set;}
+    public int _height {get; set;}
+
+
+    public event Action<Vector2Int, Vector2Int> SwapRequested;
+    public event Action<Vector2Int> CellTapped;
+
+    // Swipe state
+    private bool _gestureActive;
+    private bool _swipeCommitted;
+    private Vector2Int _startCell;
+    private Vector2 _startScreenPos;
+    private const float SwipeThresholdPixels = 45f;
+
+    public void ShowPoints(bool show) => _points.gameObject.SetActive(show);
+    public void ShowAnimals(bool show) => _animalsCount.gameObject.SetActive(show);
+
+    public void Build(int width, int height)
+    {
+        _width = width;
+        _height = height;
+
+        // Change the grid layout according to the board config
+        if(gridLayout == null || _boardParent == null || _cell == null || _defaultSprite == null)
+        {
+            Debug.LogError("Something in BoardView is null");
+            return;
+        }
+
+        gridLayout.constraintCount = _width;
+
+        // Clear old
+        foreach (Transform child in _boardParent)
+            Destroy(child.gameObject);
+
+        _cells.Clear();
+
+        for (int y = 0; y < _height; y++)
+        {
+            for (int x = 0; x < _width; x++)
+            {
+                var coord = new Vector2Int(x, y);
+
+                var go = Instantiate(_cell, _boardParent);
+                var cellView = go.GetComponent<CellView>();
+                cellView.Init(coord);
+
+                // Subscribe to raw input events
+                cellView.PointerDown += OnCellPointerDown;
+                cellView.Drag += OnCellDrag;
+                cellView.PointerUp += OnCellPointerUp;
+
+                _cells.Add(coord, cellView);
+            }
+        }
+
+    }
+
+    // Assign the sprites to the animals on the board
+    public void AssignSprites(Board board)
+    {
+        for (int y = 0; y < _height; y++)
+        {
+            for (int x = 0; x < _width; x++)
+            {
+                var coord = new Vector2Int(x, y);
+                var animal = board.GetAnimalFromCell(coord);
+
+                if(animal == null)
+                {
+                    _cells[coord].SetSprite(_defaultSprite, Color.red);
+                    continue;
+                }
+
+                _cells[coord].SetSprite(animal._sprite, animal.color);
+            }
+        }
+    }
+    public void SwapCellVisuals(Vector2Int a, Vector2Int b)
+    {
+        if (!_cells.ContainsKey(a) || !_cells.ContainsKey(b))
+        {
+            Debug.LogWarning($"SwapCellVisuals failed: {a} or {b} not found");
+            return;
+        }
+
+        var aView = _cells[a];
+        var bView = _cells[b];
+
+        Debug.Log($"Swapping visuals {a} <-> {b}");
+        Debug.Log($"Before: A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
+
+        var aSprite = aView.CurrentSprite;
+        var aColor = aView.CurrentColor;
+
+        aView.SetSprite(bView.CurrentSprite, bView.CurrentColor);
+        bView.SetSprite(aSprite, aColor);
+        Debug.Log($"After:  A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
+    }
+    public void SetScore(int points, int totalPoints)
+    {
+        Debug.LogWarning($"Set Score: {points} / {totalPoints}");
+        _points.text = $"{points} / {totalPoints}";
+    }
+    public void SetMatchedAnimals(int animals, int goal)
+    {
+        Debug.LogWarning($"Set Score: {animals}");
+        _animalsCount.text = $"{animals} / {goal}";
+    }
+    private void OnCellPointerDown(Vector2Int coord, Vector2 screenPos)
+    {
+        Debug.Log($"PointerDown on {coord}");
+        _gestureActive = true;
+        _swipeCommitted = false;
+        _startCell = coord;
+        _startScreenPos = screenPos;
+    }
+
+    private void OnCellDrag(Vector2Int coord, Vector2 screenPos)
+    {
+        TryCommitSwipe(screenPos);
+    }
+
+    private void OnCellPointerUp(Vector2Int coord, Vector2 screenPos)
+    {
+        TryCommitSwipe(screenPos);
+
+        // If no swipe happened, treat it as a tap
+        if (!_swipeCommitted)
+            CellTapped?.Invoke(coord);
+
+        _gestureActive = false;
+    }
+    private void TryCommitSwipe(Vector2 currentScreenPos)
+    {
+        if (!_gestureActive || _swipeCommitted || !SwapsEnabled) return;
+
+        Vector2 delta = currentScreenPos - _startScreenPos;
+
+        if (delta.magnitude < SwipeThresholdPixels)
+            return;
+
+        Vector2Int dir;
+        if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+            dir = delta.x > 0 ? Vector2Int.right : Vector2Int.left;
+        else
+            dir = delta.y > 0 ? Vector2Int.down : Vector2Int.up;
+
+        var to = _startCell + dir;
+
+        _swipeCommitted = true; // Commit once per gesture
+
+        if (!IsInBounds(to))
+            return;
+
+        SwapRequested?.Invoke(_startCell, to);
+    }
+    
+    private bool IsInBounds(Vector2Int cell)
+    {
+        return cell.x >= 0 && cell.x < _width && cell.y >= 0 && cell.y < _height;
+    }
+    
+    public void SetMovesText(int movesLeft)
+    {
+        _movesCountText.text = movesLeft.ToString();
+    }
+
+    public void SetTimerVisible(bool visible)
+    {
+        _timerPowerUp.gameObject.SetActive(visible);
+    }
+
+    public void SetTimerSeconds(int seconds)
+    {
+        _timerPowerUp.text = $"Timer: {seconds}";
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\BootstrapperLocator.cs
+================================================================================
+
+using UnityEngine;
+
+public class BootstrapperLocator : MonoBehaviour
+{
+    public GameBootstrapper Bootstrapper { get; private set; }
+
+    private void Awake()
+    {
+        Bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        if (Bootstrapper == null)
+            Debug.LogError("No GameBootstrapper found. Make sure it exists and is DontDestroyOnLoad.");
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\CellView.cs
+================================================================================
+
+using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+{
+    [SerializeField] private Image _image;
+
+    public Sprite CurrentSprite => _image.sprite;
+    public Color CurrentColor => _image.color;
+
+    public Vector2Int Coord { get; private set; }
+
+    private bool _highlighted;
+
+    public event Action<Vector2Int, Vector2> PointerDown;
+    public event Action<Vector2Int, Vector2> Drag;
+    public event Action<Vector2Int, Vector2> PointerUp;
+
+    public void Init(Vector2Int coord)
+    {
+        Coord = coord;
+        name = $"Cell ({coord.x},{coord.y})";
+    }
+    public void SetSprite(Sprite sprite, Color color)
+    {
+        _image.sprite = sprite;
+        _image.color = color;
+    }
+
+    public void SetHighlighted(bool on)
+    {
+        // TODO: Highlight
+    }
+
+    public void OnPointerDown(PointerEventData eventData) => PointerDown?.Invoke(Coord, eventData.position);
+    public void OnDrag(PointerEventData eventData) => Drag?.Invoke(Coord, eventData.position);
+    public void OnPointerUp(PointerEventData eventData) => PointerUp?.Invoke(Coord, eventData.position);
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\MoveCounter.cs
+================================================================================
+
+using System;
+using UnityEngine;
+
+public class MoveCounter : MonoBehaviour
+{
+    private int _movesLeft;
+    public int MovesLeft => _movesLeft;
+
+    public Action OnMovesOver;
+    public event Action<int> OnMovesChanged;
+
+    public void InitializeMoves(int maxMoves)
+    {
+        _movesLeft = maxMoves;
+        OnMovesChanged?.Invoke(_movesLeft);
+    }
+
+    public void UseMove()
+    {
+        if (_movesLeft <= 0) // final valid move for player
+            return;
+
+        _movesLeft--;
+        OnMovesChanged?.Invoke(_movesLeft);
+
+        if (_movesLeft == 0)
+            OnMovesOver?.Invoke(); // player finished his last move
+    }
+
+    public void AddOneMove()
+    {
+        Debug.Log("Adding move");
+        _movesLeft++;
+        OnMovesChanged?.Invoke(_movesLeft);
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\RewardsConfig.cs
+================================================================================
+
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "Game/Rewards/Rewards Config", fileName = "RewardsConfig")]
+public class RewardsConfig : ScriptableObject
+{
+    [Header("Stars by moves ratio (movesUsed/maxMoves)")]
+    [Range(0.1f, 1f)] public float threeStarThreshold = 0.4f;
+    [Range(0.1f, 1f)] public float twoStarThreshold = 0.8f;
+
+    [Header("Base coins by stars")]
+    public int coins1Star = 100;
+    public int coins2Star = 150;
+    public int coins3Star = 200;
+
+    [Header("Level multiplier (x) by levelIndex")]
+    public AnimationCurve levelMultiplier = AnimationCurve.Linear(1, 1f, 10, 2f);
+
+    public int GetStars(int maxMoves, int movesUsed)
+    {
+        if (maxMoves <= 0) return 1;
+        float ratio = movesUsed / (float)maxMoves;
+
+        if (ratio <= threeStarThreshold) return 3;
+        if (ratio <= twoStarThreshold) return 2;
+        return 1;
+    }
+
+    public int GetCoins(int stars, int levelIndex)
+    {
+        int baseCoins = stars == 3 ? coins3Star : stars == 2 ? coins2Star : coins1Star;
+        float mult = levelMultiplier.Evaluate(levelIndex);
+        return Mathf.RoundToInt(baseCoins * mult);
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\SceneLoader.cs
+================================================================================
+
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class SceneLoader : MonoBehaviour
+{
+    [SerializeField] private string levelSceneName = "Level";
+
+    public void LoadLevel()
+    {
+        SceneManager.LoadScene(levelSceneName);
+    }
+
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu+Shop");
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\Power Ups\BombPowerUp.cs
+================================================================================
+
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class BombPowerUp : MonoBehaviour, IPointerClickHandler
+{
+    [SerializeField] private BoardController _board;
+    [SerializeField] private BoardView _boardView;
+    [SerializeField] private TextMeshProUGUI _amount;
+
+    private GameBootstrapper _bootstrapper;
+
+    private bool _armed;
+
+    private void Awake()
+    {
+        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        if (_bootstrapper == null)
+            Debug.LogError("BombPowerUp: GameBootstrapper not found (should be DontDestroyOnLoad).");
+    }
+
+    private void Start()
+    {
+        //{
+        //    _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        //}
+        ////_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        //RefreshAmount();
+    }
+
+    private void OnEnable()
+    {
+        if (_bootstrapper != null)
+            _bootstrapper.Economy.OnChanged += RefreshAmount;
+
+        RefreshAmount();
+    }
+
+    private void OnDisable()
+    {
+        UnarmBomb();
+
+        if (_bootstrapper != null)
+            _bootstrapper.Economy.OnChanged -= RefreshAmount;
+    }
+
+    //private void OnDisable()
+    //{
+    //    UnarmBomb();
+    //}
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (_armed)
+        {
+            UnarmBomb();
+            ToggleHighlight(false);
+        }
+
+        else
+        {
+            ArmBomb();
+            ToggleHighlight(true);
+        }
+    }
+
+    private void ArmBomb()
+    {
+        if (_armed) return;
+
+        _armed = true;
+        _boardView.SwapsEnabled = false;
+
+        _boardView.CellTapped += OnCellTapped;  // subscribe
+        Debug.Log("Armed bomb");
+    }
+    private void UnarmBomb()
+    {
+        if (!_armed) return;
+
+        _armed = false;
+        _boardView.SwapsEnabled = true;
+
+        _boardView.CellTapped -= OnCellTapped;  // unsubscribe
+        Debug.Log("Unarmed bomb");
+    }
+
+    private void OnCellTapped(Vector2Int coord)
+    {
+        if (!_armed) 
+            return;
+
+        Debug.Log($"Clicked with bomb x: {coord.x}, y:{coord.y}");
+
+        UnarmBomb();
+
+        ToggleHighlight(false);
+
+        TryUseBomb(coord);
+    }
+
+    public void TryUseBomb(Vector2Int coord)
+    {
+        //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.Bomb, 1))
+        //    return;
+        if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
+            return;
+
+        var affected = new List<Vector2Int>(9);
+
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                int nx = coord.x + dx;
+
+                int ny = coord.y + dy;
+
+                if (nx < 0 || nx >= _board.GetWidth() || ny < 0 || ny >= _board.GetHeight())
+                    continue;
+
+                affected.Add(new Vector2Int(nx, ny));
+            }
+        }
+
+        _board.TryRemoveCellsFromGrid(affected);
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        RefreshAmount();
+    }
+
+    public void AddOneToCurrentAmount()
+    {
+        //SaveManager.Instance.Add(PowerUpType.Bomb);
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        _bootstrapper.Economy.AddBooster(BoosterEffectType.FuzzyBlast, 1);
+        RefreshAmount();
+    }
+
+    public void ToggleHighlight(bool toggle)
+    {
+        // TODO: Add highlight effect
+    }
+
+    private void RefreshAmount()
+    {
+        int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast); // or Blast if you renamed
+        _amount.text = count.ToString();
+    }
+
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\Power Ups\MovesPowerUp.cs
+================================================================================
+
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
+{
+    [SerializeField] private MoveCounter moves;
+    [SerializeField] private TextMeshProUGUI _amount;
+
+    private void Start()
+    {
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.ExtraMove).ToString();
+    }
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.ExtraMove, 1))
+        //    return;
+
+        //moves.AddOneMove();
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.ExtraMove).ToString();
+    }
+
+    public void AddOneToCurrentAmount()
+    {
+        //SaveManager.Instance.Add(PowerUpType.ExtraMove);
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.ExtraMove).ToString();
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Core\Power Ups\TimerPowerUp.cs
+================================================================================
+
+using Codice.CM.Client.Differences;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
+{
+    [Header("Board Referrences")]
+    [SerializeField] private BoardController _board;
+    [SerializeField] private BoardView _boardView;
+
+    [Header("Parameters")]
+    [SerializeField] private float _timerLength = 5f;
+
+    [Header("On Screen Texts")]
+    [SerializeField] private TextMeshProUGUI _amount;
+
+    private void Start()
+    {
+        RefreshAmount();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (_board == null) return;
+
+        // Don't start it twice
+        if (_board.IsTimerBombActive)
+            return;
+
+        // Check amount
+        //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.TimerBomb, 1))
+        {
+            RefreshAmount();
+            return;
+        }
+
+        //RefreshAmount();
+
+        // Start the power up
+        //_board.StartTimerBomb(_timerLength);
+    }
+
+    public void AddOneToCurrentAmount()
+    {
+        //SaveManager.Instance.Add(PowerUpType.TimerBomb);
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.TimerBomb).ToString();
+    }
+
+    public void ToggleHighlight(bool toggle)
+    {
+        // TODO: Add highlight effect
+    }
+    private void RefreshAmount()
+    {
+        //int count = SaveManager.Instance.GetCount(PowerUpType.TimerBomb);
+        //if (_amount != null)
+        //    _amount.text = count.ToString();
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Data\Animal.cs
+================================================================================
+
+using UnityEngine;
+using UnityEngine.UI;
+
+[CreateAssetMenu(menuName = "Animal")]
+public class Animal : ScriptableObject
+{
+    public string _id;
+    public Sprite _sprite;
+    public int _points;
+    public Color color;
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Data\BoardConfig.cs
+================================================================================
+
+using NUnit.Framework;
+using System.Collections.Generic;
+using UnityEngine;
+
+public enum PointsOrMatches { points, matches }
+
+[CreateAssetMenu(menuName = "BoardConfig")]
+public class BoardConfig : ScriptableObject
+{
+    public int levelIndex;
+    public int weidth; 
+    public int height;
+    public PointsOrMatches goalType = PointsOrMatches.points;
+    public int goal;
+    public List<Animal> animals;
+    public int maxMoves;
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\EconomyContext.cs
+================================================================================
+
+ERROR READING FILE: 'utf-8' codec can't decode byte 0x92 in position 2484: invalid start byte
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\EconomyDebugPanel.cs
+================================================================================
+
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class EconomyDebugPanel : MonoBehaviour
+{
+    [SerializeField] private GameBootstrapper bootstrapper;
+
+    private void Update()
+    {
+        if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
+        {
+            bootstrapper.Economy.AddCoins(100);
+            Debug.Log($"Coins now: {bootstrapper.Economy.State.coins}");
+        }
+
+        //if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+        //{
+        //    bootstrapper.Economy.AddBooster(BoosterEffectType.FreeSwitch, 1);
+        //    Debug.Log($"FreeSwitch now: {bootstrapper.Economy.State.GetBoosterCount(BoosterEffectType.FreeSwitch)}");
+        //}
+
+        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            bootstrapper.Economy.Wipe();
+            Debug.Log("Wiped + reloaded economy.");
+        }
+
+        if (Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame)
+        {
+            Debug.Log($"ExtraMoves now: {bootstrapper.Economy.State.extraMoveCount}");
+        }
+
+        if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)
+        {
+            bool ok = bootstrapper.Economy.TrySpendLifeForLevelStart();
+            Debug.Log(ok
+                ? $"START LEVEL: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}"
+                : $"NO LIVES: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}");
+        }
+
+        if (Keyboard.current != null && Keyboard.current.tKey.wasPressedThisFrame)
+        {
+            bootstrapper.Economy.ApplyLifeRegen();
+            Debug.Log($"REGEN CHECK: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}");
+        }
+
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\GameBootstrapper.cs
+================================================================================
+
+using UnityEngine;
+
+public class GameBootstrapper : MonoBehaviour
+{
+    public EconomyContext Economy { get; private set; }
+    public ShopService Shop { get; private set; }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);      // for next scenes
+
+        Economy = new EconomyContext();
+        Economy.InitializeLivesIfNeeded();
+        Shop = new ShopService(Economy);
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\PlayerEconomyState.cs
+================================================================================
+
+ERROR READING FILE: 'utf-8' codec can't decode byte 0x93 in position 280: invalid start byte
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\PlayerEconomyStorage.cs
+================================================================================
+
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public static class PlayerEconomyStorage
+{
+    private const string Key = "PLAYER_ECONOMY_V1";
+
+    [Serializable]
+    private class BoosterEntry
+    {
+        public BoosterEffectType type;
+        public int count;
+    }
+
+    [Serializable]
+    private class SaveData
+    {
+        public int coins;
+        public int extraMoveCount;
+        public List<BoosterEntry> boosters = new List<BoosterEntry>();
+        public int maxLives;
+        public int currentLives;
+        public long lastLifeTimestampUtcSeconds;
+    }
+
+    public static void Save(PlayerEconomyState state)
+    {
+        var data = new SaveData
+        {
+            coins = state.coins,
+            extraMoveCount = state.extraMoveCount,
+            maxLives = state.maxLives,
+            currentLives = state.currentLives,
+            lastLifeTimestampUtcSeconds = state.lastLifeTimestampUtcSeconds
+        };
+
+        foreach (var kvp in state.boosters)
+        {
+            data.boosters.Add(new BoosterEntry { type = kvp.Key, count = kvp.Value });
+        }
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(Key, json);
+        PlayerPrefs.Save();
+    }
+
+    public static PlayerEconomyState LoadOrCreate()
+    {
+        var state = new PlayerEconomyState();
+
+        if (!PlayerPrefs.HasKey(Key))                   // safetey check key empty
+            return state;
+
+        string json = PlayerPrefs.GetString(Key);
+        if (string.IsNullOrEmpty(json))                 // safetey check string empty
+            return state;
+
+        try
+        {
+            var data = JsonUtility.FromJson<SaveData>(json);
+            state.coins = data.coins;
+            // maxLives: if missing in old save, default to 3
+            state.maxLives = (data.maxLives <= 0) ? 3 : data.maxLives;
+
+            // currentLives: allow 0 as valid!
+            // If field missing in old saves, JsonUtility will also give 0,
+            // so we need a better signal.
+            // We'll treat "missing old save" as: lastLifeTimestampUtcSeconds == 0 AND currentLives == 0
+            bool looksLikeOldSave = (data.lastLifeTimestampUtcSeconds == 0 && data.currentLives == 0);
+
+            state.currentLives = looksLikeOldSave ? state.maxLives : Mathf.Clamp(data.currentLives, 0, state.maxLives);
+            state.lastLifeTimestampUtcSeconds = data.lastLifeTimestampUtcSeconds;
+            state.extraMoveCount = data.extraMoveCount;
+
+            state.boosters.Clear();
+            if (data.boosters != null)
+            {
+                foreach (var entry in data.boosters)
+                    state.boosters[entry.type] = entry.count;
+            }
+        }
+        catch
+        {
+            // If corrupted, return a fresh state
+            return new PlayerEconomyState();
+        }
+
+        return state;
+    }
+
+    public static void Wipe()
+    {
+        PlayerPrefs.DeleteKey(Key);
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\PurchaseFailReason.cs
+================================================================================
+
+public enum PurchaseFailReason
+{
+    None,
+    NotEnoughCoins,
+    NotAllowedRightNow,
+    ItemNotConfigured
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\ShopDebugPurchase.cs
+================================================================================
+
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class ShopDebugPurchase : MonoBehaviour
+{
+    [SerializeField] private GameBootstrapper bootstrapper;
+    [SerializeField] private ShopItemDefinition freeSwitchItem;
+    [SerializeField] private ShopItemDefinition powerNapItem;
+    [SerializeField] private ShopItemDefinition lifeItem;
+
+    private void Update()
+    {
+        //if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
+        //{
+        //    bool ok = bootstrapper.Shop.TryBuy(freeSwitchItem, out var reason);
+
+        //    var s = bootstrapper.Economy.State;
+        //    Debug.Log(ok
+        //        ? $"BOUGHT! Coins={s.coins}, FreeSwitch={s.GetBoosterCount(BoosterEffectType.FreeSwitch)}"
+        //        : $"BUY FAILED: {reason} (Coins={s.coins})");
+        //}
+
+        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
+        {
+            bool ok = bootstrapper.Shop.TryBuy(powerNapItem, out var reason);
+
+            var s = bootstrapper.Economy.State;
+            Debug.Log(ok
+                ? $"BOUGHT POWER NAP! Coins={s.coins}, ExtraMovesConsumables={s.extraMoveCount}"
+                : $"BUY POWER NAP FAILED: {reason} (Coins={s.coins})");
+        }
+
+        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            bootstrapper.Shop.IsBeforeLevel = !bootstrapper.Shop.IsBeforeLevel;
+            Debug.Log($"IsBeforeLevel = {bootstrapper.Shop.IsBeforeLevel}");
+        }
+
+        if (Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame)
+        {
+            bool ok = bootstrapper.Shop.TryBuy(lifeItem, out var reason);
+            var s = bootstrapper.Economy.State;
+            Debug.Log(ok
+                ? $"BOUGHT LIFE! Lives={s.currentLives}/{s.maxLives}, Coins={s.coins}"
+                : $"BUY LIFE FAILED: {reason} (Lives={s.currentLives}/{s.maxLives}, Coins={s.coins})");
+        }
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\ShopItemDefinition.cs
+================================================================================
+
+using UnityEngine;
+
+public enum CurrencyType
+{
+    Coins
+}
+
+public enum ShopItemType
+{
+    Booster,
+    Lives,
+    ExtraMoves
+}
+
+public enum BoosterEffectType
+{
+    //FreeSwitch,
+    //SniffCandy,
+    FuzzyBlast,
+    TimerBomb
+}
+
+
+[CreateAssetMenu(menuName = "Game/Shop/Shop Item", fileName = "ShopItem_")]
+public class ShopItemDefinition : ScriptableObject
+{
+    [Header("Identity")]
+    [SerializeField] private string itemId; // unique string like "booster_free_switch"
+    [SerializeField] private string displayName;
+    [TextArea][SerializeField] private string description;
+    [SerializeField] private Sprite icon;
+
+    [Header("Purchase")]
+    [SerializeField] private CurrencyType currency = CurrencyType.Coins;
+    [Min(0)][SerializeField] private int price = 0;
+
+    [Header("Type")]
+    [SerializeField] private ShopItemType itemType = ShopItemType.Booster;
+
+    [Header("Booster Data (only if itemType = Booster)")]
+    [SerializeField] private BoosterEffectType boosterEffect;
+    [Min(1)][SerializeField] private int boosterAmountGranted = 1;
+
+    [Header("Lives Data (only if itemType = Lives)")]
+    [Min(1)][SerializeField] private int livesAmountGranted = 1;
+
+    [Header("Extra Moves Data (only if itemType = ExtraMoves)")]
+    [Min(1)][SerializeField] private int extraMovesGranted = 3;
+
+    // Read-only accessors (so other code can read but not modify runtime)
+    public string ItemId => itemId;
+    public string DisplayName => displayName;
+    public string Description => description;
+    public Sprite Icon => icon;
+
+    public CurrencyType Currency => currency;
+    public int Price => price;
+
+    public ShopItemType ItemType => itemType;
+
+    public BoosterEffectType BoosterEffect => boosterEffect;
+    public int BoosterAmountGranted => boosterAmountGranted;
+
+    public int LivesAmountGranted => livesAmountGranted;
+
+    public int ExtraMovesGranted => extraMovesGranted;
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\ShopItemRowUI.cs
+================================================================================
+
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ShopItemRowUI : MonoBehaviour
+{
+    [SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI nameText;
+    [SerializeField] private TextMeshProUGUI descText;
+    [SerializeField] private TextMeshProUGUI priceText;
+    [SerializeField] private TextMeshProUGUI ownedText;
+    [SerializeField] private Button buyButton;
+
+    private GameBootstrapper bootstrapper;
+    private ShopItemDefinition item;
+
+    public void Bind(GameBootstrapper bootstrapper, ShopItemDefinition item)
+    {
+        this.bootstrapper = bootstrapper;
+        this.item = item;
+
+        icon.sprite = item.Icon;
+        nameText.text = item.DisplayName;
+        descText.text = item.Description;
+        priceText.text = item.Price.ToString();
+
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(OnBuyClicked);
+
+        bootstrapper.Economy.OnChanged += Refresh;
+        Refresh();
+    }
+
+    private void OnDestroy()
+    {
+        if (bootstrapper != null)
+            bootstrapper.Economy.OnChanged -= Refresh;
+    }
+
+    private void Refresh()
+    {
+        var s = bootstrapper.Economy.State;
+
+        int owned = 0;
+        switch (item.ItemType)
+        {
+            case ShopItemType.Booster:
+                owned = s.GetBoosterCount(item.BoosterEffect);
+                break;
+            case ShopItemType.ExtraMoves:
+                owned = s.extraMoveCount;
+                break;
+            case ShopItemType.Lives:
+                owned = s.currentLives; // show current lives / energy
+                break;
+        }
+
+        ownedText.text = $"Owned: {owned}";
+
+        bool canBuy = bootstrapper.Shop.CanBuy(item, out _);
+        buyButton.interactable = canBuy;
+    }
+
+    private void OnBuyClicked()
+    {
+        bool ok = bootstrapper.Shop.TryBuy(item, out var reason);
+        if (!ok)
+            Debug.Log($"Buy failed: {reason}");
+        // Economy.OnChanged will refresh UI automatically
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\ShopPanelUI.cs
+================================================================================
+
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ShopPanelUI : MonoBehaviour
+{
+    [SerializeField] private GameBootstrapper bootstrapper;
+    [SerializeField] private GameObject shopPanelRoot;
+    [SerializeField] private Transform contentRoot;
+    [SerializeField] private ShopItemRowUI rowPrefab;
+    [SerializeField] private List<ShopItemDefinition> items;
+
+    private readonly List<ShopItemRowUI> spawned = new();
+
+    private void Start()
+    {
+        shopPanelRoot.SetActive(false);
+        BuildList();
+    }
+
+    private void BuildList()
+    {
+        foreach (var row in spawned)
+            Destroy(row.gameObject);
+        spawned.Clear();
+
+        foreach (var item in items)
+        {
+            var row = Instantiate(rowPrefab, contentRoot);
+            row.Bind(bootstrapper, item);
+            spawned.Add(row);
+        }
+    }
+
+    public void Open()
+    {
+        bootstrapper.Economy.ApplyLifeRegen();
+        shopPanelRoot.SetActive(true);
+    }
+
+    public void Close()
+    {
+        shopPanelRoot.SetActive(false);
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\ShopService.cs
+================================================================================
+
+public class ShopService
+{
+    private readonly EconomyContext economy;
+
+    public bool IsBeforeLevel { get; set; } = true;
+
+    public ShopService(EconomyContext economy)
+    {
+        this.economy = economy;
+    }
+
+    public bool CanBuy(ShopItemDefinition item, out PurchaseFailReason reason)
+    {
+        reason = PurchaseFailReason.None;
+
+        if (item == null) 
+        { reason = PurchaseFailReason.ItemNotConfigured; return false; }
+        if (!IsBeforeLevel) 
+        { reason = PurchaseFailReason.NotAllowedRightNow; return false; }
+        if (item.Currency != CurrencyType.Coins) 
+        { reason = PurchaseFailReason.ItemNotConfigured; return false; }
+
+        if (economy.State.coins < item.Price)
+        {
+            reason = PurchaseFailReason.NotEnoughCoins;
+            return false;
+        }
+
+        if (item.ItemType == ShopItemType.Lives && !economy.CanBuyLives())
+        {
+            reason = PurchaseFailReason.NotAllowedRightNow;
+            return false;
+        }
+
+
+        return true;
+    }
+
+    public bool TryBuy(ShopItemDefinition item, out PurchaseFailReason reason)
+    {
+        if (!CanBuy(item, out reason))
+            return false;
+
+        if (!economy.SpendCoins(item.Price))
+        {
+            reason = PurchaseFailReason.NotEnoughCoins;
+            return false;
+        }
+
+        switch (item.ItemType)
+        {
+            case ShopItemType.Booster:
+                economy.AddBooster(item.BoosterEffect, item.BoosterAmountGranted);
+                break;
+
+            case ShopItemType.ExtraMoves:
+                // Buying gives you +1 Power Nap item (a consumable)
+                economy.AddExtraMove(1);
+                break;
+
+            case ShopItemType.Lives:
+                economy.AddLives(item.LivesAmountGranted);
+                break;
+        }
+
+        reason = PurchaseFailReason.None;
+        return true;
+    }
+}
+
+
+================================================================================
+FILE: M:\Tslil\Documents\Unity Projects\Git\Fuzzy-Frenzy-Final-Project\Assets\Scripts\Shop\TopBarUI.cs
+================================================================================
+
+using TMPro;
+using UnityEngine;
+
+public class TopBarUI : MonoBehaviour
+{
+    [SerializeField] private GameBootstrapper bootstrapper;
+    [SerializeField] private TextMeshProUGUI coinsText;
+    [SerializeField] private TextMeshProUGUI livesText;
+    [SerializeField] private TextMeshProUGUI lifeTimerText;
+
+    private bool subscribed = false;
+
+    private float timer;
+
+    private void Update()
+    {
+        timer += Time.unscaledDeltaTime;
+        if (timer >= 1f)
+        {
+            timer = 0f;
+            Refresh();
+        }
+    }
+
+    private void Start()
+    {
+        TrySubscribeAndRefresh();
+    }
+
+    private void OnDisable()
+    {
+        if (subscribed && bootstrapper != null && bootstrapper.Economy != null)
+        {
+            bootstrapper.Economy.OnChanged -= Refresh;
+            subscribed = false;
+        }
+    }
+
+    private void TrySubscribeAndRefresh()
+    {
+        if (bootstrapper == null)
+        {
+            Debug.LogError("TopBarUI: Bootstrapper not assigned.");
+            return;
+        }
+
+        if (bootstrapper.Economy == null)
+        {
+            Debug.LogError("TopBarUI: Bootstrapper.Economy is null (created in Awake?).");
+            return;
+        }
+
+        bootstrapper.Economy.OnChanged += Refresh;
+        subscribed = true;
+        Refresh();
+    }
+
+    private void Refresh()
+    {
+        var s = bootstrapper.Economy.State;
+
+        coinsText.text = $"Coins: {s.coins}";
+        livesText.text = $"Energy: {s.currentLives}/{s.maxLives}";
+
+        if (bootstrapper.Economy.TryGetTimeUntilNextLife(out int seconds))
+        {
+            int minutes = seconds / 60;
+            int secs = seconds % 60;
+            lifeTimerText.text = $"{minutes:00}:{secs:00}";
+        }
+        else
+        {
+            lifeTimerText.text = "Full";
+        }
+    }
+
+}

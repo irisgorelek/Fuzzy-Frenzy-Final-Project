@@ -66,12 +66,13 @@ public class EconomyContext
         return true;
     }
 
-    public void AddExtraMove(int amount = 1)     // ?
+    public void AddExtraMove(int amount = 1)     // check duplicate?
     {
         State.AddExtraMoves(amount);
         Save();
         OnChanged?.Invoke();
     }
+
     public bool TryConsumeExtraMove(int amount = 1)
     {
         if (State.extraMoveCount < amount) return false;

@@ -19,7 +19,7 @@ MonoBehaviour:
   currency: 0
   price: 300
   itemType: 0
-  boosterEffect: 3
+  boosterEffect: 1
   boosterAmountGranted: 1
   livesAmountGranted: 1
   extraMovesGranted: 3

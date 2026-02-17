@@ -1309,6 +1309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: FunzzyFrenzy.core::MovesPowerUp
   moves: {fileID: 190064116}
   _amount: {fileID: 1028601145}
+  extraMoveItem: {fileID: 11400000, guid: f5af1af43f5c57b458a88dbee4c209c3, type: 2}
 --- !u!114 &861614288 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1650985475521923327, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
@@ -3487,6 +3488,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SaveManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1817528472867568358, guid: 181a1ff56ecba1944948b3d9b5ddedd9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2171743786311985289, guid: 181a1ff56ecba1944948b3d9b5ddedd9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 97.42623
@@ -3529,7 +3534,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5648867210672973612, guid: 181a1ff56ecba1944948b3d9b5ddedd9, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerEconomyState
 {
     public int coins = 0;
-    public int powerNapCount = 0;
+    public int extraMoveCount = 0;
     public int maxLives = 3;
     public int currentLives = 3;
 
@@ -41,9 +41,9 @@ public class PlayerEconomyState
         coins += amount;
     }
 
-    public void AddPowerNap(int amount)
+    public void AddExtraMoves(int amount)
     {
         if (amount <= 0) return;
-        powerNapCount += amount;
+        extraMoveCount += amount;
     }
 }

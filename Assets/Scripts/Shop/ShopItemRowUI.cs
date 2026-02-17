@@ -48,7 +48,7 @@ public class ShopItemRowUI : MonoBehaviour
                 owned = s.GetBoosterCount(item.BoosterEffect);
                 break;
             case ShopItemType.ExtraMoves:
-                owned = s.powerNapCount;
+                owned = s.extraMoveCount;
                 break;
             case ShopItemType.Lives:
                 owned = s.currentLives; // show current lives / energy

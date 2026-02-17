@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ShopItem_FuzzyBlast
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemDefinition
   itemId: booster_fuzzy_blast
-  displayName: Timer Bomb
+  displayName: Fuzzy Blast
   description: Blast a 3x3 area in the grid
   icon: {fileID: 0}
   currency: 0
-  price: 0
+  price: 150
   itemType: 0
-  boosterEffect: 2
+  boosterEffect: 0
   boosterAmountGranted: 1
   livesAmountGranted: 1
   extraMovesGranted: 3

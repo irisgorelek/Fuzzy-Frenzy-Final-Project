@@ -10,16 +10,42 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TextMeshProUGUI _amount;
     [SerializeField] private PowerUpEventChannelSO _powerUpChannel;
 
+    private GameBootstrapper _bootstrapper;
+
     private bool _armed;
 
-    private void Start()
+    private void Awake()
     {
-        _amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        if (_bootstrapper == null)
+            Debug.LogError("BombPowerUp: GameBootstrapper not found (should be DontDestroyOnLoad).");
     }
+
+    //private void Start()
+    //{
+    //    //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+    //}
+
+    private void OnEnable()
+    {
+        if (_bootstrapper != null)
+            _bootstrapper.Economy.OnChanged += RefreshAmount;
+
+        RefreshAmount();
+    }
+
     private void OnDisable()
     {
         UnarmBomb();
+
+        if (_bootstrapper != null)
+            _bootstrapper.Economy.OnChanged -= RefreshAmount;
     }
+
+    //private void OnDisable()
+    //{
+    //    UnarmBomb();
+    //}
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -73,7 +99,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public void TryUseBomb(Vector2Int coord)
     {
-        if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.Bomb, 1))
+        //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.Bomb, 1))
+        //    return;
+        if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
             return;
 
         var affected = new List<Vector2Int>(9);
@@ -95,17 +123,27 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         _board.TryRemoveCellsFromGrid(affected);
         _powerUpChannel.RaiseEvent("bomb");
-        _amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        RefreshAmount();
     }
 
     public void AddOneToCurrentAmount()
     {
-        SaveManager.Instance.Add(PowerUpType.Bomb);
-        _amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        //SaveManager.Instance.Add(PowerUpType.Bomb);
+        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
+        _bootstrapper.Economy.AddBooster(BoosterEffectType.FuzzyBlast, 1);
+        RefreshAmount();
     }
 
     public void ToggleHighlight(bool toggle)
     {
         // TODO: Add highlight effect
     }
+
+    private void RefreshAmount()
+    {
+        int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast); // or Blast if you renamed
+        _amount.text = count.ToString();
+    }
+
 }

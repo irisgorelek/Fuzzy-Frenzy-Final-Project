@@ -15,6 +15,11 @@ public class BoardController : MonoBehaviour
     [Header("On Screen Pop Ups")]
     [SerializeField] private GameObject _levelClearedPopup;
     [SerializeField] private GameObject _levelLostPopup;
+    [SerializeField] private int framesBetweenSteps = 100;
+
+    [Header("Rewards Configs")]
+    [SerializeField] private RewardsConfig _rewards;
+    [SerializeField] private BootstrapperLocator _locator; // to add coins
 
     [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannelSO;
     [SerializeField] private AnimalsDestroyedEventChannelSO _animalsDestroyedChannelSO;
@@ -158,7 +163,7 @@ public class BoardController : MonoBehaviour
         // The swap was valid. Resolve cascades with pacing
         _view.AssignSprites(_board); // Sync view to model after swap
         
-        await ResolveCascadesAsync(25);
+        await ResolveCascadesAsync(framesBetweenSteps);
 
         if (_isLevelOver)
         {
@@ -258,6 +263,15 @@ public class BoardController : MonoBehaviour
             if (_board.IsGoalReached)
             {
                 _levelCompletedChannelSO.RaiseEvent(_cfg.level);
+                int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
+                int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
+                int coins = _rewards.GetCoins(stars, _cfg.levelIndex);
+
+                _locator.Bootstrapper.Economy.AddCoins(coins);
+
+                // TODO: pass stars/coins to the cleared popup UI
+                Debug.Log($"Level Cleared! Stars={stars}, Coins={coins}, MovesUsed={movesUsed}");
+
                 _levelClearedPopup.gameObject.SetActive(true);
                 _isLevelOver = true;
                 return;

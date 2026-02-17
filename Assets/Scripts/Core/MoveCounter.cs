@@ -27,10 +27,19 @@ public class MoveCounter : MonoBehaviour
             OnMovesOver?.Invoke(); // player finished his last move
     }
 
-    public void AddOneMove()
+    public void AddOneMove()        // adds only 1 move not from scriptable object where the int is not fixed - replaced method
     {
         Debug.Log("Adding move");
         _movesLeft++;
         OnMovesChanged?.Invoke(_movesLeft);
     }
+
+    public void AddMoves(int amount)
+    {
+        if (amount <= 0) return;
+
+        _movesLeft += amount;
+        OnMovesChanged?.Invoke(_movesLeft);
+    }
+
 }

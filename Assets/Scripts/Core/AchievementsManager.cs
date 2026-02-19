@@ -11,14 +11,17 @@ public class AchievementsManager : MonoBehaviour
     [SerializeField] private List<AchievementSO> _achievements;
     [SerializeField] private LevelsData _allLevels;
 
-    private HashSet<string> _unlockedAchievements = new();
-    private HashSet<int> _completedLevels = new();
-    private HashSet<string> _discoveredAnimals = new();
-    private Dictionary<string, int> _destroyedAnimals = new();
-
-    private int _totalDestroyedAnimals = 0;
-    private int _totalPointsEarned = 0;
+    private EconomyContext _economy;
     private const int TotalAnimalTypes = 5;
+
+    // Shortcut to state
+    private PlayerEconomyState S => _economy.State;
+
+    private void Start()
+    {
+        var bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _economy = bootstrapper.Economy;
+    }
 
     private void OnEnable()
     {
@@ -38,8 +41,8 @@ public class AchievementsManager : MonoBehaviour
 
     private void OnLevelCompleted(int levelId)
     {
-        _completedLevels.Add(levelId);
-
+        S.completedLevels.Add(levelId);
+        _economy.Save();
         CheckForLevelAchievement();
     }
 
@@ -49,8 +52,8 @@ public class AchievementsManager : MonoBehaviour
         {
             bool unlock;
 
-            if (achievement.Goal == 0) unlock = _completedLevels.Count >= _allLevels.Levels.Count; // finish all levels goal
-            else unlock = _completedLevels.Count >= achievement.Goal; // check if total unique completed levels are higher than required goal
+            if (achievement.Goal == 0) unlock = S.completedLevels.Count >= _allLevels.Levels.Count; // finish all levels goal
+            else unlock = S.completedLevels.Count >= achievement.Goal; // check if total unique completed levels are higher than required goal
 
             if (unlock) Unlock(achievement);
         }
@@ -58,12 +61,12 @@ public class AchievementsManager : MonoBehaviour
 
     private void OnAnimalDestroyed(string animalId, int amount)
     {
-        if (_destroyedAnimals.ContainsKey(animalId)) _destroyedAnimals[animalId] += amount; // if the animal is already in dictionary add to the destroyed amount
-        else _destroyedAnimals[animalId] = amount; // first time this animal type was destroyed
+        if (S.destroyedAnimals.ContainsKey(animalId)) S.destroyedAnimals[animalId] += amount; // if the animal is already in dictionary add to the destroyed amount
+        else S.destroyedAnimals[animalId] = amount; // first time this animal type was destroyed
 
-        _totalDestroyedAnimals += amount; // all animals destroyed amount
-        _discoveredAnimals.Add(animalId); // unique animals discovered
-
+        S.totalDestroyedAnimals += amount; // all animals destroyed amount
+        S.discoveredAnimals.Add(animalId); // unique animals discovered
+        _economy.Save();
         CheckForAnimalAchievements();
     }
 
@@ -73,15 +76,15 @@ public class AchievementsManager : MonoBehaviour
         {
             bool unlock = false;
 
-            if (achievement.Goal == 0) unlock = _discoveredAnimals.Count >= TotalAnimalTypes; // discover all animals achievement
+            if (achievement.Goal == 0) unlock = S.discoveredAnimals.Count >= TotalAnimalTypes; // discover all animals achievement
             else
             {
                 if (!string.IsNullOrEmpty(achievement.AnimalId)) // check if it's animal specific
                 {
-                    if (_destroyedAnimals.TryGetValue(achievement.AnimalId, out int count))
+                    if (S.destroyedAnimals.TryGetValue(achievement.AnimalId, out int count))
                         unlock = count >= achievement.Goal;
                 }
-                else unlock = _totalDestroyedAnimals >= achievement.Goal; // general animals achievement
+                else unlock = S.totalDestroyedAnimals >= achievement.Goal; // general animals achievement
             }
 
             if (unlock) Unlock(achievement);
@@ -90,7 +93,8 @@ public class AchievementsManager : MonoBehaviour
 
     private void OnAddedScore(int amount)
     {
-        _totalPointsEarned += amount;
+        S.totalPointsEarned += amount;
+        _economy.Save();
         CheckForScoreAchievements();
     }
 
@@ -98,24 +102,23 @@ public class AchievementsManager : MonoBehaviour
     {
         foreach (var achievement in GetLocked(AchievementCategory.Score))
         {
-            if (_totalPointsEarned >= achievement.Goal)
+            if (S.totalPointsEarned >= achievement.Goal)
                 Unlock(achievement);
         }
     }
 
     private void OnPowerUpUsed(string powerUpName)
     {
-        foreach (var achievement in _achievements)
+        foreach (var achievement in GetLocked(AchievementCategory.PowerUp))
         {
-            if (achievement.Category != AchievementCategory.PowerUp || _unlockedAchievements.Contains(achievement.Id)) continue;
-
             if (achievement.PowerUpName == powerUpName) Unlock(achievement);
         }
     }
 
     private void Unlock(AchievementSO achievement)
     {
-        _unlockedAchievements.Add(achievement.Id);
+        S.unlockedAchievements.Add(achievement.Id);
+        _economy.Save();
         Debug.Log($"Achievement unlocked: {achievement.Title}");
     }
 
@@ -124,70 +127,39 @@ public class AchievementsManager : MonoBehaviour
         foreach (var achievement in _achievements)
         {
             if (achievement.Category != category) continue;
-            if (_unlockedAchievements.Contains(achievement.Id)) continue;
+            if (S.unlockedAchievements.Contains(achievement.Id)) continue;
             yield return achievement;
         }
     }
 
     public (int current, int goal) GetProgress(AchievementSO achievement)
     {
-        if (_unlockedAchievements.Contains(achievement.Id))
+        if (S.unlockedAchievements.Contains(achievement.Id))
         {
             int g = GetGoalValue(achievement);
             return (g, g);
         }
 
-        switch (achievement.Category)
+        return achievement.Category switch
         {
-            case AchievementCategory.Level:
-                if (achievement.Goal == 0) // finish all levels
-                    return (_completedLevels.Count, _allLevels.Levels.Count);
-
-                return (_completedLevels.Count, achievement.Goal);
-
-            case AchievementCategory.Animal:
-                if (achievement.Goal == 0) // discover all animals
-                    return (_discoveredAnimals.Count, TotalAnimalTypes);
-
-                if (!string.IsNullOrEmpty(achievement.AnimalId))
-                {
-                    _destroyedAnimals.TryGetValue(achievement.AnimalId, out int count);
-                    return (count, achievement.Goal);
-                }
-
-                return (_totalDestroyedAnimals, achievement.Goal);
-
-            case AchievementCategory.PowerUp:
-                return (0, 1); // bomb once (0 until unlocked)
-
-            case AchievementCategory.Score:
-                return (_totalPointsEarned, achievement.Goal);
-
-            default:
-                return (0, achievement.Goal);
-        }
+            AchievementCategory.Level => (S.completedLevels.Count, GetGoalValue(achievement)),
+            AchievementCategory.Animal when achievement.Goal == 0 => (S.discoveredAnimals.Count, TotalAnimalTypes), // discover all animals
+            AchievementCategory.Animal when !string.IsNullOrEmpty(achievement.AnimalId) =>
+                (S.destroyedAnimals.TryGetValue(achievement.AnimalId, out int count) ? count : 0, achievement.Goal),
+            AchievementCategory.Animal => (S.totalDestroyedAnimals, achievement.Goal),
+            AchievementCategory.PowerUp => (0, 1), // bomb once (0 until unlocked)
+            AchievementCategory.Score => (S.totalPointsEarned, achievement.Goal),
+            _ => (0, achievement.Goal)
+        };
     }
 
-    private int GetGoalValue(AchievementSO achievement)
+    private int GetGoalValue(AchievementSO achievement) => achievement.Category switch
     {
-        switch (achievement.Category)
-        {
-            case AchievementCategory.Level:
-                return achievement.Goal == 0 ? _allLevels.Levels.Count : achievement.Goal;
-
-            case AchievementCategory.Animal:
-                return achievement.Goal == 0 ? TotalAnimalTypes : achievement.Goal;
-
-            case AchievementCategory.PowerUp:
-                return 1;
-
-            case AchievementCategory.Score:
-                return achievement.Goal;
-
-            default:
-                return achievement.Goal;
-        }
-    }
+        AchievementCategory.Level => achievement.Goal == 0 ? _allLevels.Levels.Count : achievement.Goal,
+        AchievementCategory.Animal => achievement.Goal == 0 ? TotalAnimalTypes : achievement.Goal,
+        AchievementCategory.PowerUp => 1,
+        _ => achievement.Goal
+    };
 
     [ContextMenu("Log All Progress")]
     private void LogAllProgress()

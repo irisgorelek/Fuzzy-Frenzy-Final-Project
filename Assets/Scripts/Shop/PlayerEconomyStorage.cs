@@ -14,6 +14,13 @@ public static class PlayerEconomyStorage
     }
 
     [Serializable]
+    private class DestroyedAnimalEntry
+    {
+        public string animalId;
+        public int count;
+    }
+
+    [Serializable]
     private class SaveData
     {
         public int coins;
@@ -22,6 +29,12 @@ public static class PlayerEconomyStorage
         public int maxLives;
         public int currentLives;
         public long lastLifeTimestampUtcSeconds;
+        public List<string> unlockedAchievements = new();
+        public List<int> completedLevels = new();
+        public List<string> discoveredAnimals = new();
+        public List<DestroyedAnimalEntry> destroyedAnimals = new();
+        public int totalDestroyedAnimals;
+        public int totalPointsEarned;
     }
 
     public static void Save(PlayerEconomyState state)
@@ -39,6 +52,15 @@ public static class PlayerEconomyStorage
         {
             data.boosters.Add(new BoosterEntry { type = kvp.Key, count = kvp.Value });
         }
+
+        data.unlockedAchievements = new List<string>(state.unlockedAchievements);
+        data.completedLevels = new List<int>(state.completedLevels);
+        data.discoveredAnimals = new List<string>(state.discoveredAnimals);
+        data.totalDestroyedAnimals = state.totalDestroyedAnimals;
+        data.totalPointsEarned = state.totalPointsEarned;
+
+        foreach (var kvp in state.destroyedAnimals)
+            data.destroyedAnimals.Add(new DestroyedAnimalEntry { animalId = kvp.Key, count = kvp.Value });
 
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(Key, json);
@@ -78,6 +100,23 @@ public static class PlayerEconomyStorage
             {
                 foreach (var entry in data.boosters)
                     state.boosters[entry.type] = entry.count;
+            }
+
+            if (data.unlockedAchievements != null)
+                state.unlockedAchievements = new HashSet<string>(data.unlockedAchievements);
+            if (data.completedLevels != null)
+                state.completedLevels = new HashSet<int>(data.completedLevels);
+            if (data.discoveredAnimals != null)
+                state.discoveredAnimals = new HashSet<string>(data.discoveredAnimals);
+
+            state.totalDestroyedAnimals = data.totalDestroyedAnimals;
+            state.totalPointsEarned = data.totalPointsEarned;
+
+            state.destroyedAnimals.Clear();
+            if (data.destroyedAnimals != null)
+            {
+                foreach (var entry in data.destroyedAnimals)
+                    state.destroyedAnimals[entry.animalId] = entry.count;
             }
         }
         catch

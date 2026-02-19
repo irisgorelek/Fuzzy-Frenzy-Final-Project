@@ -129,4 +129,74 @@ public class AchievementsManager : MonoBehaviour
         }
     }
 
+    public (int current, int goal) GetProgress(AchievementSO achievement)
+    {
+        if (_unlockedAchievements.Contains(achievement.Id))
+        {
+            int g = GetGoalValue(achievement);
+            return (g, g);
+        }
+
+        switch (achievement.Category)
+        {
+            case AchievementCategory.Level:
+                if (achievement.Goal == 0) // finish all levels
+                    return (_completedLevels.Count, _allLevels.Levels.Count);
+
+                return (_completedLevels.Count, achievement.Goal);
+
+            case AchievementCategory.Animal:
+                if (achievement.Goal == 0) // discover all animals
+                    return (_discoveredAnimals.Count, TotalAnimalTypes);
+
+                if (!string.IsNullOrEmpty(achievement.AnimalId))
+                {
+                    _destroyedAnimals.TryGetValue(achievement.AnimalId, out int count);
+                    return (count, achievement.Goal);
+                }
+
+                return (_totalDestroyedAnimals, achievement.Goal);
+
+            case AchievementCategory.PowerUp:
+                return (0, 1); // bomb once (0 until unlocked)
+
+            case AchievementCategory.Score:
+                return (_totalPointsEarned, achievement.Goal);
+
+            default:
+                return (0, achievement.Goal);
+        }
+    }
+
+    private int GetGoalValue(AchievementSO achievement)
+    {
+        switch (achievement.Category)
+        {
+            case AchievementCategory.Level:
+                return achievement.Goal == 0 ? _allLevels.Levels.Count : achievement.Goal;
+
+            case AchievementCategory.Animal:
+                return achievement.Goal == 0 ? TotalAnimalTypes : achievement.Goal;
+
+            case AchievementCategory.PowerUp:
+                return 1;
+
+            case AchievementCategory.Score:
+                return achievement.Goal;
+
+            default:
+                return achievement.Goal;
+        }
+    }
+
+    [ContextMenu("Log All Progress")]
+    private void LogAllProgress()
+    {
+        foreach (var achievement in _achievements)
+        {
+            var (current, goal) = GetProgress(achievement);
+            float percent = goal > 0 ? (float)current / goal * 100f : 0f;
+            Debug.Log($"[{achievement.Category}] {achievement.Title}: {current}/{goal} ({percent:F0}%)");
+        }
+    }
 }

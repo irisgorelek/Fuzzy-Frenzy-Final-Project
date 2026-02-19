@@ -7,6 +7,8 @@ public enum PointsOrMatches { points, matches }
 [CreateAssetMenu(menuName = "BoardConfig")]
 public class BoardConfig : ScriptableObject
 {
+    [SerializeField] private bool enableRain;
+    public bool EnableRain => enableRain;
     public int levelIndex;
     public int weidth; 
     public int height;

@@ -20,6 +20,8 @@ public class BoardController : MonoBehaviour
     [Header("Rewards Configs")]
     [SerializeField] private RewardsConfig _rewards;
     [SerializeField] private BootstrapperLocator _locator; // to add coins
+    
+    public BoardConfig Config => _cfg;
 
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 

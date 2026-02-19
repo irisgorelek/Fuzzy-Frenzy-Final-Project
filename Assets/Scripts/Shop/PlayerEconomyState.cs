@@ -10,6 +10,14 @@ public class PlayerEconomyState
     public int maxLives = 3;
     public int currentLives = 3;
 
+    // Achievement tracking
+    public HashSet<string> unlockedAchievements = new();
+    public HashSet<int> completedLevels = new();
+    public HashSet<string> discoveredAnimals = new();
+    public Dictionary<string, int> destroyedAnimals = new();
+    public int totalDestroyedAnimals = 0;
+    public int totalPointsEarned = 0;
+
     // When was regen last “accounted for”
     public long lastLifeTimestampUtcSeconds = 0;
 

@@ -1,9 +1,6 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -30,6 +27,9 @@ public class Board
         _goalType == PointsOrMatches.points
             ? _points >= _goalAmount
             : _matchedAnimals >= _goalAmount;
+
+    public Action<string, int> OnAnimalsDestroyed;
+    public Action<int> OnScoreAdded;
 
     public Board(BoardConfig config)
     {
@@ -183,15 +183,34 @@ public class Board
     // Clear the found matches
     private void ClearMatches(List<Vector2Int> matches)
     {
+        var destroyedByAnimal = new Dictionary<string, int>();
+        int pointsGainedThisClear = 0;
+
         for (int i = 0; i < matches.Count; i++)
         {
             var a = _grid[matches[i].x, matches[i].y];
             if (a == null) continue;
 
             _points += a._points;
+            pointsGainedThisClear += a._points;
             _matchedAnimals++;
 
+            string animalId = a._id;
+
+            if (destroyedByAnimal.ContainsKey(animalId))
+                destroyedByAnimal[animalId]++;
+            else
+                destroyedByAnimal[animalId] = 1;
+
             _grid[matches[i].x, matches[i].y] = null;
+        }
+
+        if (pointsGainedThisClear > 0)
+            OnScoreAdded?.Invoke(pointsGainedThisClear);
+
+        foreach (var kvp in destroyedByAnimal)
+        {
+            OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
         }
 
         ApplyGravity();

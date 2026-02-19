@@ -21,6 +21,10 @@ public class BoardController : MonoBehaviour
     [SerializeField] private RewardsConfig _rewards;
     [SerializeField] private BootstrapperLocator _locator; // to add coins
 
+    [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannelSO;
+    [SerializeField] private AnimalsDestroyedEventChannelSO _animalsDestroyedChannelSO;
+    [SerializeField] private ScoreEventChannelSO _scoreEventChannelSO;
+
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
     private bool _isLevelOver = false;
@@ -92,6 +96,14 @@ public class BoardController : MonoBehaviour
     {
         // Technical
         _board = new Board(_cfg);
+
+        _board.OnAnimalsDestroyed = (animalId, amount) =>
+        {
+            _animalsDestroyedChannelSO.RaiseEvent(animalId, amount);
+        };
+
+        _board.OnScoreAdded = amount => _scoreEventChannelSO.RaiseEvent(amount);
+
         _moveCounter.InitializeMoves(_cfg.maxMoves);
         _board.Initialize();
         
@@ -250,6 +262,7 @@ public class BoardController : MonoBehaviour
 
             if (_board.IsGoalReached)
             {
+                _levelCompletedChannelSO.RaiseEvent(_cfg.levelIndex);
                 int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
                 int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
                 int coins = _rewards.GetCoins(stars, _cfg.levelIndex);

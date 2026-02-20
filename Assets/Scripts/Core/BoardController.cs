@@ -118,6 +118,14 @@ public class BoardController : MonoBehaviour
         if (_isBusy || _isLevelOver) return;
         if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
 
+        var a = _board.GetAnimalFromCell(from);
+        var b = _board.GetAnimalFromCell(to);
+
+        if (a == null || b == null) return;
+
+        if (!a._canSwap || !b._canSwap)
+            return;
+
         // Do if activated timer power up
         if (IsTimerBombActive)
         {

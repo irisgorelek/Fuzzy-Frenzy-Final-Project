@@ -15,14 +15,19 @@ MonoBehaviour:
   levelIndex: 3
   weidth: 8
   height: 8
-  goalType: 1
+  maxMoves: 8
+  goalType: 2
   goal: 20
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
   - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
   - {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
   - {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
-  maxMoves: 8
+  collectGoals:
+  - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
+    amount: 10
+  - animal: {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
+    amount: 5
   wolf: {fileID: 0}
   sheep: {fileID: 0}
   boneBlock: {fileID: 0}

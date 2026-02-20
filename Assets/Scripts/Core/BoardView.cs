@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
+using UnityEditor;
 
 public class BoardView : MonoBehaviour
 {
@@ -23,10 +25,11 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Sprite _defaultSprite; // For null animals
 
     [Header("On Screen Texts")]
-    [SerializeField] private TextMeshProUGUI _points;
-    [SerializeField] private TextMeshProUGUI _animalsCount;
+    [SerializeField] private TextMeshProUGUI _goal;
     [SerializeField] private TextMeshProUGUI _movesCountText;
     [SerializeField] private TextMeshProUGUI _timerPowerUp;
+    [SerializeField] private Transform _goalRowsParent;
+    [SerializeField] private GoalRowView _goalRowPrefab;
 
 
     private Dictionary<Vector2Int, CellView> _cells = new();
@@ -44,8 +47,10 @@ public class BoardView : MonoBehaviour
     private Vector2 _startScreenPos;
     private const float SwipeThresholdPixels = 45f;
 
-    public void ShowPoints(bool show) => _points.gameObject.SetActive(show);
-    public void ShowAnimals(bool show) => _animalsCount.gameObject.SetActive(show);
+    private readonly List<GoalRowView> _rows = new();
+
+
+    public void ShowGoal(bool show) => _goal.gameObject.SetActive(show);
 
     public void Build(int width, int height)
     {
@@ -132,13 +137,44 @@ public class BoardView : MonoBehaviour
     public void SetScore(int points, int totalPoints)
     {
         Debug.LogWarning($"Set Score: {points} / {totalPoints}");
-        _points.text = $"{points} / {totalPoints}";
+        _goal.text = $"Points: {points} / {totalPoints}";
     }
     public void SetMatchedAnimals(int animals, int goal)
     {
-        Debug.LogWarning($"Set Score: {animals}");
-        _animalsCount.text = $"{animals} / {goal}";
+        Debug.LogWarning($"Set Score: {animals} / {goal}");
+        _goal.text = $"Matched: {animals} / {goal}";
     }
+    public void SetCollectGoals(List<AnimalGoal> goals, Dictionary<string, int> collected)
+    {
+        ClearGoalRows();
+        _goal.text = "Collect:"; // header
+
+        foreach (var g in goals)
+        {
+            if (g.animal == null) continue;
+
+            collected.TryGetValue(g.animal._id, out int have);
+
+            var row = Instantiate(_goalRowPrefab, _goalRowsParent);
+            row.Set(g.animal._sprite, $"{have}/{g.amount}".Trim() , g.animal.color);
+            _rows.Add(row);
+        }
+    }
+    private void ClearGoalRows()
+    {
+        for (int i = 0; i < _rows.Count; i++)
+            Destroy(_rows[i].gameObject);
+        _rows.Clear();
+    }
+    //public void SetPointsRow(int points, int goal, Sprite pointsIcon = null)
+    //{
+    //    ClearGoalRows();
+    //    _goal.text = "Goal:";
+
+    //    var row = Instantiate(_goalRowPrefab, _goalRowsParent);
+    //    row.Set(pointsIcon, $"Points: {points}/{goal}");
+    //    _rows.Add(row);
+    //}
     private void OnCellPointerDown(Vector2Int coord, Vector2 screenPos)
     {
         Debug.Log($"PointerDown on {coord}");

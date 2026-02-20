@@ -2,22 +2,33 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PointsOrMatches { points, matches }
+public enum PointsOrMatches { points, matches, collectAnimals }
 
 [CreateAssetMenu(fileName = "BoardConfig", menuName = "Scriptable Objects/BoardConfig")]
 
 public class BoardConfig : ScriptableObject
 {
+    [Header("Level Config")]
     public int levelIndex;
     public int weidth; 
     public int height;
+    public int maxMoves;
+
+    [Header("Goal Config")]
     public PointsOrMatches goalType = PointsOrMatches.points;
     public int goal;
     public List<Animal> animals;
-    public int maxMoves;
+    public List<AnimalGoal> collectGoals;
 
     [Header("Special Pieces")]
     public Animal wolf;
     public Animal sheep;
     public Animal boneBlock;
+}
+
+[System.Serializable] // Show and edit this class in the inspector
+public class AnimalGoal
+{
+    public Animal animal;
+    public int amount;
 }

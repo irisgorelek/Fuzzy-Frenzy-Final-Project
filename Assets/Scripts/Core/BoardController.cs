@@ -29,6 +29,8 @@ public class BoardController : MonoBehaviour
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
     private bool _isLevelOver = false;
 
+    private Dictionary<string, int> _collected = new Dictionary<string, int>(); // Track collected animals
+
     // Timer bomb parameters
     public bool IsTimerBombActive { get; private set; }
     private float _timerBombEndTime;
@@ -97,10 +99,8 @@ public class BoardController : MonoBehaviour
         // Technical
         _board = new Board(_cfg);
 
-        _board.OnAnimalsDestroyed = (animalId, amount) =>
-        {
-            _animalsDestroyedChannelSO.RaiseEvent(animalId, amount);
-        };
+        _collected.Clear();
+        _board.OnAnimalsDestroyed = HandleAnimalsDestroyed;
 
         _board.OnScoreAdded = amount => _scoreEventChannelSO.RaiseEvent(amount);
 
@@ -260,7 +260,7 @@ public class BoardController : MonoBehaviour
             // Redraw
             _view.AssignSprites(_board);
 
-            if (_board.IsGoalReached)
+            if (_cfg.goalType == PointsOrMatches.collectAnimals ? IsCollectGoalComplete() : _board.IsGoalReached)
             {
                 _levelCompletedChannelSO.RaiseEvent(_cfg.levelIndex);
                 int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
@@ -284,18 +284,49 @@ public class BoardController : MonoBehaviour
 
     private void UpdateGoalUI()
     {
+        _view.ShowGoal(true); // Show the goal text
         if (_board.GoalType == PointsOrMatches.points)
         {
-            _view.ShowPoints(true); // Show the points text
-            _view.ShowAnimals(false); // Don't show the animals text
             _view.SetScore(_board.CurrentPoints, _board.GoalAmount);
         }
-        else
+        else if (_board.GoalType == PointsOrMatches.matches)
         {
-            _view.ShowPoints(false); // Don't show the points text
-            _view.ShowAnimals(true); // Show the animals text
             _view.SetMatchedAnimals(_board.MatchedAnimals, _board.GoalAmount);
         }
+        else if (_cfg.goalType == PointsOrMatches.collectAnimals)
+        {
+            _view.SetCollectGoals(_cfg.collectGoals, _collected);
+        }
+    }
+
+    // For the animal collection goal
+    private void HandleAnimalsDestroyed(string animalId, int count)
+    {
+        _animalsDestroyedChannelSO.RaiseEvent(animalId, count);
+
+        // Only track collection if this level is a collect level
+        if (_cfg.goalType != PointsOrMatches.collectAnimals)
+            return;
+
+        if (!_collected.TryGetValue(animalId, out int have))
+            have = 0;
+
+        _collected[animalId] = have + count;
+
+        // Update goal UI
+        UpdateGoalUI();
+    }
+
+    private bool IsCollectGoalComplete()
+    {
+        foreach (var g in _cfg.collectGoals)
+        {
+            if (g.animal == null) continue;
+
+            _collected.TryGetValue(g.animal._id, out int have);
+            if (have < g.amount) return false;
+        }
+        return true;
     }
 
     private async Task WaitFrames(int frameCount)

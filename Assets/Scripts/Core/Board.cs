@@ -476,10 +476,10 @@ public class Board
             if (changed)
             {
                 if (pointsGained > 0)
-                    OnScoreAdded?.Invoke(pointsGained);
+                    OnScoreAdded?.Invoke(pointsGained); // Add the sheep in the score
 
                 if (eatenCount > 0)
-                    OnAnimalsDestroyed?.Invoke(_sheep._id, eatenCount);
+                    OnAnimalsDestroyed?.Invoke(_sheep._id, eatenCount); // Add the sheep as a match
 
                 ApplyGravity();
                 Refill();
@@ -527,7 +527,7 @@ public class Board
             eatenCount++;
             _points += a._points; // Add the points of the sheep eaten
             pointsGained += a._points;
-            _matchedAnimals++;
+            _matchedAnimals++; // Add the sheep as 1 match 
 
             // Sheep turns into a bone block
             _grid[cell.x, cell.y] = _boneBlock;
@@ -555,8 +555,8 @@ public class Board
                     var cell = new Vector2Int(x, y);
                     if (!HasNeighbor(cell, _wolf)) continue;
 
-                    // Reroll this sheep into something else that: isn't sheep or wolf, doesn't create a 3-match immediately,
-                    // isn't adjacent to a wolf
+                    // Reroll this sheep into something else that:
+                    // isn't sheep or wolf, doesn't create a 3-match immediately, isn't adjacent to a wolf
                     for (int attempt = 0; attempt < MaxAttemptsPerCell; attempt++)
                     {
                         var candidate = PickRandomAllowedAnimal(); // your weighted picker (or your old random)

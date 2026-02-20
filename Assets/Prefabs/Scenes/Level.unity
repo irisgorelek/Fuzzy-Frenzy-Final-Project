@@ -1309,7 +1309,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: FunzzyFrenzy.core::MovesPowerUp
   moves: {fileID: 190064116}
   _amount: {fileID: 1028601145}
-  extraMoveItem: {fileID: 11400000, guid: f5af1af43f5c57b458a88dbee4c209c3, type: 2}
 --- !u!114 &861614288 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1650985475521923327, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
@@ -2452,10 +2451,10 @@ RectTransform:
   m_Children:
   - {fileID: 1731801649}
   - {fileID: 1875722127}
-  - {fileID: 1109928811}
-  - {fileID: 1634729075}
   - {fileID: 31314100}
   - {fileID: 620829871}
+  - {fileID: 1109928811}
+  - {fileID: 1634729075}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3506,7 +3505,7 @@ PrefabInstance:
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _cfg
       value: 
-      objectReference: {fileID: 11400000, guid: 2f0b4ebfb6dabcd46b1e31758913978e, type: 2}
+      objectReference: {fileID: 11400000, guid: 0d5fb526f30134a43a8c9f2bf3db014c, type: 2}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _timer
       value: 
@@ -3531,6 +3530,10 @@ PrefabInstance:
       propertyPath: _levelClearedPopup
       value: 
       objectReference: {fileID: 1109928810}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: framesBetweenSteps
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _scoreEventChannelSO
       value: 

@@ -17,6 +17,15 @@ public class Board
     private int _goalAmount = 0;
     private PointsOrMatches _goalType;
 
+    // Special Pieces
+    private readonly Animal _wolf;
+    private readonly Animal _sheep;
+    private readonly Animal _boneBlock;
+    private static readonly Vector2Int[] OrthogonalDirs =
+    {
+        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
+    };
+
     public int CurrentPoints => _points;
     public int MatchedAnimals => _matchedAnimals;
 
@@ -42,6 +51,11 @@ public class Board
         // Get the allowed animals for the level
         _allowedAnimals = new List<Animal>(config.animals);
         _grid = new Animal[_width, _height];
+
+        // Special Pieces
+        _wolf = config.wolf;
+        _sheep = config.sheep;
+        _boneBlock = config.boneBlock;
     }
 
     public void Initialize()
@@ -63,7 +77,7 @@ public class Board
 
                 do
                 {
-                    chosen = _allowedAnimals[Random.Range(0, _allowedAnimals.Count)];
+                    chosen = PickRandomAllowedAnimal();
                     attempts++;
                 }
                 while (WouldCreateInitialMatches(cell, chosen) && attempts < MaxPlacementAttempts);
@@ -71,6 +85,8 @@ public class Board
                 _grid[x, y] = chosen;
             }
         }
+
+        FixStartWolfSheepAdjacency(); // Make sure sheep don't appear next to wolves at the start of the level
     }
 
     // Find matches on the board and return a list of matches found
@@ -86,7 +102,7 @@ public class Board
 
             for (int y = 1; y < _height; y++)
             {
-                if (_grid[x, y] == null || _grid[x, y - 1] == null)
+                if (!IsMatchable(_grid[x, y]) || !IsMatchable(_grid[x, y - 1]))
                 {
                     if (sameAnimalCounter >= 3)
                     {
@@ -135,7 +151,7 @@ public class Board
             for (int x = 1; x < _width; x++)
             {
                 // Break on nulls (and flush any run that ended at y-1)
-                if (_grid[x, y] == null || _grid[x - 1, y] == null)
+                if (!IsMatchable(_grid[x, y]) || !IsMatchable(_grid[x - 1, y]))
                 {
                     if (sameAnimalCounter >= 3)
                     {
@@ -205,6 +221,8 @@ public class Board
             _grid[matches[i].x, matches[i].y] = null;
         }
 
+        DamageAdjacentBoneBlocks(matches);
+
         if (pointsGainedThisClear > 0)
             OnScoreAdded?.Invoke(pointsGainedThisClear);
 
@@ -215,6 +233,8 @@ public class Board
 
         ApplyGravity();
         Refill();
+
+        ResolveWolfSheepInteractions();
     }
 
     // Apply gravity to the cells
@@ -222,7 +242,7 @@ public class Board
     {
         for (int x = 0; x < _width; x++)
         {
-            int writeY = _height - 1; // bottom-most position we can write into
+            int writeY = _height - 1; // Next slot we can write into
 
             // Scan from bottom to top
             for (int y = _height - 1; y >= 0; y--)
@@ -231,8 +251,22 @@ public class Board
                 if (piece == null)
                     continue;
 
+                // If bone block, don't apply gravity
+                if (!piece._affectedByGravity)
+                {
+                    writeY = y - 1;
+                    continue;
+                }
+
                 if (y != writeY)
                 {
+                    // Skip over obstacles if writeY is (somehow) pointing at one
+                    while (writeY >= 0 && _grid[x, writeY] != null && !_grid[x, writeY]._affectedByGravity)
+                        writeY--;
+
+                    if (writeY < 0)
+                        break;
+
                     _grid[x, writeY] = piece;
                     _grid[x, y] = null;
                 }
@@ -252,7 +286,7 @@ public class Board
                 if (_grid[x, y] != null)
                     continue;
 
-                _grid[x, y] = _allowedAnimals[Random.Range(0, _allowedAnimals.Count)]; // If the cell is empty, add a random animal
+                _grid[x, y] = PickRandomAllowedAnimal(); // If the cell is empty, add a random animal
             }
         }
     }
@@ -340,6 +374,11 @@ public class Board
 
     public bool SwapCellsRaw(Vector2Int cell1, Vector2Int cell2)
     {
+        var a = _grid[cell1.x, cell1.y];
+        var b = _grid[cell2.x, cell2.y];
+
+        // Safety checks
+        if ((a != null && !a._canSwap) || (b != null && !b._canSwap)) return false;
         if (!(IsCellInBounds(cell1) && IsCellInBounds(cell2))) return false;
         if (!AreCellsNeighbours(cell1, cell2)) return false;
 
@@ -362,42 +401,213 @@ public class Board
         _grid[cell.x, cell.y] = null;
     }
 
+    private bool IsMatchable(Animal a) => a != null && a._canMatch;
 
-    // Try to swap the animals between 2 touching cells
-    //public bool TrySwapCells(Vector2Int cell1, Vector2Int cell2, bool checkForMatches = true)
-    //{
-    //    bool didSwap = false;
+    private Animal PickRandomAllowedAnimal()
+    {
+        // If there’s nothing to pick from, return null
+        if (_allowedAnimals == null || _allowedAnimals.Count == 0)
+            return null;
 
-    //    // Swap the cells and check what happens
-    //    if((IsCellInBounds(cell1) && IsCellInBounds(cell2)) && AreCellsNeighbours(cell1, cell2))
-    //    {
-    //        Animal temp = _grid[cell1.x, cell1.y];
-    //        _grid[cell1.x, cell1.y] = _grid[cell2.x, cell2.y];
-    //        _grid[cell2.x, cell2.y] = temp;
+        // Compute the sum of all weights
+        float total = 0f;
+        for (int i = 0; i < _allowedAnimals.Count; i++)
+            total += Mathf.Max(0f, _allowedAnimals[i]._spawnWeight);
 
-    //        List<Vector2Int> matches = MatchesFound();
+        // If total is 0 (all weights were 0 or negative), fallback to uniform random
+        if (total <= 0f)
+            return _allowedAnimals[Random.Range(0, _allowedAnimals.Count)];
 
-    //        // If there were no matches found return the cells back to what they were
-    //        if (matches.Count == 0 || checkForMatches == false)
-    //        {
-    //            _grid[cell2.x, cell2.y] = _grid[cell1.x, cell1.y];
-    //            _grid[cell1.x, cell1.y] = temp;
-    //            return didSwap;
-    //        }
+        // Pick a random number in [0, total)
+        float r = Random.value * total;
 
-    //        didSwap = true;
+        // Walk through the animals, adding weights until we “cross” r
+        float cumulative = 0f;
+        for (int i = 0; i < _allowedAnimals.Count; i++)
+        {
+            cumulative += Mathf.Max(0f, _allowedAnimals[i]._spawnWeight);
 
-    //        HandleMatches(matches);
-    //    }
+            // Select the first animal whose cumulative range contains r
+            if (r <= cumulative)
+                return _allowedAnimals[i];
+        }
 
-    //    return didSwap;
-    //}
-    //private void HandleMatches(List<Vector2Int> matches) 
-    //{
-    //    while (matches.Count > 0)
-    //    {
-    //        ClearMatches(matches);
-    //        matches = MatchesFound();
-    //    }
-    //}
+        return _allowedAnimals[_allowedAnimals.Count - 1];
+    }
+
+    // ----- Wolf -> Sheep interaction ----- //
+    private void DamageAdjacentBoneBlocks(List<Vector2Int> matches)
+    {
+        if (_boneBlock == null || matches == null || matches.Count == 0)
+            return;
+
+        var toRemove = new HashSet<Vector2Int>();
+
+        for (int i = 0; i < matches.Count; i++)
+        {
+            var m = matches[i];
+            for (int d = 0; d < OrthogonalDirs.Length; d++)
+            {
+                var n = m + OrthogonalDirs[d];
+                if (!IsCellInBounds(n)) continue;
+
+                if (_grid[n.x, n.y] == _boneBlock)
+                    toRemove.Add(n);
+            }
+        }
+
+        foreach (var cell in toRemove)
+            _grid[cell.x, cell.y] = null;
+    }
+
+    private void ResolveWolfSheepInteractions()
+    {
+        if (_wolf == null || _sheep == null || _boneBlock == null)
+            return;
+
+        // In case eating creates more falling and more eating, continue until stable
+        bool changed;
+        int safety = 0;
+
+        do
+        {
+            changed = ResolveWolfSheepOnce(out int eatenCount, out int pointsGained);
+
+            if (changed)
+            {
+                if (pointsGained > 0)
+                    OnScoreAdded?.Invoke(pointsGained);
+
+                if (eatenCount > 0)
+                    OnAnimalsDestroyed?.Invoke(_sheep._id, eatenCount);
+
+                ApplyGravity();
+                Refill();
+            }
+        }
+        while (changed && safety++ < 100);
+    }
+
+    private bool ResolveWolfSheepOnce(out int eatenCount, out int pointsGained)
+    {
+        eatenCount = 0;
+        pointsGained = 0;
+
+        var sheepToEat = new HashSet<Vector2Int>();
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                if (_grid[x, y] != _sheep) continue;
+
+                var cell = new Vector2Int(x, y);
+                for (int d = 0; d < OrthogonalDirs.Length; d++)
+                {
+                    var n = cell + OrthogonalDirs[d];
+                    if (!IsCellInBounds(n)) continue;
+
+                    if (_grid[n.x, n.y] == _wolf)
+                    {
+                        sheepToEat.Add(cell);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (sheepToEat.Count == 0)
+            return false;
+
+        foreach (var cell in sheepToEat)
+        {
+            var a = _grid[cell.x, cell.y];
+            if (a == null) continue;
+
+            eatenCount++;
+            _points += a._points; // Add the points of the sheep eaten
+            pointsGained += a._points;
+            _matchedAnimals++;
+
+            // Sheep turns into a bone block
+            _grid[cell.x, cell.y] = _boneBlock;
+        }
+
+        return true;
+    }
+
+    private void FixStartWolfSheepAdjacency()
+    {
+        if (_wolf == null || _sheep == null) return;
+
+        const int MaxPasses = 50;
+        const int MaxAttemptsPerCell = 30;
+
+        for (int pass = 0; pass < MaxPasses; pass++)
+        {
+            bool changed = false;
+
+            for (int x = 0; x < _width; x++)
+                for (int y = 0; y < _height; y++)
+                {
+                    if (_grid[x, y] != _sheep) continue;
+
+                    var cell = new Vector2Int(x, y);
+                    if (!HasNeighbor(cell, _wolf)) continue;
+
+                    // Reroll this sheep into something else that: isn't sheep or wolf, doesn't create a 3-match immediately,
+                    // isn't adjacent to a wolf
+                    for (int attempt = 0; attempt < MaxAttemptsPerCell; attempt++)
+                    {
+                        var candidate = PickRandomAllowedAnimal(); // your weighted picker (or your old random)
+
+                        if (candidate == _sheep || candidate == _wolf) continue;
+                        if (WouldCreateMatchAnywhere(cell, candidate)) continue;
+
+                        _grid[cell.x, cell.y] = candidate;
+
+                        if (HasNeighbor(cell, _wolf))
+                            continue; // still adjacent, try again
+
+                        changed = true;
+                        break;
+                    }
+                }
+
+            if (!changed)
+                break; // stable, no sheep next to wolves
+        }
+    }
+    private bool HasNeighbor(Vector2Int cell, Animal target)
+    {
+        for (int i = 0; i < OrthogonalDirs.Length; i++)
+        {
+            var n = cell + OrthogonalDirs[i];
+            if (!IsCellInBounds(n)) continue;
+            if (_grid[n.x, n.y] == target) return true;
+        }
+        return false;
+    }
+
+    private bool WouldCreateMatchAnywhere(Vector2Int cell, Animal candidate)
+    {
+        int h = 1 + CountInDir(cell, Vector2Int.left, candidate) + CountInDir(cell, Vector2Int.right, candidate);
+        if (h >= 3) return true;
+
+        int v = 1 + CountInDir(cell, Vector2Int.down, candidate) + CountInDir(cell, Vector2Int.up, candidate);
+        return v >= 3;
+    }
+
+    // Counts how many of the same animals are in a straight line starting from the cell next to start
+    private int CountInDir(Vector2Int start, Vector2Int dir, Animal a)
+    {
+        int c = 0;
+        var p = start + dir;
+        while (IsCellInBounds(p) && _grid[p.x, p.y] == a)
+        {
+            c++;
+            p += dir;
+        }
+        return c;
+    }
 }

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ee029291298beba4984d3a96b6ec8ef3, type: 3}
-  m_Name: Cow
+  m_Name: Bone Block
   m_EditorClassIdentifier: FuzzyFrenzy.Data::Animal
-  _id: cow
-  _sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  _id: boneBlock
+  _sprite: {fileID: -712631045867808456, guid: b670ab75dde984907b8570040daa08c5, type: 3}
   _points: 2
-  color: {r: 0, g: 0, b: 0, a: 1}
-  _spawnWeight: 1
-  _canMatch: 1
-  _canSwap: 1
-  _affectedByGravity: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
+  _spawnWeight: 0
+  _canMatch: 0
+  _canSwap: 0
+  _affectedByGravity: 0

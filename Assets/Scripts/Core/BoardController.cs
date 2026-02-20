@@ -15,7 +15,7 @@ public class BoardController : MonoBehaviour
     [Header("On Screen Pop Ups")]
     [SerializeField] private GameObject _levelClearedPopup;
     [SerializeField] private GameObject _levelLostPopup;
-    [SerializeField] private int framesBetweenSteps = 100;
+    [SerializeField] private int framesBetweenSteps = 25;
 
     [Header("Rewards Configs")]
     [SerializeField] private RewardsConfig _rewards;
@@ -195,7 +195,7 @@ public class BoardController : MonoBehaviour
 
         _view.AssignSprites(_board);
 
-        await ResolveCascadesAsync(25);
+        await ResolveCascadesAsync(10);
     }
 
     public void StartTimerBomb(float durationSeconds)
@@ -224,7 +224,7 @@ public class BoardController : MonoBehaviour
         _view.SwapsEnabled = false;
         _isBusy = true;
 
-        await ResolveCascadesAsync(25);
+        await ResolveCascadesAsync(10);
 
         _isBusy = false;
         _view.SwapsEnabled = true;

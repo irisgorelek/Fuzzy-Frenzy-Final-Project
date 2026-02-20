@@ -16,3 +16,7 @@ MonoBehaviour:
   _sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   _points: 5
   color: {r: 0.3283019, g: 0.30909935, b: 0.30909935, a: 1}
+  _spawnWeight: 0.25
+  _canMatch: 1
+  _canSwap: 1
+  _affectedByGravity: 1

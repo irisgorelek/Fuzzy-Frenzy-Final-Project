@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameBootstrapper : MonoBehaviour
 {
     public EconomyContext Economy { get; private set; }
     public ShopService Shop { get; private set; }
+
+    public LeaderboardManager Leaderboard { get; private set; }
 
     private void Awake()
     {
@@ -13,5 +16,6 @@ public class GameBootstrapper : MonoBehaviour
         Economy = new EconomyContext();
         Economy.InitializeLivesIfNeeded();
         Shop = new ShopService(Economy);
+        Leaderboard = new LeaderboardManager();
     }
 }

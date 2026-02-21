@@ -13,6 +13,10 @@ public class BoardConfig : ScriptableObject
     public int weidth; 
     public int height;
     public int maxMoves;
+    
+    [Header("Level VFX")]
+    [SerializeField] private bool enableRain;
+    public bool EnableRain => enableRain;
 
     [Header("Goal Config")]
     public PointsOrMatches goalType = PointsOrMatches.points;

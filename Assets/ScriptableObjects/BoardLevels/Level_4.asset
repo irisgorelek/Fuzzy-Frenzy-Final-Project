@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b4517038998984ea2c758914b1c2b1, type: 3}
   m_Name: Level_4
   m_EditorClassIdentifier: FuzzyFrenzy.Data::BoardConfig
-  levelIndex: 3
+  levelIndex: 4
   weidth: 8
   height: 8
   maxMoves: 8
+  enableRain: 0
   goalType: 2
   goal: 20
   animals:

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 25b4517038998984ea2c758914b1c2b1, type: 3}
-  m_Name: Level_5
+  m_Name: Level_8
   m_EditorClassIdentifier: FuzzyFrenzy.Data::BoardConfig
-  levelIndex: 5
-  weidth: 9
-  height: 9
+  levelIndex: 8
+  weidth: 8
+  height: 8
   maxMoves: 20
-  enableRain: 0
+  enableRain: 1
   goalType: 1
   goal: 100
   animals:

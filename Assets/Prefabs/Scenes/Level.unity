@@ -7602,7 +7602,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::LevelVFXToggle
   boardController: {fileID: 2044731411}
-  rainRoot: {fileID: 1366927154380171921}
+  roots:
+  - key: {fileID: 11400000, guid: fd6a70702062b2c46b64abc07e68b0f8, type: 2}
+    root: {fileID: 1366927154380171921}
+    defaultStateIfMissing: 0
+  - key: {fileID: 11400000, guid: f7a3cd2a2305dc840a9e97c8feb0ac3d, type: 2}
+    root: {fileID: 982854925}
+    defaultStateIfMissing: 0
 --- !u!1 &1435826032
 GameObject:
   m_ObjectHideFlags: 0
@@ -18487,7 +18493,7 @@ PrefabInstance:
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _cfg
       value: 
-      objectReference: {fileID: 11400000, guid: 993a19669a67e9a40a312e9099a99296, type: 2}
+      objectReference: {fileID: 11400000, guid: 0334a87f3c1580f4d8bbd160f256839c, type: 2}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _timer
       value: 
@@ -23474,7 +23480,7 @@ Transform:
   m_GameObject: {fileID: 2856765346594949854}
   serializedVersion: 2
   m_LocalRotation: {x: -1, y: -0, z: -0, w: 0}
-  m_LocalPosition: {x: -245.46648, y: -357.52786, z: 0}
+  m_LocalPosition: {x: -242.3, y: -357.52786, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23489,7 +23495,7 @@ Transform:
   m_GameObject: {fileID: 3517254588725960520}
   serializedVersion: 2
   m_LocalRotation: {x: -1, y: -0, z: -0, w: 0}
-  m_LocalPosition: {x: -245.46648, y: -357.52786, z: 0}
+  m_LocalPosition: {x: -242.3, y: -357.52786, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

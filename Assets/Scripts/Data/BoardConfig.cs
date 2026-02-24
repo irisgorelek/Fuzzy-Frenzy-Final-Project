@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,9 +15,9 @@ public class BoardConfig : ScriptableObject
     public int height;
     public int maxMoves;
     
-    [Header("Level VFX")]
-    [SerializeField] private bool enableRain;
-    public bool EnableRain => enableRain;
+    //[Header("Level VFX")]
+    //[SerializeField] private bool enableRain;
+    ////public bool EnableRain => enableRain;
 
     [Header("Goal Config")]
     public PointsOrMatches goalType = PointsOrMatches.points;
@@ -28,7 +29,18 @@ public class BoardConfig : ScriptableObject
     public Animal wolf;
     public Animal sheep;
     public Animal boneBlock;
+    
+    [SerializeField] private List<VFXToggle> vfxToggles = new();
+    public IReadOnlyList<VFXToggle> VfxToggles => vfxToggles;
+
+    [Serializable]
+    public struct VFXToggle
+    {
+        public VFXKey key;
+        public bool enabled;
+    }
 }
+
 
 [System.Serializable] // Show and edit this class in the inspector
 public class AnimalGoal

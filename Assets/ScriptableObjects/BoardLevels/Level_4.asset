@@ -16,7 +16,6 @@ MonoBehaviour:
   weidth: 8
   height: 8
   maxMoves: 8
-  enableRain: 0
   goalType: 2
   goal: 20
   animals:
@@ -32,3 +31,6 @@ MonoBehaviour:
   wolf: {fileID: 0}
   sheep: {fileID: 0}
   boneBlock: {fileID: 0}
+  vfxToggles:
+  - key: {fileID: 11400000, guid: f7a3cd2a2305dc840a9e97c8feb0ac3d, type: 2}
+    enabled: 1

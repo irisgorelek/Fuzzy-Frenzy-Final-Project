@@ -21,6 +21,9 @@ public class Board
     private readonly Animal _wolf;
     private readonly Animal _sheep;
     private readonly Animal _boneBlock;
+    private readonly Animal _blackSheep;
+    private bool _blackSheepArmed; // when true, spawn one black sheep during next refill
+
     private static readonly Vector2Int[] OrthogonalDirs =
     {
         Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
@@ -56,6 +59,7 @@ public class Board
         _wolf = config.wolf;
         _sheep = config.sheep;
         _boneBlock = config.boneBlock;
+        _blackSheep = config.blackSheep;
     }
 
     public void Initialize()
@@ -77,7 +81,7 @@ public class Board
 
                 do
                 {
-                    chosen = PickRandomAllowedAnimal();
+                    chosen = PickRandomAllowedAnimal(); // Create a board of random animals
                     attempts++;
                 }
                 while (WouldCreateInitialMatches(cell, chosen) && attempts < MaxPlacementAttempts);
@@ -85,6 +89,12 @@ public class Board
                 _grid[x, y] = chosen;
             }
         }
+
+        if (_allowedAnimals.Contains(_boneBlock) && _boneBlock != null)
+            _allowedAnimals.Remove(_boneBlock);
+
+        if (_blackSheep != null)
+            _allowedAnimals.Remove(_blackSheep);
 
         FixStartWolfSheepAdjacency(); // Make sure sheep don't appear next to wolves at the start of the level
     }
@@ -279,16 +289,27 @@ public class Board
     // Refill the empty cells
     public void Refill()
     {
-        for (int x = 0; x < _width; x++) // Columns
-        {
-            for (int y = 0; y < _height; y++) // Rows
-            {
-                if (_grid[x, y] != null)
-                    continue;
+        // Collect empty cells
+        var empties = new List<Vector2Int>();
+        for (int x = 0; x < _width; x++)
+            for (int y = 0; y < _height; y++)
+                if (_grid[x, y] == null)
+                    empties.Add(new Vector2Int(x, y));
 
-                _grid[x, y] = PickRandomAllowedAnimal(); // If the cell is empty, add a random animal
-            }
+        // If armed, spawn exactly ONE black sheep into an empty spot
+        if (_blackSheepArmed && _blackSheep != null && empties.Count > 0)
+        {
+            var chosenCell = empties[Random.Range(0, empties.Count)];
+
+            _grid[chosenCell.x, chosenCell.y] = _blackSheep;
+            _blackSheepArmed = false;
+
+            empties.Remove(chosenCell);
         }
+
+        // Fill remaining empties with normal animals
+        foreach (var cell in empties)
+            _grid[cell.x, cell.y] = PickRandomAllowedAnimal();
     }
 
     // Get an animal from a cell
@@ -521,6 +542,7 @@ public class Board
 
         foreach (var cell in sheepToEat)
         {
+            Debug.Log($"Wolf ate sheep at {cell} -> bone");
             var a = _grid[cell.x, cell.y];
             if (a == null) continue;
 
@@ -609,5 +631,81 @@ public class Board
             p += dir;
         }
         return c;
+    }
+
+    // ----- Black Sheep ----- //
+    public void RollForBlackSheep(float chance01)
+    {
+        if (_blackSheep == null) return;
+        if (_blackSheepArmed) return; // already queued
+
+        chance01 = Mathf.Clamp01(chance01);
+        if (Random.value < chance01)
+            _blackSheepArmed = true;
+    }
+
+    public void TriggerSheepSwipeBlast(Vector2Int sheepPosAfterSwap, bool swipedVertically)
+    {
+        if (!IsCellInBounds(sheepPosAfterSwap))
+            return;
+
+        // vertical swipe -> ROW
+        // horizontal swipe -> COLUMN
+        var cellsToClear = new List<Vector2Int>();
+
+        if (swipedVertically)
+        {
+            int y = sheepPosAfterSwap.y;
+            for (int x = 0; x < _width; x++)
+                cellsToClear.Add(new Vector2Int(x, y));
+        }
+        else
+        {
+            int x = sheepPosAfterSwap.x;
+            for (int y = 0; y < _height; y++)
+                cellsToClear.Add(new Vector2Int(x, y));
+        }
+
+        ClearCellsAsExplosion(cellsToClear);
+    }
+
+    private void ClearCellsAsExplosion(List<Vector2Int> cells)
+    {
+        var destroyedByAnimal = new Dictionary<string, int>();
+        int pointsGainedThisClear = 0;
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            var c = cells[i];
+            var a = _grid[c.x, c.y];
+            if (a == null) continue;
+
+            // Dont clear bone blocks
+            if (_boneBlock != null && a == _boneBlock)
+                continue;
+
+            _points += a._points;
+            pointsGainedThisClear += a._points;
+            _matchedAnimals++;
+
+            string animalId = a._id;
+            if (destroyedByAnimal.ContainsKey(animalId)) destroyedByAnimal[animalId]++;
+            else destroyedByAnimal[animalId] = 1;
+
+            _grid[c.x, c.y] = null;
+        }
+
+        // destroys bones adjacent to the explosion - Can delete if we don't want that
+        DamageAdjacentBoneBlocks(cells);
+
+        if (pointsGainedThisClear > 0)
+            OnScoreAdded?.Invoke(pointsGainedThisClear);
+
+        foreach (var kvp in destroyedByAnimal)
+            OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
+
+        ApplyGravity();
+        Refill();
+        ResolveWolfSheepInteractions();
     }
 }

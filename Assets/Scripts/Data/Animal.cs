@@ -10,7 +10,7 @@ public class Animal : ScriptableObject
     public Color color;
 
     [Header("Gameplay")]
-    [Min(0f)] public float _spawnWeight = 1f; // The chance when randomly spawning (Min 0) - Making the wolf rarer
+    [Min(0f)] public float _spawnWeight = 1f; // The chance when randomly spawning (Min 0) - Making the wolf and the bones rarer
     public bool _canMatch = true;             // Can be part of a 3+ match
     public bool _canSwap = true;              // Can be swapped by the player
     public bool _affectedByGravity = true;    // Falls during gravity

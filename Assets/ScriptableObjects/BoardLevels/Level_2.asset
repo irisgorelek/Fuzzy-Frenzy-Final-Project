@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Level_2
   m_EditorClassIdentifier: FuzzyFrenzy.Data::BoardConfig
   levelIndex: 2
-  weidth: 6
+  weidth: 5
   height: 7
   maxMoves: 8
-  goalType: 1
-  goal: 20
+  goalType: 0
+  goal: 50
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
   - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
@@ -27,3 +27,4 @@ MonoBehaviour:
   wolf: {fileID: 0}
   sheep: {fileID: 0}
   boneBlock: {fileID: 0}
+  vfxToggles: []

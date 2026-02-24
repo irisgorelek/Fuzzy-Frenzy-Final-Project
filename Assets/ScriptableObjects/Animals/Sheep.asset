@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Sheep
   m_EditorClassIdentifier: Assembly-CSharp::Animal
   _id: sheep
-  _sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+  _sprite: {fileID: 3261072515126580666, guid: 119ecdc8bfa89964daecb94059be07f1, type: 3}
   _points: 4
   color: {r: 1, g: 1, b: 1, a: 1}
+  _spawnWeight: 1
+  _canMatch: 1
+  _canSwap: 1
+  _affectedByGravity: 1

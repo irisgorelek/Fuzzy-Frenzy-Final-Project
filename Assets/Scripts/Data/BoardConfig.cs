@@ -29,7 +29,13 @@ public class BoardConfig : ScriptableObject
     public Animal wolf;
     public Animal sheep;
     public Animal boneBlock;
-    
+
+    [Header("Delayed Spawns")]
+    public Animal blackSheep;
+    public int blackSheepUnlockAfterMoves = 1;
+    public float blackSheepRollChance = 0.2f; // 20% each roll
+
+    [Header("Weather VFX")]
     [SerializeField] private List<VFXToggle> vfxToggles = new();
     public IReadOnlyList<VFXToggle> VfxToggles => vfxToggles;
 

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ee029291298beba4984d3a96b6ec8ef3, type: 3}
-  m_Name: Wolf
+  m_Name: Chicken
   m_EditorClassIdentifier: Assembly-CSharp::Animal
-  _id: wolf
-  _sprite: {fileID: -8591260587891477783, guid: fa9584a778f42bc459b2e6e81cfc9815, type: 3}
-  _points: 5
+  _id: chicken
+  _sprite: {fileID: -8767049047189544362, guid: 95948f02bfa3cbb48a546a897dddd3a8, type: 3}
+  _points: 1
   color: {r: 1, g: 1, b: 1, a: 1}
-  _spawnWeight: 0.25
+  _spawnWeight: 1
   _canMatch: 1
   _canSwap: 1
   _affectedByGravity: 1

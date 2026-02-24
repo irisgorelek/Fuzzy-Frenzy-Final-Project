@@ -15,7 +15,7 @@ public class BoardController : MonoBehaviour
     [Header("On Screen Pop Ups")]
     [SerializeField] private GameObject _levelClearedPopup;
     [SerializeField] private GameObject _levelLostPopup;
-    [SerializeField] private int framesBetweenSteps = 25;
+    [SerializeField] private int framesBetweenSteps = 5;
 
     [Header("Rewards Configs")]
     [SerializeField] private RewardsConfig _rewards;
@@ -108,7 +108,9 @@ public class BoardController : MonoBehaviour
 
         _moveCounter.InitializeMoves(_cfg.maxMoves);
         _board.Initialize();
-        
+
+        //_blackSheepTriggered = false;
+
         // Visual
         _view.Build(_cfg.weidth, _cfg.height);
         _view.AssignSprites(_board);
@@ -138,15 +140,23 @@ public class BoardController : MonoBehaviour
             return;
         }
 
-
         // Do if normal gameplay
         _isBusy = true;
+
+        bool sheepSwiped = IsAnySheep(a); // started swipe on a sheep
+        bool otherIsSheep = IsAnySheep(b); // or you swiped into a sheep
+        bool sheepInvolved = sheepSwiped || otherIsSheep;
+
+        bool swipeVertical = (from.x == to.x);
+
+        // where the sheep ends up after the swap
+        Vector2Int sheepPosAfterSwap = sheepSwiped ? to : otherIsSheep ? from : from;
 
         // Show the swap immediately even if invalid
         _view.SwapCellVisuals(from, to);
 
         // Let the swap show in unity
-        await WaitFrames(10);
+        await WaitFrames(framesBetweenSteps);
 
         bool swappedNormal = _board.SwapCellsRaw(from, to);
 
@@ -155,6 +165,24 @@ public class BoardController : MonoBehaviour
             // Out of bounds / not neighbors
             _view.SwapCellVisuals(from, to); // swap back
             _isBusy = false;
+            return;
+        }
+
+        if (sheepInvolved) // Black sheep
+        {
+            _moveCounter.UseMove();
+
+            TryRollBlackSheep();
+
+            _board.TriggerSheepSwipeBlast(sheepPosAfterSwap, swipeVertical);
+
+            UpdateGoalUI();
+            _view.AssignSprites(_board);
+
+            await ResolveCascadesAsync(framesBetweenSteps);
+
+            _isBusy = false;
+            Debug.Log($"a={a?._id}, b={b?._id}, sheepInvolved={sheepInvolved}");
             return;
         }
 
@@ -169,6 +197,8 @@ public class BoardController : MonoBehaviour
         }
 
         _moveCounter.UseMove();
+
+        TryRollBlackSheep(); // Roll the black sheep spawn
 
         // The swap was valid. Resolve cascades with pacing
         _view.AssignSprites(_board); // Sync view to model after swap
@@ -191,6 +221,21 @@ public class BoardController : MonoBehaviour
 
         _isBusy = false;
 
+    }
+
+    private void TryRollBlackSheep()
+    {
+        if (_cfg.blackSheep == null) return; // not this level
+
+        int movesMade = _cfg.maxMoves - _moveCounter.MovesLeft;
+
+        if (_cfg.blackSheepUnlockAfterMoves <= 0) return;
+
+        if (movesMade % _cfg.blackSheepUnlockAfterMoves == 0)
+        {
+            _board.RollForBlackSheep(_cfg.blackSheepRollChance);
+            Debug.Log($"Rolled for black sheep at move {movesMade}");
+        }
     }
 
     public async void TryRemoveCellsFromGrid(List<Vector2Int> cells)
@@ -351,5 +396,14 @@ public class BoardController : MonoBehaviour
 
         int seconds = Mathf.CeilToInt(remaining);
         _view.SetTimerSeconds(seconds);
+    }
+
+    private bool IsAnimal(Animal piece, Animal target)
+    {
+        return piece != null && target != null && piece._id == target._id;
+    }
+    private bool IsAnySheep(Animal piece)
+    {
+        return IsAnimal(piece, _cfg.sheep) || IsAnimal(piece, _cfg.blackSheep);
     }
 }

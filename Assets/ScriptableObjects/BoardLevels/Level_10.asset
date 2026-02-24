@@ -10,26 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 25b4517038998984ea2c758914b1c2b1, type: 3}
-  m_Name: Level_6
+  m_Name: Level_10
   m_EditorClassIdentifier: FuzzyFrenzy.Data::BoardConfig
-  levelIndex: 6
+  levelIndex: 10
   weidth: 5
   height: 9
   maxMoves: 20
   goalType: 2
-  goal: 200
+  goal: 100
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
   - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
   - {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
   - {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
   - {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
-  collectGoals:
-  - animal: {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
-    amount: 50
-  - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
-    amount: 30
+  - {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
+  collectGoals: []
   wolf: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
   sheep: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
   boneBlock: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
-  vfxToggles: []
+  blackSheep: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
+  blackSheepUnlockAfterMoves: 5
+  blackSheepRollChance: 0.45
+  vfxToggles:
+  - key: {fileID: 11400000, guid: fd6a70702062b2c46b64abc07e68b0f8, type: 2}
+    enabled: 1

@@ -6,6 +6,8 @@ using TMPro;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using UnityEditor;
+using DG.Tweening;
+using System.Threading.Tasks;
 
 public class BoardView : MonoBehaviour
 {
@@ -20,6 +22,9 @@ public class BoardView : MonoBehaviour
     [Header("Highlighting")] // For highlighting
     [SerializeField] Color _selectedColor;
     [SerializeField] Color _normalColor;
+
+    [Header("Animation")]
+    [SerializeField] private RectTransform _swapOverlay;
 
     [Header("Sprite")]
     [SerializeField] private Sprite _defaultSprite; // For null animals
@@ -242,5 +247,70 @@ public class BoardView : MonoBehaviour
     public void SetTimerSeconds(int seconds)
     {
         _timerPowerUp.text = $"Timer: {seconds}";
+    }
+
+    // Dotween animation
+    public Task AnimateSwap(Vector2Int a, Vector2Int b, float duration = 0.18f)
+    {
+        if (!_cells.ContainsKey(a) || !_cells.ContainsKey(b))
+            return Task.CompletedTask;
+
+        var aView = _cells[a];
+        var bView = _cells[b];
+
+        // Create 2 temporary images that can move freely
+        Image tempA = CreateTempImage(aView);
+        Image tempB = CreateTempImage(bView);
+
+        // Hide the real images during animation
+        aView.SetImageEnabled(false);
+        bView.SetImageEnabled(false);
+
+        var tcs = new TaskCompletionSource<bool>(); // Create a future task that I’ll mark as finished later.
+
+        Sequence seq = DOTween.Sequence(); // Create a sequence of animations
+        seq.Join(tempA.rectTransform.DOMove(bView.ImageRect.position, duration).SetEase(Ease.InOutQuad));
+        seq.Join(tempB.rectTransform.DOMove(aView.ImageRect.position, duration).SetEase(Ease.InOutQuad));
+
+        seq.OnComplete(() =>
+        {
+            // Swap the real sprites at the end
+            var aSprite = aView.CurrentSprite;
+            var aColor = aView.CurrentColor;
+
+            aView.SetSprite(bView.CurrentSprite, bView.CurrentColor);
+            bView.SetSprite(aSprite, aColor);
+
+            aView.SetImageEnabled(true);
+            bView.SetImageEnabled(true);
+
+            Destroy(tempA.gameObject);
+            Destroy(tempB.gameObject);
+
+            tcs.SetResult(true);
+        });
+
+        return tcs.Task;
+    }
+
+    private Image CreateTempImage(CellView source)
+    {
+        var go = new GameObject("SwapTemp", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        go.transform.SetParent(_swapOverlay, worldPositionStays: false);
+
+        var img = go.GetComponent<Image>();
+        img.sprite = source.CurrentSprite;
+        img.color = source.CurrentColor;
+        img.raycastTarget = false;
+
+        var rt = (RectTransform)go.transform;
+
+        // Match screen position + size
+        rt.position = source.ImageRect.position;
+        rt.rotation = source.ImageRect.rotation;
+        rt.sizeDelta = source.ImageRect.rect.size;
+        rt.localScale = Vector3.one;
+
+        return img;
     }
 }

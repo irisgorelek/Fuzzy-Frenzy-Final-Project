@@ -125,7 +125,8 @@ public class BoardController : MonoBehaviour
         var a = _board.GetAnimalFromCell(from);
         var b = _board.GetAnimalFromCell(to);
 
-        if (a == null || b == null) return;
+        if (a == null || b == null) 
+            return;
 
         if (!a._canSwap || !b._canSwap)
             return;
@@ -152,21 +153,18 @@ public class BoardController : MonoBehaviour
         // where the sheep ends up after the swap
         Vector2Int sheepPosAfterSwap = sheepSwiped ? to : otherIsSheep ? from : from;
 
-        // Show the swap immediately even if invalid
-        _view.SwapCellVisuals(from, to);
-
-        // Let the swap show in unity
-        await WaitFrames(framesBetweenSteps);
-
-        bool swappedNormal = _board.SwapCellsRaw(from, to);
-
-        if (!swappedNormal)
+        if (!_board.SwapCellsRaw(from, to))
         {
             // Out of bounds / not neighbors
-            _view.SwapCellVisuals(from, to); // swap back
             _isBusy = false;
             return;
         }
+
+        // Show the swap immediately even if invalid
+        await _view.AnimateSwap(from, to, 0.18f);
+
+        // Let the swap show in unity
+        // await WaitFrames(framesBetweenSteps);
 
         if (sheepInvolved) // Black sheep
         {
@@ -189,15 +187,15 @@ public class BoardController : MonoBehaviour
         // Check if the swap didn't produce any match
         if (!_board.HasAnyMatch())
         {
-            // The swap was invalid. Swap back in model and view
+            // The swap was invalid. Swap back in model and animate back
             _board.SwapCellsRaw(from, to);
-            _view.SwapCellVisuals(from, to);
+            await _view.AnimateSwap(from, to, 0.18f); // animate back
+
             _isBusy = false;
             return;
         }
 
         _moveCounter.UseMove();
-
         TryRollBlackSheep(); // Roll the black sheep spawn
 
         // The swap was valid. Resolve cascades with pacing

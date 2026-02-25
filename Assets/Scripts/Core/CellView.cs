@@ -18,6 +18,10 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public event Action<Vector2Int, Vector2> Drag;
     public event Action<Vector2Int, Vector2> PointerUp;
 
+    public RectTransform ImageRect => _image.rectTransform;
+    public void SetImageEnabled(bool enabled) => _image.enabled = enabled;
+
+
     public void Init(Vector2Int coord)
     {
         Coord = coord;

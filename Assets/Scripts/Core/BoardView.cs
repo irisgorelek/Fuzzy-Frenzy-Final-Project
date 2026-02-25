@@ -339,4 +339,155 @@ public class BoardView : MonoBehaviour
             _rows.Add(row);
         }
     }
+
+    // Animate the gravity 
+    public Task AnimateGravity(List<Board.FallMove> moves, List<Board.SpawnInfo> spawns, Board board, float duration = 0.20f)
+    {
+        bool hasMoves = moves != null && moves.Count > 0;
+        bool hasSpawns = spawns != null && spawns.Count > 0;
+
+        if (!hasMoves && !hasSpawns)
+        {
+            AssignSprites(board);
+            return Task.CompletedTask;
+        }
+
+        // Hide all involved cells so we only see the moving temp images
+        var involved = new HashSet<Vector2Int>();
+        if (hasMoves)
+        {
+            foreach (var m in moves) { involved.Add(m.from); involved.Add(m.to); }
+        }
+        if (hasSpawns)
+        {
+            foreach (var s in spawns) involved.Add(s.cell);
+        }
+
+        foreach (var c in involved)
+            if (_cells.TryGetValue(c, out var cv))
+                cv.SetImageEnabled(false);
+
+        var temps = new List<GameObject>();
+        var tcs = new TaskCompletionSource<bool>();
+
+        Sequence seq = DOTween.Sequence();
+
+        // Falling moves
+        if (hasMoves)
+        {
+            foreach (var m in moves)
+            {
+                if (!_cells.ContainsKey(m.from) || !_cells.ContainsKey(m.to)) continue;
+
+                var fromView = _cells[m.from];
+                var toView = _cells[m.to];
+
+                var temp = CreateTempImage(fromView);
+                temps.Add(temp.gameObject);
+
+                seq.Join(temp.rectTransform
+                    .DOMove(toView.ImageRect.position, duration)
+                    .SetEase(Ease.InQuad));
+            }
+        }
+
+        // Spawns
+        if (hasSpawns)
+        {
+            foreach (var s in spawns)
+            {
+                if (!_cells.ContainsKey(s.cell) || s.animal == null) continue;
+
+                var targetView = _cells[s.cell];
+                var targetPos = targetView.ImageRect.position;
+
+                int entryY = (s.spawnFromY >= 0) ? (s.spawnFromY + 1) : 0;
+
+                // Create temp image
+                var temp = CreateTempImageFromSprite(s.animal._sprite, s.animal.color, targetView);
+                temps.Add(temp.gameObject);
+
+                float cellH = targetView.ImageRect.rect.height;
+                float cellW = targetView.ImageRect.rect.width;
+                float upOffset = cellH * 1.2f;
+
+                if (s.spawnFromY < 0)
+                {
+                    // Normal: spawn from above board in same column
+                    var startView = _cells[new Vector2Int(s.cell.x, 0)];
+                    temp.rectTransform.position = startView.ImageRect.position + Vector3.up * upOffset;
+
+                    seq.Join(temp.rectTransform
+                        .DOMove(targetPos, duration)
+                        .SetEase(Ease.InQuad));
+                }
+                else
+                {
+                    // Under a blocker: spawn from side and slide under the bone row
+                    int leftX = s.cell.x - 1;
+                    int rightX = s.cell.x + 1;
+
+                    // pick a side (simple + safe)
+                    int sideX =
+                        (leftX >= 0 && rightX < _width)
+                            ? (UnityEngine.Random.value < 0.5f ? leftX : rightX)
+                            : (leftX >= 0 ? leftX : rightX);
+
+                    // reference cell on that side, at the entry row
+                    var sideCell = new Vector2Int(sideX, entryY);
+                    var sideView = _cells[sideCell];
+
+                    // start slightly outside the grid on that side, and slightly above
+                    Vector3 sideDir = (sideX < s.cell.x) ? Vector3.left : Vector3.right;
+                    temp.rectTransform.position =
+                        sideView.ImageRect.position + Vector3.up * upOffset + sideDir * (cellW * 0.8f);
+
+                    // “slide under” pivot: same y as entry row, x of target
+                    Vector3 pivot = new Vector3(targetPos.x, sideView.ImageRect.position.y, targetPos.z);
+
+                    Sequence sseq = DOTween.Sequence();
+                    sseq.Append(temp.rectTransform.DOMove(pivot, duration * 0.35f).SetEase(Ease.OutQuad));
+                    sseq.Append(temp.rectTransform.DOMove(targetPos, duration * 0.65f).SetEase(Ease.InQuad));
+
+                    seq.Join(sseq);
+                }
+            }
+        }
+
+        seq.OnComplete(() =>
+        {
+            // Redraw final state
+            AssignSprites(board);
+
+            // Re-enable real cell images
+            foreach (var c in involved)
+                if (_cells.TryGetValue(c, out var cv))
+                    cv.SetImageEnabled(true);
+
+            // Cleanup temps
+            for (int i = 0; i < temps.Count; i++)
+                Destroy(temps[i]);
+
+            tcs.SetResult(true);
+        });
+
+        return tcs.Task;
+    }
+
+    private Image CreateTempImageFromSprite(Sprite sprite, Color color, CellView sizeReference)
+    {
+        var go = new GameObject("FallTemp", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        go.transform.SetParent(_swapOverlay, worldPositionStays: false);
+
+        var img = go.GetComponent<Image>();
+        img.sprite = sprite;
+        img.color = color;
+        img.raycastTarget = false;
+
+        var rt = (RectTransform)go.transform;
+        rt.sizeDelta = sizeReference.ImageRect.rect.size;
+        rt.localScale = Vector3.one;
+
+        return img;
+    }
 }

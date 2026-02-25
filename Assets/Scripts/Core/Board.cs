@@ -6,6 +6,19 @@ using Random = UnityEngine.Random;
 
 public class Board
 {
+    public struct FallMove
+    {
+        public Vector2Int from;
+        public Vector2Int to;
+    }
+
+    public struct SpawnInfo
+    {
+        public Vector2Int cell;   // where it ends
+        public Animal animal;     // what spawned
+        public int spawnFromY;    // -1 = above board, otherwise y of the blocker above
+    }
+
     private List<Animal> _allowedAnimals; // Which animals are allowed on the board
     private Animal[,] _grid;
     private int _width;
@@ -207,7 +220,7 @@ public class Board
     }
 
     // Clear the found matches
-    private void ClearMatches(List<Vector2Int> matches)
+    private void ClearMatches(List<Vector2Int> matches, List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
     {
         var destroyedByAnimal = new Dictionary<string, int>();
         int pointsGainedThisClear = 0;
@@ -241,14 +254,14 @@ public class Board
             OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
         }
 
-        ApplyGravity();
-        Refill();
+        ApplyGravity(fallMoves);
+        Refill(spawns);
 
-        ResolveWolfSheepInteractions();
+        ResolveWolfSheepInteractions(fallMoves, spawns);
     }
 
     // Apply gravity to the cells
-    public void ApplyGravity()
+    public void ApplyGravity(List<FallMove> fallMoves = null)
     {
         for (int x = 0; x < _width; x++)
         {
@@ -277,6 +290,12 @@ public class Board
                     if (writeY < 0)
                         break;
 
+                    fallMoves?.Add(new FallMove
+                    {
+                        from = new Vector2Int(x, y),
+                        to = new Vector2Int(x, writeY)
+                    });
+
                     _grid[x, writeY] = piece;
                     _grid[x, y] = null;
                 }
@@ -287,7 +306,7 @@ public class Board
     }
 
     // Refill the empty cells
-    public void Refill()
+    public void Refill(List<SpawnInfo> spawns = null)
     {
         // Collect empty cells
         var empties = new List<Vector2Int>();
@@ -302,14 +321,31 @@ public class Board
             var chosenCell = empties[Random.Range(0, empties.Count)];
 
             _grid[chosenCell.x, chosenCell.y] = _blackSheep;
-            _blackSheepArmed = false;
 
+            spawns?.Add(new SpawnInfo
+            {
+                cell = chosenCell,
+                animal = _blackSheep,
+                spawnFromY = GetSpawnFromY(chosenCell)
+            });
+
+            _blackSheepArmed = false;
             empties.Remove(chosenCell);
         }
 
         // Fill remaining empties with normal animals
         foreach (var cell in empties)
-            _grid[cell.x, cell.y] = PickRandomAllowedAnimal();
+        {
+            var spawned = PickRandomAllowedAnimal();
+            _grid[cell.x, cell.y] = spawned;
+
+            spawns?.Add(new SpawnInfo
+            {
+                cell = cell,
+                animal = spawned,
+                spawnFromY = GetSpawnFromY(cell)
+            });
+        }
     }
 
     // Get an animal from a cell
@@ -388,9 +424,9 @@ public class Board
         return MatchesFound();
     }
 
-    public void ResolveMatches(List<Vector2Int> matches)
+    public void ResolveMatches(List<Vector2Int> matches, List<FallMove> fallMoves, List<SpawnInfo> spawns)
     {
-        ClearMatches(matches);
+        ClearMatches(matches, fallMoves, spawns);
     }
 
     public bool SwapCellsRaw(Vector2Int cell1, Vector2Int cell2)
@@ -481,7 +517,7 @@ public class Board
             _grid[cell.x, cell.y] = null;
     }
 
-    private void ResolveWolfSheepInteractions()
+    private void ResolveWolfSheepInteractions(List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
     {
         if (_wolf == null || _sheep == null || _boneBlock == null)
             return;
@@ -502,8 +538,8 @@ public class Board
                 if (eatenCount > 0)
                     OnAnimalsDestroyed?.Invoke(_sheep._id, eatenCount); // Add the sheep as a match
 
-                ApplyGravity();
-                Refill();
+                ApplyGravity(fallMoves);
+                Refill(spawns);
             }
         }
         while (changed && safety++ < 100);
@@ -707,5 +743,18 @@ public class Board
         ApplyGravity();
         Refill();
         ResolveWolfSheepInteractions();
+    }
+
+    // Helper for gravaity + bone animation
+    private int GetSpawnFromY(Vector2Int target)
+    {
+        // Search upward for the nearest blocker
+        for (int y = target.y - 1; y >= 0; y--)
+        {
+            var above = _grid[target.x, y];
+            if (above != null && !above._affectedByGravity)
+                return y; // blocker location
+        }
+        return -1; // no blocker above -> spawn from above board
     }
 }

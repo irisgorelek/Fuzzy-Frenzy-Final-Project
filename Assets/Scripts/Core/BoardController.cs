@@ -305,14 +305,21 @@ public class BoardController : MonoBehaviour
             // Let the player see the current state before clearing
             await WaitFrames(framesBetweenSteps);
 
-            // Resolve clear + gravity + refill
-            _board.ResolveMatches(matches);
+            var fallMoves = new List<Board.FallMove>();
+            var spawns = new List<Board.SpawnInfo>();
+
+            _board.ResolveMatches(matches, fallMoves, spawns);
+
+            UpdateGoalUI();
+
+            // animate gravity and refill
+            await _view.AnimateGravity(fallMoves, spawns, _board, 0.20f);
 
             // Points + Amount of animals matched
             UpdateGoalUI();
 
             // Redraw
-            _view.AssignSprites(_board);
+            //_view.AssignSprites(_board);
 
             if (AreAllGoalsComplete())
             {
@@ -420,6 +427,6 @@ public class BoardController : MonoBehaviour
     }
     private bool IsAnySheep(Animal piece)
     {
-        return IsAnimal(piece, _cfg.sheep) || IsAnimal(piece, _cfg.blackSheep);
+        return IsAnimal(piece, _cfg.blackSheep);
     }
 }

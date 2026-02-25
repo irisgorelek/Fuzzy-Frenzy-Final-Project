@@ -141,18 +141,20 @@ public class BoardView : MonoBehaviour
     }
     public void SetScore(int points, int totalPoints)
     {
+        ClearGoalRows();
         Debug.LogWarning($"Set Score: {points} / {totalPoints}");
         _goal.text = $"Points: {points} / {totalPoints}";
     }
     public void SetMatchedAnimals(int animals, int goal)
     {
+        ClearGoalRows();
         Debug.LogWarning($"Set Score: {animals} / {goal}");
         _goal.text = $"Matched: {animals} / {goal}";
     }
     public void SetCollectGoals(List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
         ClearGoalRows();
-        _goal.text = "Collect:"; // header
+        //_goal.text = "Collect:"; // header
 
         foreach (var g in goals)
         {
@@ -312,5 +314,29 @@ public class BoardView : MonoBehaviour
         rt.localScale = Vector3.one;
 
         return img;
+    }
+
+    // For level 10
+    public void SetPointsAndCollectGoals(int points, int pointsGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
+    {
+        ClearGoalRows();
+        _goal.text = "Goals:";
+
+        // Points row (no icon)
+        var pointsRow = Instantiate(_goalRowPrefab, _goalRowsParent);
+        pointsRow.Set(null, $"Points: {points}/{pointsGoal}", Color.white);
+        _rows.Add(pointsRow);
+
+        // Collect rows
+        foreach (var g in goals)
+        {
+            if (g.animal == null) continue;
+
+            collected.TryGetValue(g.animal._id, out int have);
+
+            var row = Instantiate(_goalRowPrefab, _goalRowsParent);
+            row.Set(g.animal._sprite, $"{g.animal._id}: {have}/{g.amount}", g.animal.color);
+            _rows.Add(row);
+        }
     }
 }

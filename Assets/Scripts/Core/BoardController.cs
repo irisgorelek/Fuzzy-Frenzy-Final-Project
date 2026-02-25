@@ -40,6 +40,7 @@ public class BoardController : MonoBehaviour
 
     public int GetWidth() => _cfg.weidth;
     public int GetHeight() => _cfg.height;
+    private bool HasCollectGoals => _cfg.collectGoals != null && _cfg.collectGoals.Count > 0;
 
     private void Awake()
     {
@@ -313,7 +314,7 @@ public class BoardController : MonoBehaviour
             // Redraw
             _view.AssignSprites(_board);
 
-            if (_cfg.goalType == PointsOrMatches.collectAnimals ? IsCollectGoalComplete() : _board.IsGoalReached)
+            if (AreAllGoalsComplete())
             {
                 _levelCompletedChannelSO.RaiseEvent(_cfg.levelIndex);
                 int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
@@ -338,6 +339,14 @@ public class BoardController : MonoBehaviour
     private void UpdateGoalUI()
     {
         _view.ShowGoal(true); // Show the goal text
+
+        // last-level style - points and collectGoals
+        if (_cfg.goalType == PointsOrMatches.points && HasCollectGoals)
+        {
+            _view.SetPointsAndCollectGoals(_board.CurrentPoints, _cfg.goal, _cfg.collectGoals, _collected);
+            return;
+        }
+
         if (_board.GoalType == PointsOrMatches.points)
         {
             _view.SetScore(_board.CurrentPoints, _board.GoalAmount);
@@ -358,7 +367,7 @@ public class BoardController : MonoBehaviour
         _animalsDestroyedChannelSO.RaiseEvent(animalId, count);
 
         // Only track collection if this level is a collect level
-        if (_cfg.goalType != PointsOrMatches.collectAnimals)
+        if (!HasCollectGoals) // && _cfg.goalType != PointsOrMatches.collectAnimals)
             return;
 
         if (!_collected.TryGetValue(animalId, out int have))
@@ -394,6 +403,15 @@ public class BoardController : MonoBehaviour
 
         int seconds = Mathf.CeilToInt(remaining);
         _view.SetTimerSeconds(seconds);
+    }
+    private bool AreAllGoalsComplete()
+    {
+        // points or total matches
+        bool primaryComplete = _cfg.goalType == PointsOrMatches.collectAnimals ? IsCollectGoalComplete() : _board.IsGoalReached;
+
+        bool collectComplete = HasCollectGoals ? IsCollectGoalComplete() : true;
+
+        return primaryComplete && collectComplete;
     }
 
     private bool IsAnimal(Animal piece, Animal target)

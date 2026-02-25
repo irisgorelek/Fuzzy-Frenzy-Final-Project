@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: a33543f70ae76254ab2d8da71fa4331a
+guid: 6f1969f93340f624aac46c3c44d997de
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5471292935323376479
-    second: gold sparkle_0
-  - first:
-      213: -7041477088856871207
-    second: gold sparkle_1
-  - first:
-      213: -8430306997731951695
-    second: gold sparkle_2
+      213: 4585089242064746568
+    second: beige panel_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -119,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: gold sparkle_0
+      name: beige panel_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 867
-        height: 309
+        width: 855
+        height: 266
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1a422ff30101214b0800000000000000
-      internalID: -5471292935323376479
+      spriteID: 848fbb07f5281af30800000000000000
+      internalID: 4585089242064746568
       vertices: []
       indices: 
       edges: []
@@ -144,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6097d44c3e5d18a45bb76405d393bde9
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -152,11 +146,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":867.0,"y":309.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      gold sparkle_0: -5471292935323376479
+      beige panel_0: 4585089242064746568
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

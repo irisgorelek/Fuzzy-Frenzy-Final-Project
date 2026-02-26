@@ -143,7 +143,11 @@ public class BoardController : MonoBehaviour
             bool swapped = _board.SwapCellsRaw(from, to);
             if (!swapped) return;
 
-            _view.SwapCellVisuals(from, to);
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFXPitchAdjusted(12, 0.2f); // Play swap sound.
+            }
+            await _view.AnimateSwap(from, to, 0.18f);
             return;
         }
 

@@ -106,6 +106,11 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         var affected = new List<Vector2Int>(9);
 
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFXPitchAdjusted(1, 0.5f); // Play swap sound.
+        }
+
         for (int dx = -1; dx <= 1; dx++)
         {
             for (int dy = -1; dy <= 1; dy++)

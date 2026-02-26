@@ -230,6 +230,11 @@ public class Board
             var a = _grid[matches[i].x, matches[i].y];
             if (a == null) continue;
 
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f); // Play pop sound.
+            }
+
             _points += a._points;
             pointsGainedThisClear += a._points;
             _matchedAnimals++;

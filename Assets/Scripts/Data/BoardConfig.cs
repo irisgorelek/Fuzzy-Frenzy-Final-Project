@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum PointsOrMatches { points, matches, collectAnimals }
+public enum SongName { happy, chilly }
 
 [CreateAssetMenu(fileName = "BoardConfig", menuName = "Scriptable Objects/BoardConfig")]
 
@@ -38,6 +39,9 @@ public class BoardConfig : ScriptableObject
     [Header("Weather VFX")]
     [SerializeField] private List<VFXToggle> vfxToggles = new();
     public IReadOnlyList<VFXToggle> VfxToggles => vfxToggles;
+
+    [Header("Level Music")]
+    public SongName songNumber;
 
     [Serializable]
     public struct VFXToggle

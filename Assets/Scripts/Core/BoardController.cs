@@ -86,6 +86,11 @@ public class BoardController : MonoBehaviour
         }
 
         _view.SetTimerVisible(false);
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlayBG((int)_cfg.songNumber);
+        }
     }
 
     private void OnDisable()
@@ -158,10 +163,20 @@ public class BoardController : MonoBehaviour
         {
             // Out of bounds / not neighbors
             _isBusy = false;
+
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(4); // Play can't swap sound.
+            }
+
             return;
         }
 
         // Show the swap immediately even if invalid
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFXPitchAdjusted(12, 0.2f); // Play swap sound.
+        }
         await _view.AnimateSwap(from, to, 0.18f);
 
         // Let the swap show in unity
@@ -196,6 +211,10 @@ public class BoardController : MonoBehaviour
             return;
         }
 
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f); // Play pop sound.
+        }
         _moveCounter.UseMove();
         TryRollBlackSheep(); // Roll the black sheep spawn
 
@@ -263,6 +282,9 @@ public class BoardController : MonoBehaviour
         _view.SetTimerVisible(true);
         UpdateTimerUI();
 
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayTimerMusic();
+
         // allow swiping during the timer
         _view.SwapsEnabled = true;
     }
@@ -277,6 +299,9 @@ public class BoardController : MonoBehaviour
         // freeze input while resolving
         _view.SwapsEnabled = false;
         _isBusy = true;
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayBG((int)_cfg.songNumber);
 
         await ResolveCascadesAsync(10);
 
@@ -334,6 +359,15 @@ public class BoardController : MonoBehaviour
                 Debug.Log($"Level Cleared! Stars={stars}, Coins={coins}, MovesUsed={movesUsed}");
 
                 _levelClearedPopup.gameObject.SetActive(true);
+
+                if (AudioManager.instance != null)
+                {
+                    AudioManager.instance.ChangeMusicVolume(0.4f);
+                    AudioManager.instance.PlaySFX(16);
+                    await WaitFrames(25); // Wait until sound is over
+                    AudioManager.instance.ChangeMusicVolume(1f);
+                }
+
                 _isLevelOver = true;
                 return;
             }

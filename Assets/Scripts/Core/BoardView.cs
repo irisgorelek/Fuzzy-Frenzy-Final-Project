@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Runtime.CompilerServices;
-using NUnit.Framework;
-using UnityEditor;
 using DG.Tweening;
 using System.Threading.Tasks;
 
@@ -33,6 +30,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _goal;
     [SerializeField] private TextMeshProUGUI _movesCountText;
     [SerializeField] private TextMeshProUGUI _timerPowerUp;
+    [SerializeField] private Image _timerBackground;
     [SerializeField] private Transform _goalRowsParent;
     [SerializeField] private GoalRowView _goalRowPrefab;
 
@@ -244,6 +242,7 @@ public class BoardView : MonoBehaviour
     public void SetTimerVisible(bool visible)
     {
         _timerPowerUp.gameObject.SetActive(visible);
+        _timerBackground.gameObject.SetActive(visible);
     }
 
     public void SetTimerSeconds(int seconds)

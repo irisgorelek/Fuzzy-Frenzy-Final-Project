@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bone Block
   m_EditorClassIdentifier: FuzzyFrenzy.Data::Animal
   _id: boneBlock
-  _sprite: {fileID: -712631045867808456, guid: b670ab75dde984907b8570040daa08c5, type: 3}
+  _sprite: {fileID: -2682519811691601670, guid: 025f7927b3a8e1943aa95bd7130b29fe, type: 3}
   _points: 2
   color: {r: 1, g: 1, b: 1, a: 1}
   _spawnWeight: 0.3

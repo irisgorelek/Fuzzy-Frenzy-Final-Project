@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
+using System.Threading;
 
 public class BoardController : MonoBehaviour
 {
@@ -21,6 +22,16 @@ public class BoardController : MonoBehaviour
     [SerializeField] private RewardsConfig _rewards;
     [SerializeField] private BootstrapperLocator _locator; // to add coins
 
+    [Header("No-Match Prompt")]
+    [SerializeField] private AsyncDelayTimer _noMatchTimer;     // drag your AsyncDelayTimer component here
+    [SerializeField] private CanvasGroup _noMatchPanel;         // drag your panel’s CanvasGroup here
+    [SerializeField] private float _noMatchSeconds = 7f;
+    [SerializeField] private float _fadeInSeconds = 0.25f;
+
+    private CancellationTokenSource _fadeCts;
+    private bool _promptVisible;
+
+    [Space(10)]
     [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannelSO;
     [SerializeField] private AnimalsDestroyedEventChannelSO _animalsDestroyedChannelSO;
     [SerializeField] private ScoreEventChannelSO _scoreEventChannelSO;
@@ -120,6 +131,8 @@ public class BoardController : MonoBehaviour
         // Visual
         _view.Build(_cfg.weidth, _cfg.height);
         _view.AssignSprites(_board);
+
+        StartOrResetNoMatchTimer();
     }
 
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
@@ -236,6 +249,7 @@ public class BoardController : MonoBehaviour
         if (_moveCounter.MovesLeft <= 0)
         {
             _isLevelOver = true;
+            StopNoMatchSystem();
             if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
             _isBusy = false;
             return;
@@ -331,6 +345,8 @@ public class BoardController : MonoBehaviour
         var matches = _board.FindMatches();
         while (matches.Count > 0)
         {
+            StartOrResetNoMatchTimer(); // A match exists -> reset the "no match" timer
+
             // Let the player see the current state before clearing
             await WaitFrames(framesBetweenSteps);
 
@@ -352,6 +368,8 @@ public class BoardController : MonoBehaviour
 
             if (AreAllGoalsComplete())
             {
+                StopNoMatchSystem();   // Stop prompt system on win
+
                 _levelCompletedChannelSO.RaiseEvent(_cfg.levelIndex);
                 int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
                 int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
@@ -466,5 +484,60 @@ public class BoardController : MonoBehaviour
     private bool IsAnySheep(Animal piece)
     {
         return IsAnimal(piece, _cfg.blackSheep);
+    }
+
+
+    // Out of moves fade helpers
+    private void StartOrResetNoMatchTimer()
+    {
+        if (_noMatchTimer == null) return;
+
+        HideNoMatchPromptImmediate();
+
+        _noMatchTimer.StartTimer(_noMatchSeconds, () =>
+        {
+            if (_isLevelOver) return; // don’t show after level end
+            if (_promptVisible) return;  // already visible
+            _ = FadeInNoMatchPrompt();
+        });
+    }
+
+    private async Task FadeInNoMatchPrompt()
+    {
+        if (_noMatchPanel == null) return;
+
+        _promptVisible = true;
+
+        CancelFade();
+        _fadeCts = new CancellationTokenSource();
+
+        await UIFade.FadeIn(_noMatchPanel, _fadeInSeconds, _fadeCts.Token);
+    }
+
+    private void HideNoMatchPromptImmediate()
+    {
+        _promptVisible = false;
+        CancelFade();
+
+        if (_noMatchPanel == null) return;
+
+        _noMatchPanel.alpha = 0f;
+        _noMatchPanel.interactable = false;
+        _noMatchPanel.blocksRaycasts = false;
+        _noMatchPanel.gameObject.SetActive(false);
+    }
+
+    private void CancelFade()
+    {
+        if (_fadeCts == null) return;
+        _fadeCts.Cancel();
+        _fadeCts.Dispose();
+        _fadeCts = null;
+    }
+
+    private void StopNoMatchSystem()
+    {
+        _noMatchTimer?.StopTimer();
+        HideNoMatchPromptImmediate();
     }
 }

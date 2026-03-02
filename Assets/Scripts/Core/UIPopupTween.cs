@@ -9,13 +9,13 @@ public class UIPopupTween : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Show")]
-    [SerializeField] private float showDuration = 0.18f;
-    [SerializeField] private float showScaleFrom = 0.92f;
+    [SerializeField] private float showDuration = 0.26f;
+    [SerializeField] private float showScaleFrom = 0.85f;
     [SerializeField] private Ease showEase = Ease.OutBack;
 
     [Header("Hide")]
-    [SerializeField] private float hideDuration = 0.12f;
-    [SerializeField] private float hideScaleTo = 0.92f;
+    [SerializeField] private float hideDuration = 0.18f;
+    [SerializeField] private float hideScaleTo = 0.85f;
     [SerializeField] private Ease hideEase = Ease.InQuad;
 
     Tween _tween;

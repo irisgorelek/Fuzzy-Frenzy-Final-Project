@@ -15,6 +15,8 @@ public class MainMenuButtons : MonoBehaviour
             Debug.LogError($"No UIPopupTween found on {panel.name}");
             return;
         }
+
+        tween.Show();
     }
 
     public void CloseSettingsPanel(GameObject panel)

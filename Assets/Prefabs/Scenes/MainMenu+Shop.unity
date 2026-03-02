@@ -590,6 +590,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 118288714}
   m_CullTransparentMesh: 1
+--- !u!224 &183499899 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1545129847818938727, guid: 196fb777c4987214ea481a4707665abf, type: 3}
+  m_PrefabInstance: {fileID: 1063593658}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &223016601
 GameObject:
   m_ObjectHideFlags: 0
@@ -2226,7 +2231,7 @@ PrefabInstance:
     - target: {fileID: 1635303112102823466, guid: 196fb777c4987214ea481a4707665abf, type: 3}
       propertyPath: content
       value: 
-      objectReference: {fileID: 1063593659}
+      objectReference: {fileID: 1063593660}
     - target: {fileID: 1717585806168649932, guid: 196fb777c4987214ea481a4707665abf, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
@@ -2255,6 +2260,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: MainMenuButtons, FunzzyFrenzy.core
       objectReference: {fileID: 0}
+    - target: {fileID: 3163754373822762819, guid: 196fb777c4987214ea481a4707665abf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 1063593661}
     - target: {fileID: 3163754373822762819, guid: 196fb777c4987214ea481a4707665abf, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.GameObject, UnityEngine
@@ -2355,6 +2364,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3829167678381625971, guid: 196fb777c4987214ea481a4707665abf, type: 3}
   m_PrefabInstance: {fileID: 1063593658}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &1063593660 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1717585806168649932, guid: 196fb777c4987214ea481a4707665abf, type: 3}
+  m_PrefabInstance: {fileID: 1063593658}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1063593661 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2684504215939998660, guid: 196fb777c4987214ea481a4707665abf, type: 3}
@@ -2367,7 +2381,7 @@ CanvasGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1063593661}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
@@ -2379,12 +2393,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1063593661}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc23258a3db9d664cb2a3b89ef1607c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::UIPopupTween
-  rect: {fileID: 1063593659}
+  rect: {fileID: 183499899}
   canvasGroup: {fileID: 1063593664}
   showDuration: 0.26
   showScaleFrom: 0.85
@@ -3110,13 +3124,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1063593661}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1648844920}
+        m_TargetAssemblyTypeName: MainMenuButtons, FunzzyFrenzy.core
+        m_MethodName: OpenSettingsPanel
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1063593661}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

@@ -17,13 +17,17 @@ public class LevelEndButtons : MonoBehaviour
 
         menuButton.onClick.AddListener(GoToMenu);
         redoButton.onClick.AddListener(RedoLevel);
-        nextLevelButton.onClick.AddListener(GoToNextLevel);
 
-        // Hide "Next Level" if this is the last level
-        var current = _bootstrapper.SelectedLevel;
-        int currentIndex = allLevels.Levels.IndexOf(current);
-        if (currentIndex < 0 || currentIndex >= allLevels.Levels.Count - 1)
-            nextLevelButton.gameObject.SetActive(false);
+        if (nextLevelButton != null)
+        {
+            nextLevelButton.onClick.AddListener(GoToNextLevel);
+
+            // Hide "Next Level" if this is the last level
+            var current = _bootstrapper.SelectedLevel;
+            int currentIndex = allLevels.Levels.IndexOf(current);
+            if (currentIndex < 0 || currentIndex >= allLevels.Levels.Count - 1)
+                nextLevelButton.gameObject.SetActive(false);
+        }
     }
 
     private void GoToMenu()

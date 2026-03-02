@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &234617328915680245
 RectTransform:
   m_ObjectHideFlags: 0
@@ -331,9 +331,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6268823678207614605}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 133.39456, y: -52.7993}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 104.9615, y: 97.961}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8299061419240378800
@@ -385,6 +385,7 @@ GameObject:
   - component: {fileID: 5292786361754531480}
   - component: {fileID: 8199626238130370297}
   - component: {fileID: 7608307038775809196}
+  - component: {fileID: 7495713898855745645}
   m_Layer: 5
   m_Name: Buttons Panel
   m_TagString: Untagged
@@ -409,9 +410,9 @@ RectTransform:
   - {fileID: 7116811116420567555}
   m_Father: {fileID: 8158880308342775794}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 246.72069, y: -307.1781}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -385.3595}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8199626238130370297
@@ -452,6 +453,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7495713898855745645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2337578065517562548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bb7b036014ca5447a334938e251a357, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::LevelEndButtons
+  menuButton: {fileID: 6362360425848539200}
+  nextLevelButton: {fileID: 3724633111074945705}
+  redoButton: {fileID: 6526708069845631684}
+  allLevels: {fileID: 11400000, guid: 9567066a3c289c54a9a420eb7e66cea4, type: 2}
 --- !u!1 &2790352973534945060
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,9 +660,9 @@ RectTransform:
   - {fileID: 2210857939026569483}
   m_Father: {fileID: 8158880308342775794}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 246.72069, y: -160.54155}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 458.24487, y: 321.0831}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8708183638015942874
@@ -825,10 +842,10 @@ RectTransform:
   - {fileID: 18015268539589918}
   m_Father: {fileID: 2210857939026569483}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 203.7443, y: -52.7993}
-  m_SizeDelta: {x: 407.4886, y: 105.5986}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2370893786873136479
 CanvasRenderer:
@@ -926,9 +943,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6268823678207614605}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 265.53885, y: -52.7993}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 122.0718, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9106489580833801250
@@ -1063,10 +1080,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2210857939026569483}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 203.7443, y: -148.4774}
-  m_SizeDelta: {x: 407.4886, y: 63.357605}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4802892124739536425
 CanvasRenderer:
@@ -1509,6 +1526,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 894488512342488417}
+  - component: {fileID: 4658711615698622703}
+  - component: {fileID: 1322387547509290259}
+  - component: {fileID: 2333872707384198303}
   m_Layer: 5
   m_Name: Level Cleared PopUp
   m_TagString: Untagged
@@ -1523,7 +1543,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7202927578460961574}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1537,6 +1557,62 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4658711615698622703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7202927578460961574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc23258a3db9d664cb2a3b89ef1607c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::UIPopupTween
+  rect: {fileID: 1715230571696655182}
+  canvasGroup: {fileID: 1322387547509290259}
+  showDuration: 0.26
+  showScaleFrom: 0.85
+  showEase: 27
+  hideDuration: 0.18
+  hideScaleTo: 0.85
+  hideEase: 5
+--- !u!225 &1322387547509290259
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7202927578460961574}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2333872707384198303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7202927578460961574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e8c848484509444b8b7b5749d95cbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::LevelClearedPopupUI
+  popupTween: {fileID: 4658711615698622703}
+  scoreText: {fileID: 2517447818072336888}
+  coinsText: {fileID: 622345246048578219}
+  stars:
+  - {fileID: 8607234447778147317}
+  - {fileID: 8053575748489778906}
+  - {fileID: 495346610845609500}
+  delayAfterPopup: 0.05
+  starPopDuration: 0.18
+  timeBetweenStars: 0.1
+  starScaleFrom: 0.2
+  confetti: {fileID: 0}
 --- !u!1 &8053575748489778906
 GameObject:
   m_ObjectHideFlags: 0
@@ -1554,7 +1630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3685887980583887440
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1707,7 +1783,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &110936338658801233
 RectTransform:
   m_ObjectHideFlags: 0

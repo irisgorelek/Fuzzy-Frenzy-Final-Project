@@ -13,7 +13,8 @@ public class BoardController : MonoBehaviour
     [SerializeField] private MoveCounter _moveCounter;
 
     [Header("On Screen Pop Ups")]
-    [SerializeField] private GameObject _levelClearedPopup;
+    //[SerializeField] private GameObject _levelClearedPopup;
+    [SerializeField] private LevelClearedPopupUI _levelClearedPopupUI;
     [SerializeField] private GameObject _levelLostPopup;
     [SerializeField] private int framesBetweenSteps = 5;
 
@@ -24,6 +25,8 @@ public class BoardController : MonoBehaviour
     [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannelSO;
     [SerializeField] private AnimalsDestroyedEventChannelSO _animalsDestroyedChannelSO;
     [SerializeField] private ScoreEventChannelSO _scoreEventChannelSO;
+
+    [SerializeField] private LevelScoreEventChannelSO _levelScoreEventChannelSO;
 
     public BoardConfig Config => _cfg;
 
@@ -44,8 +47,8 @@ public class BoardController : MonoBehaviour
 
     private void Awake()
     {
-        _levelClearedPopup.gameObject.SetActive(false);
-        _levelLostPopup.gameObject.SetActive(false);
+        //_levelClearedPopup.gameObject.SetActive(false);
+        //_levelLostPopup.gameObject.SetActive(false);
     }
 
     public void Start()
@@ -113,6 +116,7 @@ public class BoardController : MonoBehaviour
         _board.OnAnimalsDestroyed = HandleAnimalsDestroyed;
 
         _board.OnScoreAdded = amount => _scoreEventChannelSO.RaiseEvent(amount);
+        _board.OnScoreAdded = amount => _levelScoreEventChannelSO.RaiseEvent(amount); // In-Level
 
         _moveCounter.InitializeMoves(_cfg.maxMoves);
         _board.Initialize();
@@ -358,13 +362,16 @@ public class BoardController : MonoBehaviour
                 int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
                 int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
                 int coins = _rewards.GetCoins(stars, _cfg.levelIndex);
+                int finalScore = _board.CurrentPoints;
 
                 _locator.Bootstrapper.Economy.AddCoins(coins);
 
-                // TODO: pass stars/coins to the cleared popup UI
-                Debug.Log($"Level Cleared! Stars={stars}, Coins={coins}, MovesUsed={movesUsed}");
+                //pass stars/coins to the cleared popup UI
+                //Debug.Log($"Level Cleared! Stars={stars}, Coins={coins}, MovesUsed={movesUsed}");
 
-                _levelClearedPopup.gameObject.SetActive(true);
+                //_levelClearedPopup.gameObject.SetActive(true);
+                _levelClearedPopupUI.Show(finalScore, coins, stars);    // show with script to integrate text and animations
+                Debug.Log($"LevelClearedPopupUI.Show called: score={finalScore}, coins={coins}, stars={stars}, MovesUsed={movesUsed}");
 
                 if (AudioManager.instance != null)
                 {

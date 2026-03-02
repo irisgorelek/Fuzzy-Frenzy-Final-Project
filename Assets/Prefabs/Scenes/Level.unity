@@ -7599,7 +7599,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2337578065517562548, guid: ae87934a9e16b24428d3089fb2a893e6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1715954615}
   m_SourcePrefab: {fileID: 100100000, guid: ae87934a9e16b24428d3089fb2a893e6, type: 3}
 --- !u!224 &1715954609 stripped
 RectTransform:
@@ -7611,6 +7614,60 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7202927578460961574, guid: ae87934a9e16b24428d3089fb2a893e6, type: 3}
   m_PrefabInstance: {fileID: 1715954608}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1715954611 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6526708069845631684, guid: ae87934a9e16b24428d3089fb2a893e6, type: 3}
+  m_PrefabInstance: {fileID: 1715954608}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1715954612 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3724633111074945705, guid: ae87934a9e16b24428d3089fb2a893e6, type: 3}
+  m_PrefabInstance: {fileID: 1715954608}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1715954613 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6362360425848539200, guid: ae87934a9e16b24428d3089fb2a893e6, type: 3}
+  m_PrefabInstance: {fileID: 1715954608}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!1 &1715954614 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2337578065517562548, guid: ae87934a9e16b24428d3089fb2a893e6, type: 3}
+  m_PrefabInstance: {fileID: 1715954608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1715954615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715954614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bb7b036014ca5447a334938e251a357, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::LevelEndButtons
+  menuButton: {fileID: 1715954613}
+  nextLevelButton: {fileID: 1715954612}
+  redoButton: {fileID: 1715954611}
+  allLevels: {fileID: 11400000, guid: 9567066a3c289c54a9a420eb7e66cea4, type: 2}
 --- !u!224 &1731801649 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2375918147364922185, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}

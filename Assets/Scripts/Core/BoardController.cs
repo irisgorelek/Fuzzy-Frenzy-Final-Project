@@ -50,6 +50,8 @@ public class BoardController : MonoBehaviour
 
     public void Start()
     {
+        _cfg = _locator.Bootstrapper.SelectedLevel;
+
         if (_cfg == null || _view == null)
             Debug.LogError("Error: Either cfg or view weren't inserted in the board controller");
 

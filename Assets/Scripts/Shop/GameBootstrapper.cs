@@ -7,6 +7,7 @@ public class GameBootstrapper : MonoBehaviour
     public ShopService Shop { get; private set; }
 
     public LeaderboardManager Leaderboard { get; private set; }
+    public BoardConfig SelectedLevel { get; set; }
 
     private void Awake()
     {

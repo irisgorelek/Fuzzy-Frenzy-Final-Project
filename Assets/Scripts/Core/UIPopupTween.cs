@@ -20,10 +20,7 @@ public class UIPopupTween : MonoBehaviour
 
     Tween _tween;
 
-    //private void Start()
-    //{
-    //    Hide(deactivateOnComplete: false);
-    //}
+    public float Duration => showDuration;
 
     void Reset()
     {

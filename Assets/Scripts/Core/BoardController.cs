@@ -366,9 +366,6 @@ public class BoardController : MonoBehaviour
 
                 _locator.Bootstrapper.Economy.AddCoins(coins);
 
-                //pass stars/coins to the cleared popup UI
-                //Debug.Log($"Level Cleared! Stars={stars}, Coins={coins}, MovesUsed={movesUsed}");
-
                 //_levelClearedPopup.gameObject.SetActive(true);
                 _levelClearedPopupUI.Show(finalScore, coins, stars);    // show with script to integrate text and animations
                 Debug.Log($"LevelClearedPopupUI.Show called: score={finalScore}, coins={coins}, stars={stars}, MovesUsed={movesUsed}");

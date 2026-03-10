@@ -10,6 +10,8 @@ public class LevelClearedPopupUI : MonoBehaviour
     [Header("Texts")]
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text coinsText;
+    [SerializeField] private TMP_Text levelText;
+    [SerializeField] private string levelPrefix = "Level ";
 
     [Header("Stars (GameObjects)")]
     [SerializeField] private GameObject[] stars; // size 3, order: 0..2
@@ -34,7 +36,7 @@ public class LevelClearedPopupUI : MonoBehaviour
         popupTween = GetComponent<UIPopupTween>();
     }
 
-    public void Show(int finalScore, int coinsEarned, int starsEarned)
+    public void Show(int levelIndex, int finalScore, int coinsEarned, int starsEarned)
     {
         // Safety / assumptions
         starsEarned = Mathf.Clamp(starsEarned, 1, 3);
@@ -44,6 +46,8 @@ public class LevelClearedPopupUI : MonoBehaviour
             return;
         }
 
+        if (levelText != null)
+            levelText.text = $"{levelPrefix}{levelIndex}";
         int displayScore = finalScore * scoreDisplayMultiplier;
 
         // 1) Reset state

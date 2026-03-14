@@ -13,7 +13,6 @@ public class BoardController : MonoBehaviour
     [SerializeField] private MoveCounter _moveCounter;
 
     [Header("On Screen Pop Ups")]
-    //[SerializeField] private GameObject _levelClearedPopup;
     [SerializeField] private LevelClearedPopupUI _levelClearedPopupUI;
     [SerializeField] private GameObject _levelLostPopup;
     [SerializeField] private int framesBetweenSteps = 5;
@@ -366,11 +365,12 @@ public class BoardController : MonoBehaviour
                 int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
                 int coins = _rewards.GetCoins(stars, _cfg.levelIndex);
                 int finalScore = _board.CurrentPoints;
+                int level = _cfg.levelIndex;
 
                 _locator.Bootstrapper.Economy.AddCoins(coins);
 
                 //_levelClearedPopup.gameObject.SetActive(true);
-                _levelClearedPopupUI.Show(finalScore, coins, stars);    // show with script to integrate text and animations
+                _levelClearedPopupUI.Show(level, finalScore, coins, stars);    // show with script to integrate text and animations
                 Debug.Log($"LevelClearedPopupUI.Show called: score={finalScore}, coins={coins}, stars={stars}, MovesUsed={movesUsed}");
 
                 if (AudioManager.instance != null)

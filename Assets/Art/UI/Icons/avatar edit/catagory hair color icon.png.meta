@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 406217261ca5e3a419629700f54bd22c
+guid: c26c8cd3b1835a4469470f7452307291
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5826140344498021670
-    second: ponytail icon_0
+      213: -514233400087485407
+    second: catagory hair color icon_0
   - first:
-      213: 5235948984694565777
-    second: ponytail icon_1
+      213: 8080421474792802220
+    second: catagory hair color icon_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -116,13 +116,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ponytail icon_0
+      name: catagory hair color icon_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 180
-        height: 144
+        width: 59
+        height: 104
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,20 +131,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 625606d66cb9ad050800000000000000
-      internalID: 5826140344498021670
+      spriteID: 124e42872731dd8f0800000000000000
+      internalID: -514233400087485407
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ponytail icon_1
+      name: catagory hair color icon_1
       rect:
         serializedVersion: 2
-        x: 33
-        y: 136
-        width: 114
-        height: 59
+        x: 54
+        y: 0
+        width: 48
+        height: 104
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,8 +153,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 19b69ce3cd3d9a840800000000000000
-      internalID: 5235948984694565777
+      spriteID: ca78678f48c632070800000000000000
+      internalID: 8080421474792802220
       vertices: []
       indices: 
       edges: []
@@ -173,8 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ponytail icon_0: 5826140344498021670
-      ponytail icon_1: 5235948984694565777
+      catagory hair color icon_0: -514233400087485407
+      catagory hair color icon_1: 8080421474792802220
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

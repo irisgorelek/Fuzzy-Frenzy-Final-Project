@@ -21,6 +21,13 @@ public static class PlayerEconomyStorage
     }
 
     [Serializable]
+    private class AvatarSelectionEntry
+    {
+        public AvatarCategoryType category;
+        public int index;
+    }
+
+    [Serializable]
     private class SaveData
     {
         public int coins;
@@ -35,6 +42,7 @@ public static class PlayerEconomyStorage
         public List<DestroyedAnimalEntry> destroyedAnimals = new();
         public int totalDestroyedAnimals;
         public int totalPointsEarned;
+        public List<AvatarSelectionEntry> avatarSelections = new();
     }
 
     public static void Save(PlayerEconomyState state)
@@ -61,6 +69,9 @@ public static class PlayerEconomyStorage
 
         foreach (var kvp in state.destroyedAnimals)
             data.destroyedAnimals.Add(new DestroyedAnimalEntry { animalId = kvp.Key, count = kvp.Value });
+
+        foreach (var kvp in state.avatarSelections)
+            data.avatarSelections.Add(new AvatarSelectionEntry { category = kvp.Key, index = kvp.Value });
 
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(Key, json);
@@ -117,6 +128,13 @@ public static class PlayerEconomyStorage
             {
                 foreach (var entry in data.destroyedAnimals)
                     state.destroyedAnimals[entry.animalId] = entry.count;
+            }
+
+            state.avatarSelections.Clear();
+            if (data.avatarSelections != null)
+            {
+                foreach (var entry in data.avatarSelections)
+                    state.avatarSelections[entry.category] = entry.index;
             }
         }
         catch

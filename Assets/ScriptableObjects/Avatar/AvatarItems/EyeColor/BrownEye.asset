@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BrownEye
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
   displayName: 
-  icon: {fileID: 0}
+  icon: {fileID: -5549662663155613565, guid: 2b8ed08701f2994469ec646c8f87e552, type: 3}
   avatarSprite: {fileID: 0}
   color: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}

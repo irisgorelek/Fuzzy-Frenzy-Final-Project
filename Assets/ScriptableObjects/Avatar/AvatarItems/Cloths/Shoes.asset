@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Shoes
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
   displayName: Shoes
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 979bdbf4bede3794c8b1c0c495c4217e, type: 3}
   avatarSprite: {fileID: 21300000, guid: 99bc1ba87f7793e41a475858ff310c77, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}

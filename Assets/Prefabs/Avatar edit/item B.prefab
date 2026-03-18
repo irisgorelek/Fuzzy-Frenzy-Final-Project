@@ -363,4 +363,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemButton
   button: {fileID: 7753299377508171914}
   icon: {fileID: 330112669490697928}
-  selectionFrame: {fileID: 926967969602416296}
+  background: {fileID: 5407928336420730388}
+  normalColor: {r: 0.925, g: 0.843, b: 0.706, a: 1}
+  selectedColor: {r: 0.9803922, g: 0.6039216, b: 0.5764706, a: 1}

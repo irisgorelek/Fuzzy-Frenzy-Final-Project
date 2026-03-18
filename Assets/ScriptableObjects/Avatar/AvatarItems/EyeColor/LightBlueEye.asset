@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
-  m_Name: BrownEye
+  m_Name: LightBlueEye
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
   displayName: 
   icon: {fileID: -5549662663155613565, guid: 2b8ed08701f2994469ec646c8f87e552, type: 3}
   avatarSprite: {fileID: 0}
-  color: {r: 0.67058825, g: 0.42352945, b: 0.29411766, a: 1}
+  color: {r: 0.65882355, g: 0.9058824, b: 0.89019614, a: 1}

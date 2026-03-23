@@ -42,6 +42,7 @@ public class BoardController : MonoBehaviour
 
     public int GetWidth() => _cfg.weidth;
     public int GetHeight() => _cfg.height;
+    public Board CurrentBoard => _board;
     private bool HasCollectGoals => _cfg.collectGoals != null && _cfg.collectGoals.Count > 0;
 
     private void Awake()

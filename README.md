@@ -23,6 +23,7 @@ An in-game shop for acquiring avatar customization, and boosts to help players p
 - **Bomb (3×3):** Explodes a 3×3 area on the board.
 - **Extra Move:** Grants an additional move to finish a level.
 - **Timer Frenzy:** **Freezes time for ~5–10 seconds**, letting the player move freely until time runs out.
+- **Black Sheep:** Explodes the row/column slid to.
 
 ### 🏆 Achievements
 Unlock achievements by completing goals and hitting milestones during play.

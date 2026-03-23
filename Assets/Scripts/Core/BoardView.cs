@@ -319,7 +319,7 @@ public class BoardView : MonoBehaviour
     public void SetPointsAndCollectGoals(int points, int pointsGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
         ClearGoalRows();
-        _goal.text = "Goals:";
+        Destroy(_goal.transform.parent.gameObject);
 
         // Points row (no icon)
         var pointsRow = Instantiate(_goalRowPrefab, _goalRowsParent);

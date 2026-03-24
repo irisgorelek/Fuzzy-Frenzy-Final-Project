@@ -44,6 +44,8 @@ public class Board
 
     public int CurrentPoints => _points;
     public int MatchedAnimals => _matchedAnimals;
+    public int Width => _width;
+    public int Height => _height;
 
     public int GoalAmount => _goalAmount;
     public PointsOrMatches GoalType => _goalType;

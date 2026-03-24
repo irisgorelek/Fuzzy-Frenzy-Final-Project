@@ -319,7 +319,7 @@ public class BoardView : MonoBehaviour
     public void SetPointsAndCollectGoals(int points, int pointsGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
         ClearGoalRows();
-        _goal.text = "Goals:";
+        Destroy(_goal.transform.parent.gameObject);
 
         // Points row (no icon)
         var pointsRow = Instantiate(_goalRowPrefab, _goalRowsParent);
@@ -488,5 +488,41 @@ public class BoardView : MonoBehaviour
         rt.localScale = Vector3.one;
 
         return img;
+    }
+    public Task AnimateHint(Vector2Int a, Vector2Int b, float duration = 0.2f)
+    {
+        if (!_cells.ContainsKey(a) || !_cells.ContainsKey(b))
+            return Task.CompletedTask;
+
+        var aRt = _cells[a].ImageRect;
+        var bRt = _cells[b].ImageRect;
+
+        aRt.DOKill();
+        bRt.DOKill();
+
+        aRt.localScale = Vector3.one;
+        bRt.localScale = Vector3.one;
+
+        var tcs = new TaskCompletionSource<bool>();
+
+        Sequence seq = DOTween.Sequence();
+        seq.Join(aRt.DOScale(1.15f, duration).SetLoops(4, LoopType.Yoyo));
+        seq.Join(bRt.DOScale(1.15f, duration).SetLoops(4, LoopType.Yoyo));
+
+        seq.OnComplete(() =>
+        {
+            aRt.localScale = Vector3.one;
+            bRt.localScale = Vector3.one;
+            tcs.TrySetResult(true);
+        });
+
+        seq.OnKill(() =>
+        {
+            aRt.localScale = Vector3.one;
+            bRt.localScale = Vector3.one;
+            tcs.TrySetResult(true);
+        });
+
+        return tcs.Task;
     }
 }

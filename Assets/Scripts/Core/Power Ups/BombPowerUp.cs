@@ -9,6 +9,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     [SerializeField] private BoardView _boardView;
     [SerializeField] private TextMeshProUGUI _amount;
     [SerializeField] private PowerUpEventChannelSO _powerUpChannel;
+    [SerializeField] private ParticleSystem _bombExplosionPrefab;
+    [SerializeField] private Vector3 _bombFxOffset;
+    [SerializeField] private float _bombFxLifetime = 2f;
 
     private GameBootstrapper _bootstrapper;
 
@@ -103,6 +106,21 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         //    return;
         if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
             return;
+
+        if (_bombExplosionPrefab != null && _boardView != null)
+        {
+            Vector3 spawnPos = _boardView.GetCellWorldPosition(coord) + _bombFxOffset;
+
+            var fx = Instantiate(
+                _bombExplosionPrefab,
+                spawnPos,
+                Quaternion.identity,
+                _boardView.GetFxParent()
+            );
+
+            fx.Play();
+            Destroy(fx.gameObject, _bombFxLifetime);
+        }
 
         var affected = new List<Vector2Int>(9);
 

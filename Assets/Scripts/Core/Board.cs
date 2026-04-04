@@ -764,4 +764,51 @@ public class Board
         }
         return -1; // no blocker above -> spawn from above board
     }
+
+    public void ShuffleSwappablePieces()
+    {
+        var cells = new List<Vector2Int>();
+        var pieces = new List<Animal>();
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                var a = _grid[x, y];
+                if (a == null) continue;
+                if (!a._canSwap) continue;   // keep blockers / bones in place
+
+                cells.Add(new Vector2Int(x, y));
+                pieces.Add(a);
+            }
+        }
+
+        for (int i = pieces.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (pieces[i], pieces[j]) = (pieces[j], pieces[i]);
+        }
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            var c = cells[i];
+            _grid[c.x, c.y] = pieces[i];
+        }
+    }
+
+    public bool ShuffleUntilPlayable(BoardHintFinder hintFinder, int maxAttempts = 100)
+    {
+        for (int i = 0; i < maxAttempts; i++)
+        {
+            ShuffleSwappablePieces();
+
+            if (HasAnyMatch())
+                continue;
+
+            if (hintFinder.TryFindHint(this, out _))
+                return true;
+        }
+
+        return false;
+    }
 }

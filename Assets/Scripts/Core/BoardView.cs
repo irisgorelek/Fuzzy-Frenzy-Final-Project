@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using System.Threading.Tasks;
+using Random = UnityEngine.Random;
 
 public class BoardView : MonoBehaviour
 {
@@ -33,6 +34,13 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Image _timerBackground;
     [SerializeField] private Transform _goalRowsParent;
     [SerializeField] private GoalRowView _goalRowPrefab;
+
+    [Header("Match FX")]
+    [SerializeField] private Sprite _matchRingSprite;     // Thin white circle/ring sprite
+    [SerializeField] private Sprite _sparkleSprite;       // Tiny star / diamond / soft dot
+    [SerializeField] private Color _matchFxColor = new Color(1f, 1f, 1f, 0.95f);
+    [SerializeField] private int _sparklesPerMatch = 4;
+
 
 
     private Dictionary<Vector2Int, CellView> _cells = new();
@@ -524,5 +532,147 @@ public class BoardView : MonoBehaviour
         });
 
         return tcs.Task;
+    }
+
+    public Task AnimateMatchPopFx(List<Vector2Int> matches, float duration = 0.12f)
+    {
+        if (matches == null || matches.Count == 0)
+            return Task.CompletedTask;
+
+        var tcs = new TaskCompletionSource<bool>();
+        var spawnedFx = new List<GameObject>();
+        var touchedCells = new List<RectTransform>();
+
+        Sequence master = DOTween.Sequence();
+
+        foreach (var cell in matches)
+        {
+            if (!_cells.TryGetValue(cell, out var cv))
+                continue;
+
+            var pieceRt = cv.ImageRect;
+            touchedCells.Add(pieceRt);
+
+            pieceRt.DOKill();
+            pieceRt.localScale = Vector3.one;
+
+            // Main piece pop
+            Sequence pop = DOTween.Sequence();
+            pop.Append(pieceRt.DOScale(1.12f, duration * 0.28f).SetEase(Ease.OutQuad));
+            pop.Append(pieceRt.DOScale(0.82f, duration * 0.42f).SetEase(Ease.InBack));
+            master.Join(pop);
+
+            Vector3 center = pieceRt.position;
+            Vector2 size = pieceRt.rect.size;
+
+            // White ring
+            if (_matchRingSprite != null)
+            {
+                Image ring = CreateFxImage(_matchRingSprite, _matchFxColor, center, size * 0.95f);
+                spawnedFx.Add(ring.gameObject);
+
+                var ringRt = ring.rectTransform;
+                ringRt.localScale = Vector3.one * 0.55f;
+
+                master.Join(ringRt.DOScale(1.45f, duration).SetEase(Ease.OutQuad));
+                master.Join(ring.DOFade(0f, duration).SetEase(Ease.OutQuad));
+            }
+
+            // Sparkles
+            if (_sparkleSprite != null)
+            {
+                float baseDist = Mathf.Min(size.x, size.y) * 0.28f;
+
+                for (int i = 0; i < _sparklesPerMatch; i++)
+                {
+                    Vector2 dir = Random.insideUnitCircle.normalized;
+                    if (dir.sqrMagnitude < 0.01f)
+                        dir = Vector2.up;
+
+                    float dist = baseDist * Random.Range(0.8f, 1.15f);
+                    float sparkDur = duration * Random.Range(0.75f, 1.0f);
+
+                    Image spark = CreateFxImage(_sparkleSprite, _matchFxColor, center, size * 0.18f);
+                    spawnedFx.Add(spark.gameObject);
+
+                    var sparkRt = spark.rectTransform;
+                    sparkRt.localRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+
+                    master.Join(
+                        sparkRt.DOMove(center + (Vector3)(dir * dist), sparkDur)
+                               .SetEase(Ease.OutQuad)
+                    );
+
+                    master.Join(
+                        sparkRt.DOScale(Random.Range(0.35f, 0.7f), sparkDur)
+                               .SetEase(Ease.InQuad)
+                    );
+
+                    master.Join(
+                        spark.DOFade(0f, sparkDur)
+                             .SetEase(Ease.OutQuad)
+                    );
+                }
+            }
+        }
+
+        master.OnComplete(() =>
+        {
+            foreach (var rt in touchedCells)
+                if (rt != null)
+                    rt.localScale = Vector3.one;
+
+            foreach (var go in spawnedFx)
+                if (go != null)
+                    Destroy(go);
+
+            tcs.TrySetResult(true);
+        });
+
+        master.OnKill(() =>
+        {
+            foreach (var rt in touchedCells)
+                if (rt != null)
+                    rt.localScale = Vector3.one;
+
+            foreach (var go in spawnedFx)
+                if (go != null)
+                    Destroy(go);
+
+            tcs.TrySetResult(true);
+        });
+
+        return tcs.Task;
+    }
+
+    private Image CreateFxImage(Sprite sprite, Color color, Vector3 position, Vector2 size)
+    {
+        var go = new GameObject("MatchFX", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        go.transform.SetParent(_swapOverlay, worldPositionStays: false);
+
+        var img = go.GetComponent<Image>();
+        img.sprite = sprite;
+        img.color = color;
+        img.raycastTarget = false;
+
+        var rt = (RectTransform)go.transform;
+        rt.position = position;
+        rt.sizeDelta = size;
+        rt.localScale = Vector3.one;
+
+        return img;
+    }
+
+    public Vector3 GetCellWorldPosition(Vector2Int coord)
+    {
+        if (_cells.TryGetValue(coord, out var cell))
+            return cell.ImageRect.position;
+
+        return Vector3.zero;
+    }
+
+    public Transform GetFxParent()
+    {
+        return _swapOverlay != null ? _swapOverlay : transform;
     }
 }

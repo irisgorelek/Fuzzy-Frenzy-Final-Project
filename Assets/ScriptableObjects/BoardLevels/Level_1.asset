@@ -16,7 +16,7 @@ MonoBehaviour:
   weidth: 5
   height: 5
   maxMoves: 5
-  goalType: 1
+  goalType: 0
   goal: 20
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
@@ -26,4 +26,8 @@ MonoBehaviour:
   wolf: {fileID: 0}
   sheep: {fileID: 0}
   boneBlock: {fileID: 0}
+  blackSheep: {fileID: 0}
+  blackSheepUnlockAfterMoves: 1
+  blackSheepRollChance: 0.2
   vfxToggles: []
+  songNumber: 0

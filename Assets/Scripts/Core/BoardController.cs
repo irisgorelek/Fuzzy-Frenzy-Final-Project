@@ -45,6 +45,10 @@ public class BoardController : MonoBehaviour
     public Board CurrentBoard => _board;
     private bool HasCollectGoals => _cfg.collectGoals != null && _cfg.collectGoals.Count > 0;
 
+    // For the out of moves shuffle
+    private readonly BoardHintFinder _hintFinder = new BoardHintFinder();
+    private bool _playingWinBonus;
+
     private void Awake()
     {
         //_levelClearedPopup.gameObject.SetActive(false);
@@ -55,7 +59,7 @@ public class BoardController : MonoBehaviour
             _cfg = bootstrapper.SelectedLevel;
     }
 
-    public void Start()
+    public async void Start()
     {
 
         if (_cfg == null || _view == null)
@@ -65,6 +69,8 @@ public class BoardController : MonoBehaviour
 
         // Show initial goal/progress
         UpdateGoalUI();
+
+        await EnsurePlayableBoardAsync();
     }
 
     private void Update()
@@ -343,6 +349,10 @@ public class BoardController : MonoBehaviour
             // Let the player see the current state before clearing
             await WaitFrames(framesBetweenSteps);
 
+            // Animate the matches popping
+            //await _view.AnimateMatchPop(matches, 0.12f);
+            await _view.AnimateMatchPopFx(matches, 0.12f);
+
             var fallMoves = new List<Board.FallMove>();
             var spawns = new List<Board.SpawnInfo>();
 
@@ -388,6 +398,9 @@ public class BoardController : MonoBehaviour
 
             // Check again
             matches = _board.FindMatches();
+
+            if (!_isLevelOver && !AreAllGoalsComplete())
+                await EnsurePlayableBoardAsync();
         }
     }
 
@@ -444,6 +457,29 @@ public class BoardController : MonoBehaviour
             if (have < g.amount) return false;
         }
         return true;
+    }
+
+    private async Task EnsurePlayableBoardAsync()
+    {
+        if (_isLevelOver) return;
+        if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
+
+        if (_hintFinder.TryFindHint(_board, out _))
+            return;
+
+        _view.SwapsEnabled = false;
+
+        int safety = 0;
+        do
+        {
+            _board.ShuffleSwappablePieces();
+            _view.AssignSprites(_board); // later you can replace this with AnimateShuffle()
+            await WaitFrames(4);
+            safety++;
+        }
+        while ((_board.HasAnyMatch() || !_hintFinder.TryFindHint(_board, out _)) && safety < 100);
+
+        _view.SwapsEnabled = true;
     }
 
     private async Task WaitFrames(int frameCount)

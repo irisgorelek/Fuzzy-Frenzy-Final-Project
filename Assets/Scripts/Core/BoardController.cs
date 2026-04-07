@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 
 public class BoardController : MonoBehaviour
 {
@@ -128,7 +129,8 @@ public class BoardController : MonoBehaviour
         _board.OnScoreAdded = amount => _levelScoreEventChannelSO.RaiseEvent(amount); // In-Level
 
         _moveCounter.InitializeMoves(_cfg.maxMoves);
-        _board.Initialize();
+
+        _board.Initialize(); //============================TEST=======================//
 
         //_blackSheepTriggered = false;
 
@@ -467,19 +469,28 @@ public class BoardController : MonoBehaviour
         if (_hintFinder.TryFindHint(_board, out _))
             return;
 
+        _isBusy = true;
         _view.SwapsEnabled = false;
 
+        await _view.ShowShuffleMessage("No more moves!");
+
+
         int safety = 0;
+        bool playable = false;
+
         do
         {
             _board.ShuffleSwappablePieces();
-            _view.AssignSprites(_board); // later you can replace this with AnimateShuffle()
-            await WaitFrames(4);
             safety++;
+
+            playable = !_board.HasAnyMatch() && _hintFinder.TryFindHint(_board, out _);
         }
-        while ((_board.HasAnyMatch() || !_hintFinder.TryFindHint(_board, out _)) && safety < 100);
+        while (!playable && safety < 100);
+
+        await _view.AnimateShuffle(_board);
 
         _view.SwapsEnabled = true;
+        _isBusy = false;
     }
 
     private async Task WaitFrames(int frameCount)

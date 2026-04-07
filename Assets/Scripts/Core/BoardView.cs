@@ -41,6 +41,10 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Color _matchFxColor = new Color(1f, 1f, 1f, 0.95f);
     [SerializeField] private int _sparklesPerMatch = 4;
 
+    [Header("ShuffleBoard")]
+    [SerializeField] private TextMeshProUGUI _shuffleMessage;
+    [SerializeField] private GameObject _shufflePopUp;
+
 
 
     private Dictionary<Vector2Int, CellView> _cells = new();
@@ -638,6 +642,117 @@ public class BoardView : MonoBehaviour
             foreach (var go in spawnedFx)
                 if (go != null)
                     Destroy(go);
+
+            tcs.TrySetResult(true);
+        });
+
+        return tcs.Task;
+    }
+
+    public Task ShowShuffleMessage(string text = "No more moves!", float hold = 0.9f)
+    {
+        if (_shuffleMessage == null)
+            return Task.CompletedTask;
+
+        var tcs = new TaskCompletionSource<bool>();
+
+        _shuffleMessage.DOKill();
+        _shuffleMessage.text = text;
+        _shufflePopUp.SetActive(true);
+
+        var rt = _shuffleMessage.rectTransform;
+        var cg = _shuffleMessage.GetComponent<CanvasGroup>();
+        if (cg == null)
+            cg = _shuffleMessage.gameObject.AddComponent<CanvasGroup>();
+
+        rt.localScale = Vector3.one * 0.75f;
+        cg.alpha = 0f;
+
+        DOTween.Sequence()
+            .Append(rt.DOScale(1f, 0.18f).SetEase(Ease.OutBack))
+            .Join(cg.DOFade(1f, 0.12f))
+            .AppendInterval(hold)
+            .Append(rt.DOScale(0.9f, 0.16f).SetEase(Ease.InBack))
+            .Join(cg.DOFade(0f, 0.16f))
+            .OnComplete(() =>
+            {
+                _shufflePopUp.gameObject.SetActive(false);
+                tcs.TrySetResult(true);
+            });
+
+        return tcs.Task;
+    }
+
+    public Task AnimateShuffle(Board board, float outDuration = 0.15f, float inDuration = 0.2f, float stagger = 0.002f)
+    {
+        if (board == null || _cells.Count == 0)
+            return Task.CompletedTask;
+
+        var tcs = new TaskCompletionSource<bool>();
+        var orderedCells = new List<CellView>();
+
+        foreach (var kvp in _cells)
+            orderedCells.Add(kvp.Value);
+
+        // Randomize order so the board doesn't disappear row-by-row every time
+        for (int i = orderedCells.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (orderedCells[i], orderedCells[j]) = (orderedCells[j], orderedCells[i]);
+        }
+
+        Sequence seq = DOTween.Sequence();
+
+        // OUT: shrink old animals away one by one
+        for (int i = 0; i < orderedCells.Count; i++)
+        {
+            var rt = orderedCells[i].ImageRect;
+            rt.DOKill();
+            rt.localScale = Vector3.one;
+
+            seq.Join(
+                rt.DOScale(0f, outDuration)
+                  .SetDelay(i * stagger)
+                  .SetEase(Ease.InBack)
+            );
+        }
+
+        // Swap sprites only after old board is fully hidden
+        seq.AppendCallback(() =>
+        {
+            AssignSprites(board);
+
+            for (int i = 0; i < orderedCells.Count; i++)
+            {
+                var rt = orderedCells[i].ImageRect;
+                rt.localScale = Vector3.zero;
+            }
+        });
+
+        // IN: pop new shuffled board back in one by one
+        for (int i = 0; i < orderedCells.Count; i++)
+        {
+            var rt = orderedCells[i].ImageRect;
+
+            seq.Join(
+                rt.DOScale(1f, inDuration)
+                  .SetDelay(i * stagger)
+                  .SetEase(Ease.OutBack)
+            );
+        }
+
+        seq.OnComplete(() =>
+        {
+            for (int i = 0; i < orderedCells.Count; i++)
+                orderedCells[i].ImageRect.localScale = Vector3.one;
+
+            tcs.TrySetResult(true);
+        });
+
+        seq.OnKill(() =>
+        {
+            for (int i = 0; i < orderedCells.Count; i++)
+                orderedCells[i].ImageRect.localScale = Vector3.one;
 
             tcs.TrySetResult(true);
         });

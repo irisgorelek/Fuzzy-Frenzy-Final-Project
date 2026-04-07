@@ -114,6 +114,66 @@ public class Board
         FixStartWolfSheepAdjacency(); // Make sure sheep don't appear next to wolves at the start of the level
     }
 
+    // =================================== TEST ======================================== //
+    public void InitializeStaticDeadBoard()
+    {
+        if (_allowedAnimals == null || _allowedAnimals.Count == 0)
+            throw new InvalidOperationException("Board has no allowed animals. Check BoardConfig.");
+
+        if (_width != 5 || _height != 5)
+            throw new InvalidOperationException("InitializeStaticDeadBoard supports only a 5x5 board.");
+
+        // Use only normal playable pieces
+        var pool = new List<Animal>();
+        foreach (var animal in _allowedAnimals)
+        {
+            if (animal == null) continue;
+            if (!animal._canSwap) continue;
+            if (!animal._canMatch) continue;
+
+            pool.Add(animal);
+        }
+
+        if (pool.Count < 5)
+            throw new InvalidOperationException("Need at least 5 swappable/matchable animals for this static dead board.");
+
+        // Pick 5 animals in a fixed order
+        Animal A = pool[0];
+        Animal B = pool[1];
+        Animal C = pool[2];
+        Animal D = pool[3];
+        Animal E = pool[4];
+
+        Animal[,] pattern = new Animal[5, 5]
+        {
+        { B, D, C, C, D },
+        { A, D, C, A, A },
+        { C, A, E, A, D },
+        { D, B, E, C, E },
+        { E, A, D, D, E }
+        };
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                _grid[x, y] = pattern[x, y];
+            }
+        }
+
+        // Safety validation
+        if (FindMatches().Count > 0)
+            throw new InvalidOperationException("Static dead board is invalid: it contains starting matches.");
+
+        var hintFinder = new BoardHintFinder();
+        if (hintFinder.TryFindHint(this, out var hint))
+            throw new InvalidOperationException(
+                $"Static dead board is invalid: found a legal move {hint.From} -> {hint.To}");
+    }
+
+    // ============================================================= //
+
+
     // Find matches on the board and return a list of matches found
     private List<Vector2Int> MatchesFound()
     {

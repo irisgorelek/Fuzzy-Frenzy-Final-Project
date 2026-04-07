@@ -14,6 +14,9 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
     [Header("On Screen Texts")]
     [SerializeField] private TextMeshProUGUI _amount;
 
+    [Header("Feedback")]
+    [SerializeField] private PowerUpButtonFeedback _feedback;
+
     private GameBootstrapper _bootstrapper;
 
     private void Awake()
@@ -46,6 +49,8 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
     {
         if (_board == null) return;
 
+        _feedback?.PlayPress();
+
         // Don't start it twice
         if (_board.IsTimerBombActive)
             return;
@@ -53,9 +58,15 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         // Check amount
         //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.TimerBomb, 1))
         if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.TimerBomb, 1))
+        {
+            RefreshAmount();
             return;
+        }
 
         RefreshAmount();
+
+        _feedback?.PlaySuccess();
+        _feedback?.PopAmount();
 
         // Start the power up
         _board.StartTimerBomb(_timerLength);
@@ -80,5 +91,8 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         //    _amount.text = count.ToString();
         int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.TimerBomb); // or Blast if you renamed
         _amount.text = count.ToString();
+
+        bool available = count > 0 && (_board == null || !_board.IsTimerBombActive);
+        _feedback?.SetAvailable(available);
     }
 }

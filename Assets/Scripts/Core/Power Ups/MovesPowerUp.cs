@@ -4,8 +4,12 @@ using UnityEngine.EventSystems;
 
 public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
 {
+    [Header("Config")]
     [SerializeField] private MoveCounter moves;
     [SerializeField] private TextMeshProUGUI _amount;
+
+    [Header("Feedback")]
+    [SerializeField] private PowerUpButtonFeedback _feedback;
 
     //[SerializeField] private ShopItemDefinition extraMoveItem;
 
@@ -39,7 +43,16 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (_bootstrapper == null) return;
+        if (_bootstrapper == null)
+            return;
+
+        _feedback?.PlayPress();
+
+        if (_bootstrapper.Economy.GetExtraMoveCount() == 0)
+        {
+            RefreshAmount();
+            return;
+        }
 
         if (!_bootstrapper.Economy.TryConsumeExtraMove(out int movesGranted))
         {
@@ -48,6 +61,10 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
         }
 
         moves.AddMoves(movesGranted);
+
+        _feedback?.PlaySuccess();
+        _feedback?.PopAmount();
+
         RefreshAmount();
     }
 
@@ -78,5 +95,7 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
     {
         int count = _bootstrapper.Economy.GetExtraMoveCount(); // or Blast if you renamed
         _amount.text = count.ToString();
+
+        _feedback?.SetAvailable(count > 0);
     }
 }

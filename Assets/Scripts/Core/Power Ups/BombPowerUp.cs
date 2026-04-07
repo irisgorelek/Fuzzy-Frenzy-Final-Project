@@ -1,7 +1,9 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 {
@@ -13,6 +15,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Vector3 _bombFxOffset;
     [SerializeField] private float _bombFxLifetime = 2f;
 
+    [Header("Selected Visuals")]
+    [SerializeField] private PowerUpButtonFeedback _feedback;
+
     private GameBootstrapper _bootstrapper;
 
     private bool _armed;
@@ -23,11 +28,6 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_bootstrapper == null)
             Debug.LogError("BombPowerUp: GameBootstrapper not found (should be DontDestroyOnLoad).");
     }
-
-    //private void Start()
-    //{
-    //    //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
-    //}
 
     private void OnEnable()
     {
@@ -55,13 +55,12 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_armed)
         {
             UnarmBomb();
-            ToggleHighlight(false);
+            _feedback?.SetSelected(false);
         }
-
         else
         {
             ArmBomb();
-            ToggleHighlight(true);
+            _feedback?.SetSelected(true);
         }
     }
 
@@ -88,14 +87,11 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void OnCellTapped(Vector2Int coord)
     {
-        if (!_armed) 
+        if (!_armed)
             return;
 
-        Debug.Log($"Clicked with bomb x: {coord.x}, y:{coord.y}");
-
         UnarmBomb();
-
-        ToggleHighlight(false);
+        _feedback?.SetSelected(false);
 
         TryUseBomb(coord);
     }
@@ -148,6 +144,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _powerUpChannel.RaiseEvent("bomb");
         //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
         RefreshAmount();
+
+        _feedback?.PlaySuccess();
+        _feedback?.PopAmount();
     }
 
     public void AddOneToCurrentAmount()
@@ -156,11 +155,6 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
         _bootstrapper.Economy.AddBooster(BoosterEffectType.FuzzyBlast, 1);
         RefreshAmount();
-    }
-
-    public void ToggleHighlight(bool toggle)
-    {
-        // TODO: Add highlight effect
     }
 
     private void RefreshAmount()

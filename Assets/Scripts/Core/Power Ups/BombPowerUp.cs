@@ -103,20 +103,20 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
             return;
 
-        if (_bombExplosionPrefab != null && _boardView != null)
-        {
-            Vector3 spawnPos = _boardView.GetCellWorldPosition(coord) + _bombFxOffset;
+        //if (_bombExplosionPrefab != null && _boardView != null)
+        //{
+        //    Vector3 spawnPos = _boardView.GetCellWorldPosition(coord) + _bombFxOffset;
 
-            var fx = Instantiate(
-                _bombExplosionPrefab,
-                spawnPos,
-                Quaternion.identity,
-                _boardView.GetFxParent()
-            );
+        //    var fx = Instantiate(
+        //        _bombExplosionPrefab,
+        //        spawnPos,
+        //        Quaternion.identity,
+        //        _boardView.GetFxParent()
+        //    );
 
-            fx.Play();
-            Destroy(fx.gameObject, _bombFxLifetime);
-        }
+        //    fx.Play();
+        //    Destroy(fx.gameObject, _bombFxLifetime);
+        //}
 
         var affected = new List<Vector2Int>(9);
 

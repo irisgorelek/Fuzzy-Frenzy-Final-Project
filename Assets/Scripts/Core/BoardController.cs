@@ -1,10 +1,6 @@
 using UnityEngine;
 using System.Threading.Tasks;
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using TMPro;
-using UnityEditor.Experimental.GraphView;
 
 public class BoardController : MonoBehaviour
 {
@@ -40,6 +36,7 @@ public class BoardController : MonoBehaviour
     public bool IsTimerBombActive { get; private set; }
     private float _timerBombEndTime;
     private bool _timerBombResolving;
+    public System.Action<bool> OnTimerBombStateChanged;
 
     public int GetWidth() => _cfg.weidth;
     public int GetHeight() => _cfg.height;
@@ -83,7 +80,7 @@ public class BoardController : MonoBehaviour
 
         UpdateTimerUI();
 
-        if (Time.time >= _timerBombEndTime)
+        if (Time.time >= _timerBombEndTime || AreAllGoalsComplete())
         {
             EndTimerBomb();
         }
@@ -130,7 +127,7 @@ public class BoardController : MonoBehaviour
 
         _moveCounter.InitializeMoves(_cfg.maxMoves);
 
-        _board.Initialize(); //============================TEST=======================//
+        _board.Initialize();
 
         //_blackSheepTriggered = false;
 
@@ -300,6 +297,8 @@ public class BoardController : MonoBehaviour
         _timerBombResolving = false;
         _timerBombEndTime = Time.time + durationSeconds;
 
+        OnTimerBombStateChanged?.Invoke(true);
+
         _view.SetTimerVisible(true);
         UpdateTimerUI();
 
@@ -314,6 +313,9 @@ public class BoardController : MonoBehaviour
     {
         _timerBombResolving = true;
         IsTimerBombActive = false;
+
+        OnTimerBombStateChanged?.Invoke(false);
+
 
         _view.SetTimerVisible(false);
 

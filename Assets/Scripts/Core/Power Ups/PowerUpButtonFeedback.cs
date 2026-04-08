@@ -101,7 +101,11 @@ public class PowerUpButtonFeedback : MonoBehaviour
             _iconImage.color = available ? _normalColor : _disabledColor;
 
         if (_canvasGroup != null)
+        {
             _canvasGroup.alpha = available ? 1f : 0.8f;
+            _canvasGroup.blocksRaycasts = available;
+            _canvasGroup.interactable = available;
+        }
     }
 
     public void PopAmount()

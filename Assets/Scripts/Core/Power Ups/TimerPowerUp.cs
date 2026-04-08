@@ -35,6 +35,10 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         if (_bootstrapper != null)
             _bootstrapper.Economy.OnChanged += RefreshAmount;
 
+
+        if (_board != null)
+            _board.OnTimerBombStateChanged += HandleTimerStateChanged;
+
         RefreshAmount();
     }
 
@@ -42,18 +46,34 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
     {
         if (_bootstrapper != null)
             _bootstrapper.Economy.OnChanged -= RefreshAmount;
+
+
+        if (_board != null)
+            _board.OnTimerBombStateChanged -= HandleTimerStateChanged;
+    }
+
+    private void HandleTimerStateChanged(bool active)
+    {
+        RefreshAmount();
     }
 
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (_board == null) return;
-
-        _feedback?.PlayPress();
+        if (_board == null) 
+            return;
 
         // Don't start it twice
         if (_board.IsTimerBombActive)
             return;
+
+        if (_bootstrapper.Economy.GetBoosterCount(BoosterEffectType.TimerBomb) <= 0)
+        {
+            RefreshAmount();
+            return;
+        }
+
+        _feedback?.PlayPress();
 
         // Check amount
         //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.TimerBomb, 1))
@@ -63,13 +83,12 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
             return;
         }
 
+        _board.StartTimerBomb(_timerLength);
+
         RefreshAmount();
 
         _feedback?.PlaySuccess();
         _feedback?.PopAmount();
-
-        // Start the power up
-        _board.StartTimerBomb(_timerLength);
     }
 
     public void AddOneToCurrentAmount()
@@ -78,11 +97,6 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         //_amount.text = SaveManager.Instance.GetCount(PowerUpType.TimerBomb).ToString();
         _bootstrapper.Economy.AddBooster(BoosterEffectType.TimerBomb, 1);
         RefreshAmount();
-    }
-
-    public void ToggleHighlight(bool toggle)
-    {
-        // TODO: Add highlight effect
     }
     private void RefreshAmount()
     {

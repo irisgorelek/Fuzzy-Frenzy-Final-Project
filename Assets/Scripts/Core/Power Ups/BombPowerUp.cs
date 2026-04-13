@@ -7,16 +7,23 @@ using UnityEngine.UI;
 
 public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 {
+    [Header("References")]
     [SerializeField] private BoardController _board;
     [SerializeField] private BoardView _boardView;
+
+    [Header("Saving")]
     [SerializeField] private TextMeshProUGUI _amount;
     [SerializeField] private PowerUpEventChannelSO _powerUpChannel;
-    [SerializeField] private ParticleSystem _bombExplosionPrefab;
-    [SerializeField] private Vector3 _bombFxOffset;
-    [SerializeField] private float _bombFxLifetime = 2f;
+
+    [Header("VFX")]
+    [SerializeField] private GameObject _bombExplosionPrefab;
 
     [Header("Selected Visuals")]
     [SerializeField] private PowerUpButtonFeedback _feedback;
+
+    [Header("Camera")]
+    [SerializeField] private Camera _worldCamera;
+    [SerializeField] private float _fxWorldZ = 0f;
 
     private GameBootstrapper _bootstrapper;
 
@@ -43,12 +50,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         if (_bootstrapper != null)
             _bootstrapper.Economy.OnChanged -= RefreshAmount;
-    }
-
-    //private void OnDisable()
-    //{
-    //    UnarmBomb();
-    //}
+    } 
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -98,25 +100,12 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public void TryUseBomb(Vector2Int coord)
     {
-        //if (!SaveManager.Instance.TryUsePowerUp(PowerUpType.Bomb, 1))
-        //    return;
         if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
             return;
 
-        //if (_bombExplosionPrefab != null && _boardView != null)
-        //{
-        //    Vector3 spawnPos = _boardView.GetCellWorldPosition(coord) + _bombFxOffset;
-
-        //    var fx = Instantiate(
-        //        _bombExplosionPrefab,
-        //        spawnPos,
-        //        Quaternion.identity,
-        //        _boardView.GetFxParent()
-        //    );
-
-        //    fx.Play();
-        //    Destroy(fx.gameObject, _bombFxLifetime);
-        //}
+        // Activate the bomb vfx
+        PlayBombFx(coord);
+        Debug.Log($"Bomb fx spawned at cell {coord}, visual pos {_boardView.GetCellWorldPosition(coord)}");
 
         var affected = new List<Vector2Int>(9);
 
@@ -142,11 +131,32 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         _board.TryRemoveCellsFromGrid(affected);
         _powerUpChannel.RaiseEvent("bomb");
-        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
         RefreshAmount();
 
         _feedback?.PlaySuccess();
         _feedback?.PopAmount();
+
+    }
+
+    private void PlayBombFx(Vector2Int coord)
+    {
+        if (_bombExplosionPrefab == null || _boardView == null || _worldCamera == null)
+            return;
+
+        Vector3 worldPoint = _boardView.GetCellScenePosition(coord, _worldCamera, _fxWorldZ);
+        GameObject fx = Instantiate(_bombExplosionPrefab, worldPoint, Quaternion.identity);
+
+        var ps = fx.GetComponentInChildren<ParticleSystem>();
+        if (ps != null)
+        {
+            ps.Play();
+            float lifetime = ps.main.duration + ps.main.startLifetime.constantMax;
+            Destroy(fx, lifetime);
+        }
+        else
+        {
+            Destroy(fx, 1.2f);
+        }
     }
 
     public void AddOneToCurrentAmount()

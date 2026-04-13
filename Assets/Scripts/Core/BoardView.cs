@@ -786,6 +786,22 @@ public class BoardView : MonoBehaviour
         return Vector3.zero;
     }
 
+    public Vector3 GetCellScenePosition(Vector2Int coord, Camera worldCamera, float worldZ = 0f)
+    {
+        if (!_cells.TryGetValue(coord, out var cell) || worldCamera == null)
+            return Vector3.zero;
+
+        Vector3 screenPoint = RectTransformUtility.WorldToScreenPoint(null, cell.ImageRect.position);
+
+        float camDistance = Mathf.Abs(worldCamera.transform.position.z - worldZ);
+        Vector3 worldPoint = worldCamera.ScreenToWorldPoint(
+            new Vector3(screenPoint.x, screenPoint.y, camDistance)
+        );
+
+        worldPoint.z = worldZ;
+        return worldPoint;
+    }
+
     public Transform GetFxParent()
     {
         return _swapOverlay != null ? _swapOverlay : transform;

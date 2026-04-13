@@ -64,6 +64,7 @@ public class BoardView : MonoBehaviour
     private bool _swipeCommitted;
     private Vector2Int _startCell;
     private Vector2 _startScreenPos;
+    private Vector2Int? _highlightedCell;
     private const float SwipeThresholdPixels = 45f;
 
     private readonly List<GoalRowView> _rows = new();
@@ -100,6 +101,7 @@ public class BoardView : MonoBehaviour
                 var go = Instantiate(_cell, _boardParent);
                 var cellView = go.GetComponent<CellView>();
                 cellView.Init(coord);
+                cellView.ConfigureHighlight(_selectedColor, _normalColor);
 
                 // Subscribe to raw input events
                 cellView.PointerDown += OnCellPointerDown;
@@ -187,15 +189,6 @@ public class BoardView : MonoBehaviour
             Destroy(_rows[i].gameObject);
         _rows.Clear();
     }
-    //public void SetPointsRow(int points, int goal, Sprite pointsIcon = null)
-    //{
-    //    ClearGoalRows();
-    //    _goal.text = "Goal:";
-
-    //    var row = Instantiate(_goalRowPrefab, _goalRowsParent);
-    //    row.Set(pointsIcon, $"Points: {points}/{goal}");
-    //    _rows.Add(row);
-    //}
     private void OnCellPointerDown(Vector2Int coord, Vector2 screenPos)
     {
         Debug.Log($"PointerDown on {coord}");
@@ -203,6 +196,8 @@ public class BoardView : MonoBehaviour
         _swipeCommitted = false;
         _startCell = coord;
         _startScreenPos = screenPos;
+
+        SetHighlightedCell(coord);
     }
 
     private void OnCellDrag(Vector2Int coord, Vector2 screenPos)
@@ -214,11 +209,11 @@ public class BoardView : MonoBehaviour
     {
         TryCommitSwipe(screenPos);
 
-        // If no swipe happened, treat it as a tap
         if (!_swipeCommitted)
             CellTapped?.Invoke(coord);
 
         _gestureActive = false;
+        ClearHighlightedCell();
     }
     private void TryCommitSwipe(Vector2 currentScreenPos)
     {
@@ -237,14 +232,15 @@ public class BoardView : MonoBehaviour
 
         var to = _startCell + dir;
 
-        _swipeCommitted = true; // Commit once per gesture
+        _swipeCommitted = true;
+        ClearHighlightedCell();
 
         if (!IsInBounds(to))
             return;
 
         SwapRequested?.Invoke(_startCell, to);
     }
-    
+
     private bool IsInBounds(Vector2Int cell)
     {
         return cell.x >= 0 && cell.x < _width && cell.y >= 0 && cell.y < _height;
@@ -956,5 +952,26 @@ public class BoardView : MonoBehaviour
     public Transform GetFxParent()
     {
         return _swapOverlay != null ? _swapOverlay : transform;
+    }
+    private void SetHighlightedCell(Vector2Int? coord)
+    {
+        if (_highlightedCell.HasValue &&
+            _cells.TryGetValue(_highlightedCell.Value, out var oldCell))
+        {
+            oldCell.SetHighlighted(false);
+        }
+
+        _highlightedCell = coord;
+
+        if (_highlightedCell.HasValue &&
+            _cells.TryGetValue(_highlightedCell.Value, out var newCell))
+        {
+            newCell.SetHighlighted(true);
+        }
+    }
+
+    private void ClearHighlightedCell()
+    {
+        SetHighlightedCell(null);
     }
 }

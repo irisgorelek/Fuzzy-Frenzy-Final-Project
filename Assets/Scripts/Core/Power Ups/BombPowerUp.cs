@@ -17,6 +17,11 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     [Header("VFX")]
     [SerializeField] private GameObject _bombExplosionPrefab;
+    [SerializeField] private GameObject _heldPowerUpPrefab;
+    [SerializeField] private RectTransform _armedVfxAnchor;
+    [SerializeField] private float _heldPowerUpWorldZ = 0f;
+    [SerializeField] private Vector3 _heldPowerUpWorldOffset = Vector3.zero;
+
 
     [Header("Selected Visuals")]
     [SerializeField] private PowerUpButtonFeedback _feedback;
@@ -28,10 +33,14 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     private GameBootstrapper _bootstrapper;
 
     private bool _armed;
+    private GameObject _armedHeldFxInstance;
+    private RectTransform _buttonRect;
 
     private void Awake()
     {
         _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _buttonRect = transform as RectTransform;
+
         if (_bootstrapper == null)
             Debug.LogError("BombPowerUp: GameBootstrapper not found (should be DontDestroyOnLoad).");
     }
@@ -73,7 +82,10 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _armed = true;
         _boardView.SwapsEnabled = false;
 
-        _boardView.CellTapped += OnCellTapped;  // subscribe
+        _boardView.CellTapped += OnCellTapped;
+
+        ShowArmedButtonVfx();
+
         Debug.Log("Armed bomb");
     }
     private void UnarmBomb()
@@ -83,7 +95,10 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _armed = false;
         _boardView.SwapsEnabled = true;
 
-        _boardView.CellTapped -= OnCellTapped;  // unsubscribe
+        _boardView.CellTapped -= OnCellTapped;
+
+        HideArmedButtonVfx();
+
         Debug.Log("Unarmed bomb");
     }
 
@@ -123,7 +138,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         await _boardView.AnimateBombWarning(coord, 1.5f);
 
-        PlayBombFx(coord); // Bomb vfx
+        PlayVFX(coord, _bombExplosionPrefab); // Bomb vfx
 
         if (AudioManager.instance != null)
         {
@@ -142,13 +157,13 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     }
 
-    private void PlayBombFx(Vector2Int coord)
+    private void PlayVFX(Vector2Int coord, GameObject vfx)
     {
-        if (_bombExplosionPrefab == null || _boardView == null || _worldCamera == null)
+        if (vfx == null || _boardView == null || _worldCamera == null)
             return;
 
         Vector3 worldPoint = _boardView.GetCellScenePosition(coord, _worldCamera, _fxWorldZ);
-        GameObject fx = Instantiate(_bombExplosionPrefab, worldPoint, Quaternion.identity);
+        GameObject fx = Instantiate(vfx, worldPoint, Quaternion.identity);
 
         var ps = fx.GetComponentInChildren<ParticleSystem>();
         if (ps != null)
@@ -173,6 +188,55 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     {
         int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast); // or Blast if you renamed
         _amount.text = count.ToString();
+    }
+
+    private void ShowArmedButtonVfx()
+    {
+        if (_heldPowerUpPrefab == null || _worldCamera == null || _buttonRect == null)
+            return;
+
+        RectTransform anchor = _armedVfxAnchor != null ? _armedVfxAnchor : transform as RectTransform;
+        if (anchor == null)
+            return;
+
+        Vector3 screenPoint = RectTransformUtility.WorldToScreenPoint(null, anchor.position);
+
+        float camDistance = Mathf.Abs(_worldCamera.transform.position.z - _heldPowerUpWorldZ);
+        Vector3 worldPoint = _worldCamera.ScreenToWorldPoint(
+            new Vector3(screenPoint.x, screenPoint.y, camDistance)
+        );
+
+        worldPoint.z = _heldPowerUpWorldZ;
+        worldPoint += _heldPowerUpWorldOffset;
+
+        _armedHeldFxInstance = Instantiate(_heldPowerUpPrefab, worldPoint, Quaternion.identity);
+
+        RestartParticleSystems(_armedHeldFxInstance);
+    }
+
+    private void HideArmedButtonVfx()
+    {
+        if (_armedHeldFxInstance == null)
+            return;
+
+        Destroy(_armedHeldFxInstance);
+        _armedHeldFxInstance = null;
+    }
+
+    private void RestartParticleSystems(GameObject fxRoot)
+    {
+        if (fxRoot == null)
+            return;
+
+        var systems = fxRoot.GetComponentsInChildren<ParticleSystem>(true);
+
+        for (int i = 0; i < systems.Length; i++)
+        {
+            var ps = systems[i];
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ps.Clear(true);
+            ps.Play(true);
+        }
     }
 
 }

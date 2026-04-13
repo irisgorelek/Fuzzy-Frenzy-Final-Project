@@ -90,7 +90,11 @@ public class BoardController : MonoBehaviour
     private void OnEnable()
     {
         if (_view != null)
+        {
             _view.SwapRequested += OnSwapRequested;
+            _view.CanStartSwap = CanStartSwapAt;
+        }
+
         if (_moveCounter != null && _view != null)
         {
             _moveCounter.OnMovesChanged += _view.SetMovesText;
@@ -108,7 +112,10 @@ public class BoardController : MonoBehaviour
     private void OnDisable()
     {
         if (_view != null)
+        {
             _view.SwapRequested -= OnSwapRequested;
+            _view.CanStartSwap = null;
+        }
 
         if (_moveCounter != null && _view != null)
             _moveCounter.OnMovesChanged -= _view.SetMovesText;
@@ -149,7 +156,13 @@ public class BoardController : MonoBehaviour
             return;
 
         if (!a._canSwap || !b._canSwap)
+        {
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(4); // can't swap sound
+
+            await _view.AnimateInvalidSwap(from, to);
             return;
+        }
 
         // Do if activated timer power up
         if (IsTimerBombActive)
@@ -179,14 +192,12 @@ public class BoardController : MonoBehaviour
 
         if (!_board.SwapCellsRaw(from, to))
         {
-            // Out of bounds / not neighbors
             _isBusy = false;
 
             if (AudioManager.instance != null)
-            {
-                AudioManager.instance.PlaySFX(4); // Play can't swap sound.
-            }
+                AudioManager.instance.PlaySFX(4);
 
+            await _view.AnimateInvalidSwap(from, to);
             return;
         }
 
@@ -523,7 +534,17 @@ public class BoardController : MonoBehaviour
 
         return primaryComplete && collectComplete;
     }
+    private bool CanStartSwapAt(Vector2Int coord)
+    {
+        if (_board == null)
+            return false;
 
+        if (coord.x < 0 || coord.x >= GetWidth() || coord.y < 0 || coord.y >= GetHeight())
+            return false;
+
+        var animal = _board.GetAnimalFromCell(coord);
+        return animal != null && animal._canSwap;
+    }
     private bool IsAnimal(Animal piece, Animal target)
     {
         return piece != null && target != null && piece._id == target._id;

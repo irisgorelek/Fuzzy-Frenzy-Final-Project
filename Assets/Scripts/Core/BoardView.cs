@@ -68,7 +68,7 @@ public class BoardView : MonoBehaviour
     private const float SwipeThresholdPixels = 45f;
 
     private readonly List<GoalRowView> _rows = new();
-
+    public Func<Vector2Int, bool> CanStartSwap;
 
     public void ShowGoal(bool show) => _goal.gameObject.SetActive(show);
 
@@ -191,7 +191,19 @@ public class BoardView : MonoBehaviour
     }
     private void OnCellPointerDown(Vector2Int coord, Vector2 screenPos)
     {
-        Debug.Log($"PointerDown on {coord}");
+        if (CanStartSwap != null && !CanStartSwap(coord))
+        {
+            ClearHighlightedCell();
+            _gestureActive = false;
+            _swipeCommitted = false;
+
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(4);
+
+            _ = AnimateInvalidSwap(coord);
+            return;
+        }
+
         _gestureActive = true;
         _swipeCommitted = false;
         _startCell = coord;
@@ -236,7 +248,13 @@ public class BoardView : MonoBehaviour
         ClearHighlightedCell();
 
         if (!IsInBounds(to))
+        {
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(4); // can't swap sound
+
+            _ = AnimateInvalidSwap(_startCell);
             return;
+        }
 
         SwapRequested?.Invoke(_startCell, to);
     }
@@ -952,6 +970,61 @@ public class BoardView : MonoBehaviour
     public Transform GetFxParent()
     {
         return _swapOverlay != null ? _swapOverlay : transform;
+    }
+
+    public Task AnimateInvalidSwap(Vector2Int a, Vector2Int? b = null, float duration = 0.22f)
+    {
+        var targets = new List<RectTransform>();
+
+        if (_cells.TryGetValue(a, out var aView))
+            targets.Add(aView.ImageRect);
+
+        if (b.HasValue && _cells.TryGetValue(b.Value, out var bView))
+            targets.Add(bView.ImageRect);
+
+        if (targets.Count == 0)
+            return Task.CompletedTask;
+
+        var tcs = new TaskCompletionSource<bool>();
+        int completed = 0;
+
+        foreach (var rt in targets)
+        {
+            rt.DOKill();
+
+            Vector2 startAnchoredPos = rt.anchoredPosition;
+            Vector3 startScale = rt.localScale;
+
+            Sequence seq = DOTween.Sequence();
+
+            // Small horizontal punch = "nope"
+            seq.Join(rt.DOPunchAnchorPos(new Vector2(18f, 0f), duration, 10, 0.9f));
+
+            // Tiny scale punch so it feels juicy
+            seq.Join(rt.DOPunchScale(Vector3.one * 0.06f, duration * 0.85f, 8, 0.7f));
+
+            seq.OnComplete(() =>
+            {
+                rt.anchoredPosition = startAnchoredPos;
+                rt.localScale = startScale;
+
+                completed++;
+                if (completed >= targets.Count)
+                    tcs.TrySetResult(true);
+            });
+
+            seq.OnKill(() =>
+            {
+                rt.anchoredPosition = startAnchoredPos;
+                rt.localScale = startScale;
+
+                completed++;
+                if (completed >= targets.Count)
+                    tcs.TrySetResult(true);
+            });
+        }
+
+        return tcs.Task;
     }
     private void SetHighlightedCell(Vector2Int? coord)
     {

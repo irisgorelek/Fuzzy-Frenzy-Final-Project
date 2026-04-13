@@ -98,21 +98,13 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         TryUseBomb(coord);
     }
 
-    public void TryUseBomb(Vector2Int coord)
+    public async void TryUseBomb(Vector2Int coord)
     {
         if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
             return;
 
-        // Activate the bomb vfx
-        PlayBombFx(coord);
-        Debug.Log($"Bomb fx spawned at cell {coord}, visual pos {_boardView.GetCellWorldPosition(coord)}");
-
+        _boardView.SwapsEnabled = false;
         var affected = new List<Vector2Int>(9);
-
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySFXPitchAdjusted(1, 0.5f); // Play swap sound.
-        }
 
         for (int dx = -1; dx <= 1; dx++)
         {
@@ -129,12 +121,24 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
             }
         }
 
+        await _boardView.AnimateBombWarning(coord, 1.5f);
+
+        PlayBombFx(coord); // Bomb vfx
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFXPitchAdjusted(1, 0.5f); // Play swap sound.
+        }
+
+        await _boardView.AnimateBombImpact(affected, 0.28f); // Bomb impact
+
         _board.TryRemoveCellsFromGrid(affected);
         _powerUpChannel.RaiseEvent("bomb");
         RefreshAmount();
 
         _feedback?.PlaySuccess();
         _feedback?.PopAmount();
+        _boardView.SwapsEnabled = true;
 
     }
 
@@ -161,8 +165,6 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public void AddOneToCurrentAmount()
     {
-        //SaveManager.Instance.Add(PowerUpType.Bomb);
-        //_amount.text = SaveManager.Instance.GetCount(PowerUpType.Bomb).ToString();
         _bootstrapper.Economy.AddBooster(BoosterEffectType.FuzzyBlast, 1);
         RefreshAmount();
     }

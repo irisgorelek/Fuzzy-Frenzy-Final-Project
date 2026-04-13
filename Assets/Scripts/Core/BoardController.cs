@@ -276,15 +276,21 @@ public class BoardController : MonoBehaviour
 
     public async void TryRemoveCellsFromGrid(List<Vector2Int> cells)
     {
-        for (int i = 0; i < cells.Count; i++)
-        {
-            TryRemoveCell(cells[i]);
-        }
+        if (cells == null || cells.Count == 0)
+            return;
 
-        _board.ApplyGravity();
-        _board.Refill();
+        var uniqueCells = new HashSet<Vector2Int>(cells);
 
-        _view.AssignSprites(_board);
+        foreach (var cell in uniqueCells)
+            TryRemoveCell(cell);
+
+        var fallMoves = new List<Board.FallMove>();
+        var spawns = new List<Board.SpawnInfo>();
+
+        _board.ApplyGravity(fallMoves);
+        _board.Refill(spawns);
+
+        await _view.AnimateGravity(fallMoves, spawns, _board, 0.1f);
 
         await ResolveCascadesAsync(10);
     }
@@ -351,7 +357,7 @@ public class BoardController : MonoBehaviour
         while (matches.Count > 0)
         {
             // Let the player see the current state before clearing
-            await WaitFrames(framesBetweenSteps);
+            //await WaitFrames(framesBetweenSteps); 
 
             // Animate the matches popping
             //await _view.AnimateMatchPop(matches, 0.12f);

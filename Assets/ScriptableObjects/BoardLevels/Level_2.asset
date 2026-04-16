@@ -27,4 +27,10 @@ MonoBehaviour:
   wolf: {fileID: 0}
   sheep: {fileID: 0}
   boneBlock: {fileID: 0}
-  vfxToggles: []
+  blackSheep: {fileID: 0}
+  blackSheepUnlockAfterMoves: 1
+  blackSheepRollChance: 0.2
+  vfxToggles:
+  - key: {fileID: 11400000, guid: d0102cabb8201d64a881f4f7c8b3d4a6, type: 2}
+    enabled: 0
+  songNumber: 0

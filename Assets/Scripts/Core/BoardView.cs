@@ -29,13 +29,19 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Image _backgroundImage; // 
 
 
-    [Header("On Screen Texts")]
+    [Header("Goal")]
     [SerializeField] private TextMeshProUGUI _goal;
-    [SerializeField] private TextMeshProUGUI _movesCountText;
-    [SerializeField] private TextMeshProUGUI _timerPowerUp;
-    [SerializeField] private Image _timerBackground;
     [SerializeField] private Transform _goalRowsParent;
     [SerializeField] private GoalRowView _goalRowPrefab;
+
+    [Header("Moves")]
+    [SerializeField] private TextMeshProUGUI _movesCountText;
+    [SerializeField] private Image _movesSprite;
+
+    [Header("Timer")]
+    [SerializeField] private TextMeshProUGUI _timerPowerUp;
+    [SerializeField] private Image _timerBackground;
+
 
     [Header("Match FX")]
     [SerializeField] private Sprite _matchRingSprite;     // Thin white circle/ring sprite

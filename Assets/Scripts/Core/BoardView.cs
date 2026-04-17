@@ -222,14 +222,16 @@ public class BoardView : MonoBehaviour
     {
         if (CanStartSwap != null && !CanStartSwap(coord))
         {
-            ClearHighlightedCell();
             _gestureActive = false;
             _swipeCommitted = false;
+
+            _startCell = coord;
+            _startScreenPos = screenPos;
 
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFX(4);
 
-            _ = AnimateInvalidSwap(coord);
+            _ = AnimateBlockedTap(coord);
             return;
         }
 
@@ -281,7 +283,7 @@ public class BoardView : MonoBehaviour
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFX(4); // can't swap sound
 
-            _ = AnimateInvalidSwap(_startCell);
+            _ = AnimateInvalidSwap(_startCell, null, dir);
             return;
         }
 
@@ -995,15 +997,15 @@ public class BoardView : MonoBehaviour
         return _swapOverlay != null ? _swapOverlay : transform;
     }
 
-    public Task AnimateInvalidSwap(Vector2Int a, Vector2Int? b = null, float duration = 0.22f)
+    public Task AnimateInvalidSwap(Vector2Int a, Vector2Int? b = null, Vector2Int? dir = null, float duration = 0.20f)
     {
-        var targets = new List<RectTransform>();
+        var targets = new List<(RectTransform rt, bool isPrimary)>();
 
         if (_cells.TryGetValue(a, out var aView))
-            targets.Add(aView.ImageRect);
+            targets.Add((aView.ImageRect, true));
 
         if (b.HasValue && _cells.TryGetValue(b.Value, out var bView))
-            targets.Add(bView.ImageRect);
+            targets.Add((bView.ImageRect, false));
 
         if (targets.Count == 0)
             return Task.CompletedTask;
@@ -1011,24 +1013,35 @@ public class BoardView : MonoBehaviour
         var tcs = new TaskCompletionSource<bool>();
         int completed = 0;
 
-        foreach (var rt in targets)
+        // Board direction -> UI direction
+        // x stays the same
+        // y is inverted because your board coordinates go downward
+        Vector2 primaryOffset = dir.HasValue
+            ? new Vector2(dir.Value.x, -dir.Value.y) * 16f
+            : new Vector2(18f, 0f); // fallback if no direction known
+
+        Vector2 secondaryOffset = -primaryOffset * 0.65f;
+
+        foreach (var target in targets)
         {
+            var rt = target.rt;
             rt.DOKill();
 
-            Vector2 startAnchoredPos = rt.anchoredPosition;
+            Vector2 startPos = rt.anchoredPosition;
             Vector3 startScale = rt.localScale;
 
+            Vector2 moveOffset = target.isPrimary ? primaryOffset : secondaryOffset;
+
             Sequence seq = DOTween.Sequence();
+            seq.Append(rt.DOAnchorPos(startPos + moveOffset, duration * 0.28f).SetEase(Ease.OutQuad));
+            seq.Join(rt.DOScale(startScale * 1.04f, duration * 0.20f).SetEase(Ease.OutQuad));
 
-            // Small horizontal punch = "nope"
-            seq.Join(rt.DOPunchAnchorPos(new Vector2(18f, 0f), duration, 10, 0.9f));
-
-            // Tiny scale punch so it feels juicy
-            seq.Join(rt.DOPunchScale(Vector3.one * 0.06f, duration * 0.85f, 8, 0.7f));
+            seq.Append(rt.DOAnchorPos(startPos, duration * 0.72f).SetEase(Ease.OutBack));
+            seq.Join(rt.DOScale(startScale, duration * 0.60f).SetEase(Ease.OutQuad));
 
             seq.OnComplete(() =>
             {
-                rt.anchoredPosition = startAnchoredPos;
+                rt.anchoredPosition = startPos;
                 rt.localScale = startScale;
 
                 completed++;
@@ -1038,7 +1051,7 @@ public class BoardView : MonoBehaviour
 
             seq.OnKill(() =>
             {
-                rt.anchoredPosition = startAnchoredPos;
+                rt.anchoredPosition = startPos;
                 rt.localScale = startScale;
 
                 completed++;
@@ -1046,6 +1059,46 @@ public class BoardView : MonoBehaviour
                     tcs.TrySetResult(true);
             });
         }
+
+        return tcs.Task;
+    }
+
+    public Task AnimateBlockedTap(Vector2Int cell, float duration = 0.12f)
+    {
+        if (!_cells.TryGetValue(cell, out var cv))
+            return Task.CompletedTask;
+
+        var tcs = new TaskCompletionSource<bool>();
+
+        RectTransform rt = cv.ImageRect;
+        Image img = cv.CellImage;
+
+        rt.DOKill();
+        img.DOKill();
+
+        Vector3 startScale = rt.localScale;
+        Color startColor = img.color;
+        Color flashColor = Color.Lerp(startColor, new Color(1f, 0.8f, 0.8f, 1f), 0.35f);
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(rt.DOScale(startScale * 0.94f, duration * 0.35f).SetEase(Ease.OutQuad));
+        seq.Join(img.DOColor(flashColor, duration * 0.35f));
+        seq.Append(rt.DOScale(startScale, duration * 0.65f).SetEase(Ease.OutBack));
+        seq.Join(img.DOColor(startColor, duration * 0.65f));
+
+        seq.OnComplete(() =>
+        {
+            rt.localScale = startScale;
+            img.color = startColor;
+            tcs.TrySetResult(true);
+        });
+
+        seq.OnKill(() =>
+        {
+            rt.localScale = startScale;
+            img.color = startColor;
+            tcs.TrySetResult(true);
+        });
 
         return tcs.Task;
     }

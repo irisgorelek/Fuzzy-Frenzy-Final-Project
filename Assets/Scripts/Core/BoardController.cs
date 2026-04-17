@@ -161,7 +161,7 @@ public class BoardController : MonoBehaviour
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFX(4); // can't swap sound
 
-            await _view.AnimateInvalidSwap(from, to);
+            await _view.AnimateInvalidSwap(from, to, to - from);
             return;
         }
 
@@ -198,7 +198,7 @@ public class BoardController : MonoBehaviour
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFX(4);
 
-            await _view.AnimateInvalidSwap(from, to);
+            await _view.AnimateInvalidSwap(from, to, to - from);
             return;
         }
 

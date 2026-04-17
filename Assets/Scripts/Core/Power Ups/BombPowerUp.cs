@@ -78,11 +78,15 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void ArmBomb()
     {
-        if (_armed) return;
+        if (_armed || _bootstrapper == null)
+            return;
+
+        int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast);
+        if (count <= 0)
+            return;
 
         _armed = true;
         _boardView.SwapsEnabled = false;
-
         _boardView.CellTapped += OnCellTapped;
 
         ShowArmedButtonVfx();
@@ -187,8 +191,13 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void RefreshAmount()
     {
-        int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast); // or Blast if you renamed
+        if (_bootstrapper == null)
+            return;
+
+        int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast);
         _amount.text = count.ToString();
+
+        _feedback?.SetAvailable(count > 0);
     }
 
     private void ShowArmedButtonVfx()

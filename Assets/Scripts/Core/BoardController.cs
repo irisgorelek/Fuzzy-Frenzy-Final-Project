@@ -293,17 +293,13 @@ public class BoardController : MonoBehaviour
 
         var uniqueCells = new HashSet<Vector2Int>(cells);
 
-        foreach (var cell in uniqueCells)
-            TryRemoveCell(cell);
-
         var fallMoves = new List<Board.FallMove>();
         var spawns = new List<Board.SpawnInfo>();
 
-        _board.ApplyGravity(fallMoves);
-        _board.Refill(spawns);
+        _board.ClearCells(uniqueCells, fallMoves, spawns);
+        UpdateGoalUI();
 
         await _view.AnimateGravity(fallMoves, spawns, _board, 0.1f);
-
         await ResolveCascadesAsync(10);
     }
 
@@ -349,18 +345,6 @@ public class BoardController : MonoBehaviour
         _isBusy = false;
         _view.SwapsEnabled = true;
         _timerBombResolving = false;
-    }
-
-    private void TryRemoveCell(Vector2Int cell)
-    {
-        if (!_board.IsCellInBounds(cell))
-        {
-            Debug.Log($"The cell [x:{cell.x}, y: {cell.y}] is not in bounds, couldn't remove");
-            return;
-        }
-
-        _board.ClearGridCell(cell);
-        UpdateGoalUI();
     }
 
     private async Task ResolveCascadesAsync(int framesBetweenSteps)

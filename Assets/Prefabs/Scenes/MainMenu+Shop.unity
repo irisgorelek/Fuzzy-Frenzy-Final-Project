@@ -13223,7 +13223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::LevelSelectUI
   allLevels: {fileID: 11400000, guid: 9567066a3c289c54a9a420eb7e66cea4, type: 2}
-  content: {fileID: 7632130232870221928}
+  content: {fileID: 1645317009}
   levelButtonPrefab: {fileID: 2089110886871924851, guid: 5a2afc1914df67a48ba00c9e454aa423, type: 3}
 --- !u!114 &1827790211 stripped
 MonoBehaviour:
@@ -16390,11 +16390,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2097672087}
   m_SourcePrefab: {fileID: 100100000, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
---- !u!224 &7632130232870221928 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7277106092954710663, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
-  m_PrefabInstance: {fileID: 7632130232870221927}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7660678522531074748
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -16,14 +16,13 @@ MonoBehaviour:
   weidth: 5
   height: 5
   maxMoves: 5
-  goalType: 0
-  goal: 20
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
   - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
   - {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
   - {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
-  - {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+  goalType: 0
+  goal: 20
   collectGoals: []
   wolf: {fileID: 0}
   sheep: {fileID: 0}

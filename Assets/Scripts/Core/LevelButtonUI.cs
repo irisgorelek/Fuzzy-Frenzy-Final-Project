@@ -9,6 +9,9 @@ public class LevelButtonUI : MonoBehaviour
     [SerializeField] private GameObject lockIcon;
     [SerializeField] private Button button;
 
+    [Header("Stars")]
+    [SerializeField] private Transform stars;
+
     public void SetData(int levelNumber, bool unlocked, Action onClick)
     {
         levelNumberText.text = levelNumber.ToString();

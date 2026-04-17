@@ -16,6 +16,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     [SerializeField] private PowerUpEventChannelSO _powerUpChannel;
 
     [Header("VFX")]
+    [SerializeField] private Transform _bombParent;
     [SerializeField] private GameObject _bombExplosionPrefab;
     [SerializeField] private GameObject _heldPowerUpPrefab;
     [SerializeField] private RectTransform _armedVfxAnchor;
@@ -164,7 +165,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         Vector3 worldPoint = _boardView.GetCellScenePosition(coord, _worldCamera, _fxWorldZ);
         GameObject fx = Instantiate(vfx, worldPoint, Quaternion.identity);
-
+        fx.transform.SetParent(_bombParent, true);
         var ps = fx.GetComponentInChildren<ParticleSystem>();
         if (ps != null)
         {

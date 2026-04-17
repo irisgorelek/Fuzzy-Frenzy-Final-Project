@@ -50,13 +50,43 @@ public class AudioManager : MonoBehaviour
 
     public void SetMusicOn(bool on)
     {
-        if (on == true) Debug.Log("Unmuted Music");
-        else Debug.Log("Muted Music");
+        Debug.Log(on ? "Unmuted Music" : "Muted Music");
 
         MusicOn = on;
         PlayerPrefs.SetInt(MusicPref, on ? 1 : 0);
         PlayerPrefs.Save();
-        ApplyMusicMute();
+
+        _musicFadeCts?.Cancel();
+        _musicFadeCts?.Dispose();
+        _musicFadeCts = null;
+
+        AudioSource current = GetCurrentMusic() ?? _currentMusic;
+
+        foreach (var src in GetAllMusicSources())
+        {
+            if (!src) continue;
+
+            src.mute = !MusicOn;
+
+            if (!MusicOn)
+            {
+                src.volume = 0f;
+            }
+            else
+            {
+                if (src == current)
+                {
+                    if (!src.isPlaying)
+                        src.Play();
+
+                    src.volume = _musicTargetVolume;
+                }
+                else
+                {
+                    src.volume = 0f;
+                }
+            }
+        }
     }
 
     public void SetSfxOn(bool on)
@@ -132,7 +162,13 @@ public class AudioManager : MonoBehaviour
     private void CrossFadeMusic(AudioSource next)
     {
         if (next == null) return;
-        if (_currentMusic == next && next.isPlaying) return;
+
+        if (_currentMusic == next && next.isPlaying)
+        {
+            next.mute = !MusicOn;
+            next.volume = MusicOn ? _musicTargetVolume : 0f;
+            return;
+        }
 
         _musicFadeCts?.Cancel();
         _musicFadeCts?.Dispose();
@@ -182,5 +218,18 @@ public class AudioManager : MonoBehaviour
             if (bg && bg.isPlaying) return bg;
 
         return null;
+    }
+    private AudioSource[] GetAllMusicSources()
+    {
+        int bgCount = _bg != null ? _bg.Length : 0;
+        AudioSource[] all = new AudioSource[2 + bgCount];
+
+        all[0] = _titleMusic;
+        all[1] = _timerMusic;
+
+        for (int i = 0; i < bgCount; i++)
+            all[2 + i] = _bg[i];
+
+        return all;
     }
 }

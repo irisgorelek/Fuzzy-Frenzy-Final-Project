@@ -452,17 +452,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &90662922 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1933459087064051970, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
-  m_PrefabInstance: {fileID: 8595134982853529129}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ecc24ebf0eaf3245b5e883f4d3217a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FunzzyFrenzy.core::AudioManager
 --- !u!1 &100496506
 GameObject:
   m_ObjectHideFlags: 0
@@ -3730,6 +3719,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2030948093105650950, guid: cf59a23d83767044687d37d85fcf9ddc, type: 3}
   m_PrefabInstance: {fileID: 489184897}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &495885449 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4413458595377122481, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
+  m_PrefabInstance: {fileID: 4625739440514961876}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &505588161
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4746,12 +4740,26 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
   m_PrefabInstance: {fileID: 4625739440514961876}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 495885449}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+--- !u!114 &771510856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495885449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 890b30955a97bfa4a80ac69a24b8a832, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::MusicToggleBinder
+  _toggle: {fileID: 771510854}
+  _toggleMeansMuted: 1
 --- !u!1001 &814716836
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6725,6 +6733,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1028653838}
   m_CullTransparentMesh: 1
+--- !u!1 &1053038870 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4450584851566208250, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
+  m_PrefabInstance: {fileID: 4625739440514961876}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1063162901
 GameObject:
   m_ObjectHideFlags: 0
@@ -9905,12 +9918,26 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
   m_PrefabInstance: {fileID: 4625739440514961876}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1053038870}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+--- !u!114 &1489862964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053038870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 363f1e4025dbb254f8194f603146f7a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::SFXToggleBinder
+  _toggle: {fileID: 1489862962}
+  _toggleMeansMuted: 1
 --- !u!1001 &1530252161
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15295,11 +15322,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
@@ -15308,7 +15335,7 @@ PrefabInstance:
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 90662922}
+      objectReference: {fileID: 1648844920}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -15323,7 +15350,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetSfxMuted
+      value: PlayButtonSound
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -15331,11 +15358,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: AudioManager, FunzzyFrenzy.core
+      value: MainMenuButtons, FunzzyFrenzy.core
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: MainMenuButtons, FunzzyFrenzy.core
+      objectReference: {fileID: 0}
+    - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 2968420423057138189, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
@@ -15367,19 +15398,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4822565869839012275, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4822565869839012275, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4822565869839012275, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 531.4681
       objectReference: {fileID: 0}
     - target: {fileID: 4822565869839012275, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -147.0765
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_IsOn
@@ -15387,11 +15418,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
@@ -15400,7 +15431,7 @@ PrefabInstance:
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 90662922}
+      objectReference: {fileID: 1648844920}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -15415,7 +15446,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetMusicMuted
+      value: PlayButtonSound
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -15423,11 +15454,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: AudioManager, FunzzyFrenzy.core
+      value: MainMenuButtons, FunzzyFrenzy.core
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: MainMenuButtons, FunzzyFrenzy.core
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5357066777957019300, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
@@ -15451,19 +15486,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5765089560256583104, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5765089560256583104, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5765089560256583104, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 177.15602
       objectReference: {fileID: 0}
     - target: {fileID: 5765089560256583104, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -147.0765
       objectReference: {fileID: 0}
     - target: {fileID: 7482381874203287637, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -15550,6 +15585,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7083401376341838322, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 401380900}
+    - targetCorrespondingSourceObject: {fileID: 4450584851566208250, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1489862964}
+    - targetCorrespondingSourceObject: {fileID: 4413458595377122481, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 771510856}
   m_SourcePrefab: {fileID: 100100000, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
 --- !u!1001 &6148667276057263408
 PrefabInstance:

@@ -9,9 +9,14 @@ public class GoalRowView : MonoBehaviour
 
     public void Set(Sprite icon, string text, Color color)
     {
-        _icon.sprite = icon;
-        _icon.color = color;
-        _icon.enabled = icon != null; // hide icon if null (useful for points)
-        _text.text = text;
+        if (_icon != null)
+        {
+            _icon.sprite = icon;
+            _icon.color = color;
+            _icon.enabled = icon != null;
+        }
+
+        if (_text != null)
+            _text.text = text;
     }
 }

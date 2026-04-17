@@ -871,4 +871,56 @@ public class Board
 
         return false;
     }
+
+    public void ClearCells(IEnumerable<Vector2Int> cells, List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
+    {
+        if (cells == null)
+            return;
+
+        var uniqueCells = new HashSet<Vector2Int>(cells);
+        var destroyedByAnimal = new Dictionary<string, int>();
+        var clearedCells = new List<Vector2Int>();
+        int pointsGainedThisClear = 0;
+
+        foreach (var cell in uniqueCells)
+        {
+            if (!IsCellInBounds(cell))
+                continue;
+
+            var a = _grid[cell.x, cell.y];
+            if (a == null)
+                continue;
+
+            // don't count / clear bone blocks
+            if (_boneBlock != null && a == _boneBlock)
+                continue;
+
+            _points += a._points;
+            pointsGainedThisClear += a._points;
+            _matchedAnimals++;
+
+            if (!string.IsNullOrEmpty(a._id))
+            {
+                if (destroyedByAnimal.ContainsKey(a._id))
+                    destroyedByAnimal[a._id]++;
+                else
+                    destroyedByAnimal[a._id] = 1;
+            }
+
+            _grid[cell.x, cell.y] = null;
+            clearedCells.Add(cell);
+        }
+
+        DamageAdjacentBoneBlocks(clearedCells);
+
+        if (pointsGainedThisClear > 0)
+            OnScoreAdded?.Invoke(pointsGainedThisClear);
+
+        foreach (var kvp in destroyedByAnimal)
+            OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
+
+        ApplyGravity(fallMoves);
+        Refill(spawns);
+        ResolveWolfSheepInteractions(fallMoves, spawns);
+    }
 }

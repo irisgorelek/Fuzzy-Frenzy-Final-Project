@@ -26,13 +26,13 @@ public class BoardView : MonoBehaviour
 
     [Header("Art")]
     [SerializeField] private Sprite _defaultSprite;  // For null animals
-    [SerializeField] private Image _backgroundImage; // 
+    [SerializeField] private Image _backgroundImage;
 
 
     [Header("Goal")]
-    [SerializeField] private TextMeshProUGUI _goal;
     [SerializeField] private Transform _goalRowsParent;
-    [SerializeField] private GoalRowView _goalRowPrefab;
+    [SerializeField] private GoalRowView _animalGoalRowPrefab;
+    [SerializeField] private GoalRowView _primaryGoalRowPrefab;
 
     [Header("Moves")]
     [SerializeField] private TextMeshProUGUI _movesCountText;
@@ -176,21 +176,19 @@ public class BoardView : MonoBehaviour
     }
     public void ShowGoal(bool show)
     {
-        if (_goal != null)
-            _goal.gameObject.SetActive(false); // legacy text no longer used
-
         if (_goalRowsParent != null)
             _goalRowsParent.gameObject.SetActive(show);
     }
     public void SetScore(int points, int totalPoints)
     {
         ClearGoalRows();
-        AddGoalRow(null, $"Points: {points}/{totalPoints}", Color.white);
+        AddPrimaryGoalRow($"Points: {points}/{totalPoints}");
     }
     public void SetMatchedAnimals(int animals, int goal)
     {
         ClearGoalRows();
-        AddGoalRow(null, $"Matches: {animals}/{goal}", Color.white);
+        int remaining = Mathf.Max(0, goal - animals);
+        AddPrimaryGoalRow($"Matches: {remaining}");
     }
     public void SetCollectGoals(List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
@@ -203,14 +201,9 @@ public class BoardView : MonoBehaviour
 
             collected.TryGetValue(g.animal._id, out int have);
             int remaining = Mathf.Max(0, g.amount - have);
-            AddGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
+
+            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
         }
-    }
-    private void AddGoalRow(Sprite icon, string text, Color color)
-    {
-        var row = Instantiate(_goalRowPrefab, _goalRowsParent);
-        row.Set(icon, text, color);
-        _rows.Add(row);
     }
     private void ClearGoalRows()
     {
@@ -378,21 +371,41 @@ public class BoardView : MonoBehaviour
 
     // For level 10
     public void SetPointsAndCollectGoals(int points, int pointsGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
-{
-    ClearGoalRows();
-
-    AddGoalRow(null, $"Points: {points}/{pointsGoal}", Color.white);
-
-    foreach (var g in goals)
     {
-        if (g.animal == null) 
-            continue;
+        ClearGoalRows();
 
-        collected.TryGetValue(g.animal._id, out int have);
-        int remaining = Mathf.Max(0, g.amount - have);
-        AddGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
+        AddPrimaryGoalRow($"Points: {points}/{pointsGoal}");
+
+        foreach (var g in goals)
+        {
+            if (g.animal == null)
+                continue;
+
+            collected.TryGetValue(g.animal._id, out int have);
+            int remaining = Mathf.Max(0, g.amount - have);
+
+            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
+        }
     }
-}
+
+    public void SetMatchesAndCollectGoals(int matched, int matchGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
+    {
+        ClearGoalRows();
+
+        int remainingMatches = Mathf.Max(0, matchGoal - matched);
+        AddPrimaryGoalRow(remainingMatches.ToString());
+
+        foreach (var g in goals)
+        {
+            if (g.animal == null)
+                continue;
+
+            collected.TryGetValue(g.animal._id, out int have);
+            int remaining = Mathf.Max(0, g.amount - have);
+
+            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
+        }
+    }
 
     // Animate the gravity 
     public Task AnimateGravity(List<Board.FallMove> moves, List<Board.SpawnInfo> spawns, Board board, float duration = 0.20f)
@@ -1122,5 +1135,24 @@ public class BoardView : MonoBehaviour
     private void ClearHighlightedCell()
     {
         SetHighlightedCell(null);
+    }
+    private void AddGoalRow(GoalRowView prefab, Sprite icon, string text, Color color)
+    {
+        if (prefab == null || _goalRowsParent == null)
+            return;
+
+        var row = Instantiate(prefab, _goalRowsParent);
+        row.Set(icon, text, color);
+        _rows.Add(row);
+    }
+
+    private void AddPrimaryGoalRow(string text)
+    {
+        AddGoalRow(_primaryGoalRowPrefab, null, text, Color.white);
+    }
+
+    private void AddAnimalGoalRow(Sprite icon, string text, Color color)
+    {
+        AddGoalRow(_animalGoalRowPrefab, icon, text, color);
     }
 }

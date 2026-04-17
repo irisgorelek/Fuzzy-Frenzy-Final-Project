@@ -24,8 +24,10 @@ public class BoardView : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private RectTransform _swapOverlay;
 
-    [Header("Sprite")]
-    [SerializeField] private Sprite _defaultSprite; // For null animals
+    [Header("Art")]
+    [SerializeField] private Sprite _defaultSprite;  // For null animals
+    [SerializeField] private Image _backgroundImage; // 
+
 
     [Header("On Screen Texts")]
     [SerializeField] private TextMeshProUGUI _goal;
@@ -70,7 +72,7 @@ public class BoardView : MonoBehaviour
     private readonly List<GoalRowView> _rows = new();
     public Func<Vector2Int, bool> CanStartSwap;
 
-    public void ShowGoal(bool show) => _goal.gameObject.SetActive(show);
+    //public void ShowMoves(bool show) => _movesCountText.gameObject.SetActive(show);
 
     public void Build(int width, int height)
     {
@@ -134,6 +136,17 @@ public class BoardView : MonoBehaviour
             }
         }
     }
+    public void SetBackground(Sprite backgroundSprite)
+    {
+        if (_backgroundImage == null)
+        {
+            Debug.LogWarning("BoardView: background image is missing.");
+            return;
+        }
+
+        _backgroundImage.sprite = backgroundSprite;
+        //_backgroundImage.preserveAspect = true;
+    }
     public void SwapCellVisuals(Vector2Int a, Vector2Int b)
     {
         if (!_cells.ContainsKey(a) || !_cells.ContainsKey(b))
@@ -155,33 +168,43 @@ public class BoardView : MonoBehaviour
         bView.SetSprite(aSprite, aColor);
         Debug.Log($"After:  A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
     }
+    public void ShowGoal(bool show)
+    {
+        if (_goal != null)
+            _goal.gameObject.SetActive(false); // legacy text no longer used
+
+        if (_goalRowsParent != null)
+            _goalRowsParent.gameObject.SetActive(show);
+    }
     public void SetScore(int points, int totalPoints)
     {
         ClearGoalRows();
-        Debug.LogWarning($"Set Score: {points} / {totalPoints}");
-        _goal.text = $"Points: {points} / {totalPoints}";
+        AddGoalRow(null, $"Points: {points}/{totalPoints}", Color.white);
     }
     public void SetMatchedAnimals(int animals, int goal)
     {
         ClearGoalRows();
-        Debug.LogWarning($"Set Score: {animals} / {goal}");
-        _goal.text = $"Matched: {animals} / {goal}";
+        AddGoalRow(null, $"Matches: {animals}/{goal}", Color.white);
     }
     public void SetCollectGoals(List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
         ClearGoalRows();
-        //_goal.text = "Collect:"; // header
 
         foreach (var g in goals)
         {
-            if (g.animal == null) continue;
+            if (g.animal == null)
+                continue;
 
             collected.TryGetValue(g.animal._id, out int have);
-
-            var row = Instantiate(_goalRowPrefab, _goalRowsParent);
-            row.Set(g.animal._sprite, $"{have}/{g.amount}".Trim() , g.animal.color);
-            _rows.Add(row);
+            int remaining = Mathf.Max(0, g.amount - have);
+            AddGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
         }
+    }
+    private void AddGoalRow(Sprite icon, string text, Color color)
+    {
+        var row = Instantiate(_goalRowPrefab, _goalRowsParent);
+        row.Set(icon, text, color);
+        _rows.Add(row);
     }
     private void ClearGoalRows()
     {
@@ -347,27 +370,21 @@ public class BoardView : MonoBehaviour
 
     // For level 10
     public void SetPointsAndCollectGoals(int points, int pointsGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
+{
+    ClearGoalRows();
+
+    AddGoalRow(null, $"Points: {points}/{pointsGoal}", Color.white);
+
+    foreach (var g in goals)
     {
-        ClearGoalRows();
-        Destroy(_goal.transform.parent.gameObject);
+        if (g.animal == null) 
+            continue;
 
-        // Points row (no icon)
-        var pointsRow = Instantiate(_goalRowPrefab, _goalRowsParent);
-        pointsRow.Set(null, $"Points: {points}/{pointsGoal}", Color.white);
-        _rows.Add(pointsRow);
-
-        // Collect rows
-        foreach (var g in goals)
-        {
-            if (g.animal == null) continue;
-
-            collected.TryGetValue(g.animal._id, out int have);
-
-            var row = Instantiate(_goalRowPrefab, _goalRowsParent);
-            row.Set(g.animal._sprite, $"{g.animal._id}: {have}/{g.amount}", g.animal.color);
-            _rows.Add(row);
-        }
+        collected.TryGetValue(g.animal._id, out int have);
+        int remaining = Mathf.Max(0, g.amount - have);
+        AddGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
     }
+}
 
     // Animate the gravity 
     public Task AnimateGravity(List<Board.FallMove> moves, List<Board.SpawnInfo> spawns, Board board, float duration = 0.20f)

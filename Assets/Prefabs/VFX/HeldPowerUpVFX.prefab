@@ -60,6 +60,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ef_Circle
       objectReference: {fileID: 0}
+    - target: {fileID: 1474042478047290484, guid: 2adc5596c555855469131b408d95ca71, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474042478047290484, guid: 2adc5596c555855469131b408d95ca71, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474042478047290484, guid: 2adc5596c555855469131b408d95ca71, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474042478047290484, guid: 2adc5596c555855469131b408d95ca71, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 2102872033
+      objectReference: {fileID: 0}
     - target: {fileID: 4652594878895582349, guid: 2adc5596c555855469131b408d95ca71, type: 3}
       propertyPath: prewarm
       value: 1

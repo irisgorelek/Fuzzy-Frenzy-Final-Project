@@ -11,6 +11,7 @@ TagManager:
   - 
   - Water
   - UI
+  - VFX
   - 
   - 
   - 
@@ -35,8 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Background
   m_SortingLayers:
   - name: Background
     uniqueID: 36172913
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 2722425371
+    locked: 0
+  - name: VFX
+    uniqueID: 2102872033
     locked: 0
   m_RenderingLayers:
   - Default

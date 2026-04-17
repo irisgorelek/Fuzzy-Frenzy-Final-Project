@@ -13210,6 +13210,21 @@ MonoBehaviour:
   hideDuration: 0.18
   hideScaleTo: 0.85
   hideEase: 5
+--- !u!114 &1822427990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624104448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98f0d6da248b02e42b5f8342b9f3003c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::LevelSelectUI
+  allLevels: {fileID: 11400000, guid: 9567066a3c289c54a9a420eb7e66cea4, type: 2}
+  content: {fileID: 7632130232870221928}
+  levelButtonPrefab: {fileID: 2089110886871924851, guid: 5a2afc1914df67a48ba00c9e454aa423, type: 3}
 --- !u!114 &1827790211 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 468801748936383624, guid: d6e97c57dc000794a8fb69f8581292b2, type: 3}
@@ -16368,10 +16383,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 132720009244523047, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1822427988}
+    - targetCorrespondingSourceObject: {fileID: 132720009244523047, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1822427990}
     - targetCorrespondingSourceObject: {fileID: 2258874474356614250, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2097672087}
   m_SourcePrefab: {fileID: 100100000, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
+--- !u!224 &7632130232870221928 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7277106092954710663, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
+  m_PrefabInstance: {fileID: 7632130232870221927}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7660678522531074748
 PrefabInstance:
   m_ObjectHideFlags: 0

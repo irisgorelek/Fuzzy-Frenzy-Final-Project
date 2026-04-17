@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum PointsOrMatches { points, matches, collectAnimals }
 public enum SongName { happy, chilly }
@@ -15,16 +16,17 @@ public class BoardConfig : ScriptableObject
     public int weidth; 
     public int height;
     public int maxMoves;
-    
+    public List<Animal> animals;
+
     //[Header("Level VFX")]
     //[SerializeField] private bool enableRain;
     ////public bool EnableRain => enableRain;
 
     [Header("Goal Config")]
-    public PointsOrMatches goalType = PointsOrMatches.points;
+    public PointsOrMatches goalType = PointsOrMatches.collectAnimals;
     public int goal;
-    public List<Animal> animals;
     public List<AnimalGoal> collectGoals;
+    
 
     [Header("Special Pieces")]
     public Animal wolf;
@@ -49,6 +51,10 @@ public class BoardConfig : ScriptableObject
         public VFXKey key;
         public bool enabled;
     }
+
+    [Header("Art")]
+    [SerializeField] private Sprite _backgroundSprite;
+    public Sprite BackgroundSprite => _backgroundSprite;
 }
 
 

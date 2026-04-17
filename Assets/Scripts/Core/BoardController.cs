@@ -141,6 +141,7 @@ public class BoardController : MonoBehaviour
         // Visual
         _view.Build(_cfg.weidth, _cfg.height);
         _view.AssignSprites(_board);
+        _view.SetBackground(_cfg.BackgroundSprite);
     }
 
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
@@ -427,13 +428,16 @@ public class BoardController : MonoBehaviour
 
     private void UpdateGoalUI()
     {
-        _view.ShowGoal(true); // Show the goal text
-
         // last-level style - points and collectGoals
         if (_cfg.goalType == PointsOrMatches.points && HasCollectGoals)
         {
             _view.SetPointsAndCollectGoals(_board.CurrentPoints, _cfg.goal, _cfg.collectGoals, _collected);
             return;
+        }
+
+        else if (_cfg.goalType == PointsOrMatches.collectAnimals)
+        {
+            _view.SetCollectGoals(_cfg.collectGoals, _collected);
         }
 
         if (_board.GoalType == PointsOrMatches.points)
@@ -444,10 +448,8 @@ public class BoardController : MonoBehaviour
         {
             _view.SetMatchedAnimals(_board.MatchedAnimals, _board.GoalAmount);
         }
-        else if (_cfg.goalType == PointsOrMatches.collectAnimals)
-        {
-            _view.SetCollectGoals(_cfg.collectGoals, _collected);
-        }
+
+        _view.ShowGoal(true); // Show the goal text
     }
 
     // For the animal collection goal

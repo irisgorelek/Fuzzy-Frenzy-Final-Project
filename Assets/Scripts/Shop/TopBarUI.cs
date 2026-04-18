@@ -60,7 +60,9 @@ public class TopBarUI : MonoBehaviour
         var s = bootstrapper.Economy.State;
 
         coinsText.text = $"Coins: {s.coins}";
-        livesText.text = $"Energy: {s.currentLives}/{s.maxLives}";
+        //livesText.text = $"Energy: {s.currentLives}/{s.maxLives}";
+
+        livesText.text = $"{s.currentLives}";
 
         if (bootstrapper.Economy.TryGetTimeUntilNextLife(out int seconds))
         {

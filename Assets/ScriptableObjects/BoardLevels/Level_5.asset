@@ -16,14 +16,14 @@ MonoBehaviour:
   weidth: 5
   height: 9
   maxMoves: 20
-  goalType: 0
-  goal: 150
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
   - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
   - {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
   - {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
   - {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+  goalType: 0
+  goal: 150
   collectGoals: []
   wolf: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
   sheep: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
@@ -35,3 +35,4 @@ MonoBehaviour:
   - key: {fileID: 11400000, guid: f7a3cd2a2305dc840a9e97c8feb0ac3d, type: 2}
     enabled: 1
   songNumber: 1
+  _backgroundSprite: {fileID: -5770413043492924276, guid: 8fdc8a459f87d4e43b34ec5c1dca034e, type: 3}

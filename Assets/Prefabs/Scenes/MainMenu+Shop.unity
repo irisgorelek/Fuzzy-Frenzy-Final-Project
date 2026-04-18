@@ -2111,7 +2111,7 @@ RectTransform:
   m_Father: {fileID: 405543681}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2750,7 +2750,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 5.6116943, y: -0.0006264597}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1210, y: 80}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &440609556
 MonoBehaviour:
@@ -4129,7 +4129,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 768144998}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1648844920}
+        m_TargetAssemblyTypeName: MainMenuButtons, FunzzyFrenzy.core
+        m_MethodName: CloseSettingsPanel
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1331669364}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1648844920}
+        m_TargetAssemblyTypeName: MainMenuButtons, FunzzyFrenzy.core
+        m_MethodName: PlayButtonSound
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 9
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &768144998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7145,7 +7169,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1168560466}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1648844920}
+        m_TargetAssemblyTypeName: MainMenuButtons, FunzzyFrenzy.core
+        m_MethodName: CloseSettingsPanel
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1331669364}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1648844920}
+        m_TargetAssemblyTypeName: MainMenuButtons, FunzzyFrenzy.core
+        m_MethodName: PlayButtonSound
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 9
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1168560466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8034,13 +8082,15 @@ GameObject:
   - component: {fileID: 1331669367}
   - component: {fileID: 1331669366}
   - component: {fileID: 1331669365}
+  - component: {fileID: 1331669370}
+  - component: {fileID: 1331669369}
   m_Layer: 5
   m_Name: Avatar Edit W
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1331669365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8124,6 +8174,38 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1331669369
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1331669364}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1331669370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1331669364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc23258a3db9d664cb2a3b89ef1607c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::UIPopupTween
+  rect: {fileID: 1331669368}
+  canvasGroup: {fileID: 1331669369}
+  showDuration: 0.26
+  showScaleFrom: 0.85
+  showEase: 27
+  hideDuration: 0.18
+  hideScaleTo: 0.85
+  hideEase: 5
 --- !u!1 &1356664833
 GameObject:
   m_ObjectHideFlags: 0
@@ -10338,7 +10420,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1575463286}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1648844920}
+        m_TargetAssemblyTypeName: MainMenuButtons, FunzzyFrenzy.core
+        m_MethodName: OpenSettingsPanel
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1331669364}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1648844920}
+        m_TargetAssemblyTypeName: MainMenuButtons, FunzzyFrenzy.core
+        m_MethodName: PlayButtonSound
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1575463286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10619,9 +10725,9 @@ RectTransform:
   m_Father: {fileID: 1288320910}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -17, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1649395778
 MonoBehaviour:
@@ -14586,10 +14692,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1396436778590409838, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 95b9b9e48a222fb458a7f1426baad7c0, type: 3}
     - target: {fileID: 3004787741423060852, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
       propertyPath: m_Name
       value: AudioManager
       objectReference: {fileID: 0}
+    - target: {fileID: 5629549350252762174, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: fbf7377458e7d484b9c9cb9ccca63880, type: 3}
     - target: {fileID: 6299026301485488654, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 59.3516
@@ -14630,6 +14744,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6462750416489842674, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: c5a29e286b3b2a048929e580fb7c32b1, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

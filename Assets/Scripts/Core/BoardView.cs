@@ -38,7 +38,6 @@ public class BoardView : MonoBehaviour
 
     [Header("Moves")]
     [SerializeField] private TextMeshProUGUI _movesCountText;
-    [SerializeField] private Image _movesSprite;
 
     [Header("Timer")]
     [SerializeField] private TextMeshProUGUI _timerPowerUp;

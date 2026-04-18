@@ -350,14 +350,12 @@ public class BoardController : MonoBehaviour
 
     private async Task ResolveCascadesAsync(int framesBetweenSteps)
     {
+        if (await TryHandleLevelCompleteAsync())
+            return;
+
         var matches = _board.FindMatches();
         while (matches.Count > 0)
         {
-            // Let the player see the current state before clearing
-            //await WaitFrames(framesBetweenSteps); 
-
-            // Animate the matches popping
-            //await _view.AnimateMatchPop(matches, 0.12f);
             await _view.AnimateMatchPopFx(matches, 0.12f);
 
             var fallMoves = new List<Board.FallMove>();
@@ -366,49 +364,58 @@ public class BoardController : MonoBehaviour
             _board.ResolveMatches(matches, fallMoves, spawns);
 
             UpdateGoalUI();
-
-            // animate gravity and refill
             await _view.AnimateGravity(fallMoves, spawns, _board, 0.20f);
-
-            // Points + Amount of animals matched
             UpdateGoalUI();
 
-            // Redraw
-            //_view.AssignSprites(_board);
-
-            if (AreAllGoalsComplete())
-            {
-                _levelCompletedChannelSO.RaiseEvent(_cfg.levelIndex);
-                int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
-                int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
-                int coins = _rewards.GetCoins(stars, _cfg.levelIndex);
-                int finalScore = _board.CurrentPoints;
-                int level = _cfg.levelIndex;
-
-                _locator.Bootstrapper.Economy.AddCoins(coins);
-
-                //_levelClearedPopup.gameObject.SetActive(true);
-                _levelClearedPopupUI.Show(level, finalScore, coins, stars);    // show with script to integrate text and animations
-                Debug.Log($"LevelClearedPopupUI.Show called: score={finalScore}, coins={coins}, stars={stars}, MovesUsed={movesUsed}");
-
-                if (AudioManager.instance != null)
-                {
-                    AudioManager.instance.ChangeMusicVolume(0.4f);
-                    AudioManager.instance.PlaySFX(16);
-                    await WaitFrames(25); // Wait until sound is over
-                    AudioManager.instance.ChangeMusicVolume(1f);
-                }
-
-                _isLevelOver = true;
+            if (await TryHandleLevelCompleteAsync())
                 return;
-            }
 
-            // Check again
             matches = _board.FindMatches();
 
             if (!_isLevelOver && !AreAllGoalsComplete())
                 await EnsurePlayableBoardAsync();
         }
+
+        await TryHandleLevelCompleteAsync();
+    }
+
+    private async Task<bool> TryHandleLevelCompleteAsync()
+    {
+        if (_isLevelOver || !AreAllGoalsComplete())
+            return false;
+
+        _isLevelOver = true;
+
+        _levelCompletedChannelSO?.RaiseEvent(_cfg.levelIndex);
+
+        int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
+        int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
+        int coins = _rewards.GetCoins(stars, _cfg.levelIndex);
+        int finalScore = _board.CurrentPoints;
+        int level = _cfg.levelIndex;
+
+        if (_locator != null && _locator.Bootstrapper != null)
+            _locator.Bootstrapper.Economy.AddCoins(coins);
+
+        if (_levelClearedPopupUI != null)
+        {
+            _levelClearedPopupUI.Show(level, finalScore, coins, stars);
+            Debug.Log($"LevelClearedPopupUI.Show called: score={finalScore}, coins={coins}, stars={stars}, MovesUsed={movesUsed}");
+        }
+        else
+        {
+            Debug.LogError("LevelClearedPopupUI is not assigned on BoardController.");
+        }
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.ChangeMusicVolume(0.4f);
+            AudioManager.instance.PlaySFX(16);
+            await WaitFrames(25);
+            AudioManager.instance.ChangeMusicVolume(1f);
+        }
+
+        return true;
     }
 
     private void UpdateGoalUI()

@@ -206,8 +206,9 @@ public class BoardView : MonoBehaviour
 
             collected.TryGetValue(g.animal._id, out int have);
             int remaining = Mathf.Max(0, g.amount - have);
+            bool isComplete = have >= g.amount;
 
-            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
+            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete);
         }
     }
     private void ClearGoalRows()
@@ -379,7 +380,7 @@ public class BoardView : MonoBehaviour
     {
         ClearGoalRows();
 
-        AddPrimaryGoalRow($"Points: {points}/{pointsGoal}");
+        AddPrimaryGoalRow($"Points: {points}/{pointsGoal}", points >= pointsGoal);
 
         foreach (var g in goals)
         {
@@ -388,8 +389,9 @@ public class BoardView : MonoBehaviour
 
             collected.TryGetValue(g.animal._id, out int have);
             int remaining = Mathf.Max(0, g.amount - have);
+            bool isComplete = have >= g.amount;
 
-            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
+            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete);
         }
     }
 
@@ -398,7 +400,7 @@ public class BoardView : MonoBehaviour
         ClearGoalRows();
 
         int remainingMatches = Mathf.Max(0, matchGoal - matched);
-        AddPrimaryGoalRow(remainingMatches.ToString());
+        AddPrimaryGoalRow(remainingMatches.ToString(), matched >= matchGoal);
 
         foreach (var g in goals)
         {
@@ -407,8 +409,9 @@ public class BoardView : MonoBehaviour
 
             collected.TryGetValue(g.animal._id, out int have);
             int remaining = Mathf.Max(0, g.amount - have);
+            bool isComplete = have >= g.amount;
 
-            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color);
+            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete);
         }
     }
 
@@ -1141,23 +1144,23 @@ public class BoardView : MonoBehaviour
     {
         SetHighlightedCell(null);
     }
-    private void AddGoalRow(GoalRowView prefab, Sprite icon, string text, Color color)
+    private void AddGoalRow(GoalRowView prefab, Sprite icon, string text, Color color, bool isComplete = false)
     {
         if (prefab == null || _goalRowsParent == null)
             return;
 
         var row = Instantiate(prefab, _goalRowsParent);
-        row.Set(icon, text, color);
+        row.Set(icon, text, color, isComplete);
         _rows.Add(row);
     }
 
-    private void AddPrimaryGoalRow(string text)
+    private void AddPrimaryGoalRow(string text, bool isComplete = false)
     {
-        AddGoalRow(_primaryGoalRowPrefab, null, text, Color.white);
+        AddGoalRow(_primaryGoalRowPrefab, null, text, Color.white, isComplete);
     }
 
-    private void AddAnimalGoalRow(Sprite icon, string text, Color color)
+    private void AddAnimalGoalRow(Sprite icon, string text, Color color, bool isComplete = false)
     {
-        AddGoalRow(_animalGoalRowPrefab, icon, text, color);
+        AddGoalRow(_animalGoalRowPrefab, icon, text, color, isComplete);
     }
 }

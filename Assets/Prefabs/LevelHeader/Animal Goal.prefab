@@ -367,3 +367,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: FunzzyFrenzy.core::GoalRowView
   _icon: {fileID: 3159142390048493156}
   _text: {fileID: 670512216069620023}
+  _finishedImage: {fileID: 1522669151469376596}

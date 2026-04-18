@@ -6,9 +6,16 @@ public class AvatarItemButton : MonoBehaviour
     [SerializeField] private Button button;
     [SerializeField] private Image icon;
     [SerializeField] private Image selectionFrame;
+    [SerializeField] private Image background;
+    [SerializeField] private Color selectedColor = Color.white;
 
+    private Color _normalColor;
     public Button Button => button;
-
+    private void Awake()
+    {
+        if (background != null)
+            _normalColor = background.color;
+    }
     public void Setup(AvatarItemSO item, bool isColorCategory)
     {
         if (isColorCategory)
@@ -27,7 +34,7 @@ public class AvatarItemButton : MonoBehaviour
 
     public void SetSelected(bool selected)
     {
-        if (selectionFrame != null)
-            selectionFrame.gameObject.SetActive(selected);
+        if (background != null)
+            background.color = selected ? selectedColor : _normalColor;
     }
 }

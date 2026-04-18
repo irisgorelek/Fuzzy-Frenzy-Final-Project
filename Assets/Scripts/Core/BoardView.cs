@@ -28,6 +28,8 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Sprite _defaultSprite;  // For null animals
     [SerializeField] private Image _backgroundImage;
 
+    [Header("LevelNumber")]
+    [SerializeField] private TextMeshProUGUI _levelNumberText;
 
     [Header("Goal")]
     [SerializeField] private Transform _goalRowsParent;
@@ -141,6 +143,10 @@ public class BoardView : MonoBehaviour
                 _cells[coord].SetSprite(animal._sprite, animal.color);
             }
         }
+    }
+    public void SetLevelNumber(int level)
+    {
+        _levelNumberText.text = level.ToString();
     }
     public void SetBackground(Sprite backgroundSprite)
     {

@@ -141,6 +141,7 @@ public class BoardController : MonoBehaviour
         // Visual
         _view.Build(_cfg.weidth, _cfg.height);
         _view.AssignSprites(_board);
+        _view.SetLevelNumber(_cfg.levelIndex);
         _view.SetBackground(_cfg.BackgroundSprite);
     }
 

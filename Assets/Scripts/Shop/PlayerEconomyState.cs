@@ -18,10 +18,7 @@ public class PlayerEconomyState
     public int totalDestroyedAnimals = 0;
     public int totalPointsEarned = 0;
 
-    // Avatar selections (index per category)
-    public Dictionary<AvatarCategoryType, int> avatarSelections = new();
-
-    // When was regen last accounted for
+    // When was regen last “accounted for”
     public long lastLifeTimestampUtcSeconds = 0;
 
     // Booster counts by effect type

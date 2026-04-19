@@ -263,6 +263,7 @@ public class BoardController : MonoBehaviour
         if (_moveCounter.MovesLeft <= 0)
         {
             _isLevelOver = true;
+            _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
             if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
             _isBusy = false;
             return;
@@ -385,7 +386,7 @@ public class BoardController : MonoBehaviour
             return false;
 
         _isLevelOver = true;
-
+        
         _levelCompletedChannelSO?.RaiseEvent(_cfg.levelIndex);
 
         int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;

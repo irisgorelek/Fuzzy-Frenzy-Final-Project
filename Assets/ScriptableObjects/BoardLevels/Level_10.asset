@@ -16,8 +16,6 @@ MonoBehaviour:
   weidth: 5
   height: 9
   maxMoves: 20
-  goalType: 0
-  goal: 200
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
   - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
@@ -25,6 +23,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
   - {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
   - {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
+  goalType: 0
+  goal: 200
   collectGoals:
   - animal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
     amount: 2
@@ -38,4 +38,4 @@ MonoBehaviour:
   - key: {fileID: 11400000, guid: d0102cabb8201d64a881f4f7c8b3d4a6, type: 2}
     enabled: 1
   songNumber: 0
-  _backgroundSprite: {fileID: -8956085781893672634, guid: 90674f8ae7526b1469a855d15bed6ea6, type: 3}
+  _backgroundSprite: {fileID: -7991674732735634052, guid: ef4000a80a46f3a40a84d3073e601a17, type: 3}

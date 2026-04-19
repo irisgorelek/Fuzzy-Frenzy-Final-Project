@@ -220,4 +220,17 @@ public class EconomyContext
         secondsRemaining = Mathf.Max(0, remaining);
         return true;
     }
+
+    public bool TrySpendLifeOnLevelFail()
+    {
+        if (State.currentLives <= 0)
+            return false;
+
+        State.currentLives -= 1;
+        State.lastLifeTimestampUtcSeconds = GetUtcNowSeconds();
+
+        Save();
+        OnChanged?.Invoke();
+        return true;
+    }
 }

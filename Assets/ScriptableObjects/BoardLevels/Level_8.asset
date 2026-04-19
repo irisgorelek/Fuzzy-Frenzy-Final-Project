@@ -36,4 +36,4 @@ MonoBehaviour:
   - key: {fileID: 11400000, guid: fd6a70702062b2c46b64abc07e68b0f8, type: 2}
     enabled: 1
   songNumber: 1
-  _backgroundSprite: {fileID: -5306630395885388627, guid: 7cd5a178995810e43a1e263d8675b53f, type: 3}
+  _backgroundSprite: {fileID: -4717898685981270901, guid: 0621aa45d654cc1469e714a1412b2512, type: 3}

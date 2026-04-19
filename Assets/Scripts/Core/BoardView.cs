@@ -307,7 +307,7 @@ public class BoardView : MonoBehaviour
 
     public void SetTimerSeconds(int seconds)
     {
-        _timerPowerUp.text = $"Timer: {seconds}";
+        _timerPowerUp.text = $"Match Time!\n{seconds}";
     }
 
     // Dotween animation

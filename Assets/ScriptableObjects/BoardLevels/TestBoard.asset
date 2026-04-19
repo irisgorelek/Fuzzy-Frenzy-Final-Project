@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: FuzzyFrenzy.Data::BoardConfig
   levelIndex: -1
   weidth: 5
-  height: 5
+  height: 8
   maxMoves: 100
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}

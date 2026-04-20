@@ -48,7 +48,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Sprite _matchRingSprite;     // Thin white circle/ring sprite
     [SerializeField] private Sprite _sparkleSprite;       // Tiny star / diamond / soft dot
     [SerializeField] private Color _matchFxColor = new Color(1f, 1f, 1f, 0.95f);
-    [SerializeField] private int _sparklesPerMatch = 4;
+    [SerializeField] private int _sparklesPerMatch = 3; // For the PC 4 looks great
 
     [Header("ShuffleBoard")]
     [SerializeField] private TextMeshProUGUI _shuffleMessage;
@@ -139,7 +139,7 @@ public class BoardView : MonoBehaviour
                 var coord = new Vector2Int(x, y);
                 var animal = board.GetAnimalFromCell(coord);
 
-                if(animal == null)
+                if (animal == null)
                 {
                     _cells[coord].SetSprite(_defaultSprite, Color.red);
                     continue;
@@ -162,7 +162,6 @@ public class BoardView : MonoBehaviour
         }
 
         _backgroundImage.sprite = backgroundSprite;
-        //_backgroundImage.preserveAspect = true;
     }
     public void SwapCellVisuals(Vector2Int a, Vector2Int b)
     {
@@ -216,7 +215,8 @@ public class BoardView : MonoBehaviour
     private void ClearGoalRows()
     {
         for (int i = 0; i < _rows.Count; i++)
-            Destroy(_rows[i].gameObject);
+            ReleaseGoalRow(_rows[i]);
+
         _rows.Clear();
     }
     private void OnCellPointerDown(Vector2Int coord, Vector2 screenPos)
@@ -347,8 +347,8 @@ public class BoardView : MonoBehaviour
             aView.SetImageEnabled(true);
             bView.SetImageEnabled(true);
 
-            Destroy(tempA.gameObject);
-            Destroy(tempB.gameObject);
+            ReleaseTempImage(tempA);
+            ReleaseTempImage(tempB);
 
             tcs.SetResult(true);
         });
@@ -358,15 +358,11 @@ public class BoardView : MonoBehaviour
 
     private Image CreateTempImage(CellView source)
     {
-        var go = new GameObject("SwapTemp", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        go.transform.SetParent(_swapOverlay, worldPositionStays: false);
+        var img = GetPooledImage(_tempImagePool, "SwapTemp");
+        var rt = img.rectTransform;
 
-        var img = go.GetComponent<Image>();
         img.sprite = source.CurrentSprite;
         img.color = source.CurrentColor;
-        img.raycastTarget = false;
-
-        var rt = (RectTransform)go.transform;
 
         // Match screen position + size
         rt.position = source.ImageRect.position;
@@ -376,7 +372,101 @@ public class BoardView : MonoBehaviour
 
         return img;
     }
+    private Image GetPooledImage(Stack<Image> pool, string objectName)
+    {
+        Image img;
 
+        if (pool.Count > 0)
+        {
+            img = pool.Pop();
+        }
+        else
+        {
+            var go = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            go.transform.SetParent(_swapOverlay, worldPositionStays: false);
+            img = go.GetComponent<Image>();
+            img.raycastTarget = false;
+        }
+
+        img.gameObject.name = objectName;
+        img.transform.SetParent(_swapOverlay, worldPositionStays: false);
+        img.gameObject.SetActive(true);
+
+        img.DOKill();
+        img.rectTransform.DOKill();
+
+        var rt = img.rectTransform;
+        rt.localScale = Vector3.one;
+        rt.localRotation = Quaternion.identity;
+        rt.anchoredPosition3D = Vector3.zero;
+
+        img.sprite = null;
+        img.color = Color.white;
+        img.raycastTarget = false;
+
+        return img;
+    }
+    private void ReleaseTempImage(Image img)
+    {
+        ReleasePooledImage(img, _tempImagePool);
+    }
+
+    private void ReleaseFxImage(Image img)
+    {
+        ReleasePooledImage(img, _fxImagePool);
+    }
+    private void ReleasePooledImage(Image img, Stack<Image> pool)
+    {
+        if (img == null)
+            return;
+
+        img.DOKill();
+        img.rectTransform.DOKill();
+
+        img.sprite = null;
+        img.color = Color.white;
+
+        var rt = img.rectTransform;
+        rt.localScale = Vector3.one;
+        rt.localRotation = Quaternion.identity;
+        rt.anchoredPosition3D = Vector3.zero;
+
+        img.gameObject.SetActive(false);
+        pool.Push(img);
+    }
+    private GoalRowView GetGoalRow(GoalRowView prefab, bool isPrimary)
+    {
+        var pool = isPrimary ? _primaryGoalRowPool : _animalGoalRowPool;
+        GoalRowView row;
+
+        if (pool.Count > 0)
+        {
+            row = pool.Pop();
+        }
+        else
+        {
+            row = Instantiate(prefab, _goalRowsParent);
+        }
+
+        row.transform.SetParent(_goalRowsParent, false);
+        row.gameObject.SetActive(true);
+        _isPrimaryGoalRow[row] = isPrimary;
+        return row;
+    }
+
+    private void ReleaseGoalRow(GoalRowView row)
+    {
+        if (row == null)
+            return;
+
+        row.gameObject.SetActive(false);
+
+        bool isPrimary = _isPrimaryGoalRow.TryGetValue(row, out bool cachedIsPrimary) && cachedIsPrimary;
+        if (isPrimary)
+            _primaryGoalRowPool.Push(row);
+        else
+            _animalGoalRowPool.Push(row);
+    }
     // For level 10
     public void SetPointsAndCollectGoals(int points, int pointsGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
@@ -444,7 +534,7 @@ public class BoardView : MonoBehaviour
             if (_cells.TryGetValue(c, out var cv))
                 cv.SetImageEnabled(false);
 
-        var temps = new List<GameObject>();
+        var temps = new List<Image>();
         var tcs = new TaskCompletionSource<bool>();
 
         Sequence seq = DOTween.Sequence();
@@ -460,7 +550,7 @@ public class BoardView : MonoBehaviour
                 var toView = _cells[m.to];
 
                 var temp = CreateTempImage(fromView);
-                temps.Add(temp.gameObject);
+                temps.Add(temp);
 
                 seq.Join(temp.rectTransform
                     .DOMove(toView.ImageRect.position, duration)
@@ -482,7 +572,7 @@ public class BoardView : MonoBehaviour
 
                 // Create temp image
                 var temp = CreateTempImageFromSprite(s.animal._sprite, s.animal.color, targetView);
-                temps.Add(temp.gameObject);
+                temps.Add(temp);
 
                 float cellH = targetView.ImageRect.rect.height;
                 float cellW = targetView.ImageRect.rect.width;
@@ -543,7 +633,7 @@ public class BoardView : MonoBehaviour
 
             // Cleanup temps
             for (int i = 0; i < temps.Count; i++)
-                Destroy(temps[i]);
+                ReleaseTempImage(temps[i]);
 
             tcs.SetResult(true);
         });
@@ -563,15 +653,12 @@ public class BoardView : MonoBehaviour
     }
     private Image CreateTempImageFromSprite(Sprite sprite, Color color, CellView sizeReference)
     {
-        var go = new GameObject("FallTemp", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        go.transform.SetParent(_swapOverlay, worldPositionStays: false);
+        var img = GetPooledImage(_tempImagePool, "FallTemp");
+        var rt = img.rectTransform;
 
-        var img = go.GetComponent<Image>();
         img.sprite = sprite;
         img.color = color;
-        img.raycastTarget = false;
 
-        var rt = (RectTransform)go.transform;
         rt.sizeDelta = sizeReference.ImageRect.rect.size;
         rt.localScale = Vector3.one;
 
@@ -620,7 +707,7 @@ public class BoardView : MonoBehaviour
             return Task.CompletedTask;
 
         var tcs = new TaskCompletionSource<bool>();
-        var spawnedFx = new List<GameObject>();
+        var spawnedFx = new List<Image>();
         var touchedCells = new List<RectTransform>();
 
         Sequence master = DOTween.Sequence();
@@ -646,7 +733,7 @@ public class BoardView : MonoBehaviour
             if (_matchRingSprite != null)
             {
                 Image ring = CreateFxImage(_matchRingSprite, _matchFxColor, center, size * 0.95f);
-                spawnedFx.Add(ring.gameObject);
+                spawnedFx.Add(ring);
 
                 var ringRt = ring.rectTransform;
                 ringRt.localScale = Vector3.one * 0.55f;
@@ -670,7 +757,7 @@ public class BoardView : MonoBehaviour
                     float sparkDur = duration * Random.Range(0.75f, 1.0f);
 
                     Image spark = CreateFxImage(_sparkleSprite, _matchFxColor, center, size * 0.18f);
-                    spawnedFx.Add(spark.gameObject);
+                    spawnedFx.Add(spark);
 
                     var sparkRt = spark.rectTransform;
                     sparkRt.localRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
@@ -699,9 +786,8 @@ public class BoardView : MonoBehaviour
                 if (rt != null)
                     rt.localScale = Vector3.one;
 
-            foreach (var go in spawnedFx)
-                if (go != null)
-                    Destroy(go);
+            foreach (var fx in spawnedFx)
+                ReleaseFxImage(fx);
 
             tcs.TrySetResult(true);
         });
@@ -712,9 +798,8 @@ public class BoardView : MonoBehaviour
                 if (rt != null)
                     rt.localScale = Vector3.one;
 
-            foreach (var go in spawnedFx)
-                if (go != null)
-                    Destroy(go);
+            foreach (var fx in spawnedFx)
+                ReleaseFxImage(fx);
 
             tcs.TrySetResult(true);
         });
@@ -839,7 +924,7 @@ public class BoardView : MonoBehaviour
             return Task.CompletedTask;
 
         var tcs = new TaskCompletionSource<bool>();
-        var spawnedFx = new List<GameObject>();
+        var spawnedFx = new List<Image>();
 
         Sprite ringSprite = _bombRingSprite != null ? _bombRingSprite : _matchRingSprite;
         if (ringSprite == null)
@@ -860,7 +945,7 @@ public class BoardView : MonoBehaviour
             Vector2 size = pieceRt.rect.size;
 
             Image ring = CreateFxImage(ringSprite, _bombRingColor, center, size * 1.08f);
-            spawnedFx.Add(ring.gameObject);
+            spawnedFx.Add(ring);
 
             var ringRt = ring.rectTransform;
             ringRt.localScale = Vector3.one * 0.72f;
@@ -891,9 +976,8 @@ public class BoardView : MonoBehaviour
 
         master.OnComplete(() =>
         {
-            foreach (var go in spawnedFx)
-                if (go != null)
-                    Destroy(go);
+            foreach (var fx in spawnedFx)
+                ReleaseFxImage(fx);
 
             tcs.TrySetResult(true);
         });
@@ -906,9 +990,8 @@ public class BoardView : MonoBehaviour
                     kvp.Value.ImageRect.localScale = Vector3.one;
             }
 
-            foreach (var go in spawnedFx)
-                if (go != null)
-                    Destroy(go);
+            foreach (var fx in spawnedFx)
+                ReleaseFxImage(fx);
 
             tcs.TrySetResult(true);
         });
@@ -975,15 +1058,12 @@ public class BoardView : MonoBehaviour
 
     private Image CreateFxImage(Sprite sprite, Color color, Vector3 position, Vector2 size)
     {
-        var go = new GameObject("MatchFX", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        go.transform.SetParent(_swapOverlay, worldPositionStays: false);
+        var img = GetPooledImage(_fxImagePool, "MatchFX");
+        var rt = img.rectTransform;
 
-        var img = go.GetComponent<Image>();
         img.sprite = sprite;
         img.color = color;
-        img.raycastTarget = false;
 
-        var rt = (RectTransform)go.transform;
         rt.position = position;
         rt.sizeDelta = size;
         rt.localScale = Vector3.one;
@@ -1151,7 +1231,8 @@ public class BoardView : MonoBehaviour
         if (prefab == null || _goalRowsParent == null)
             return;
 
-        var row = Instantiate(prefab, _goalRowsParent);
+        bool isPrimary = prefab == _primaryGoalRowPrefab;
+        var row = GetGoalRow(prefab, isPrimary);
         row.Set(icon, text, color, isComplete);
         _rows.Add(row);
     }

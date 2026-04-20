@@ -77,6 +77,12 @@ public class BoardView : MonoBehaviour
     private const float SwipeThresholdPixels = 45f;
 
     private readonly List<GoalRowView> _rows = new();
+    private readonly Stack<Image> _tempImagePool = new();
+    private readonly Stack<Image> _fxImagePool = new();
+    private readonly Stack<GoalRowView> _animalGoalRowPool = new();
+    private readonly Stack<GoalRowView> _primaryGoalRowPool = new();
+    private readonly Dictionary<GoalRowView, bool> _isPrimaryGoalRow = new();
+
     public Func<Vector2Int, bool> CanStartSwap;
 
     //public void ShowMoves(bool show) => _movesCountText.gameObject.SetActive(show);
@@ -169,15 +175,11 @@ public class BoardView : MonoBehaviour
         var aView = _cells[a];
         var bView = _cells[b];
 
-        Debug.Log($"Swapping visuals {a} <-> {b}");
-        Debug.Log($"Before: A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
-
         var aSprite = aView.CurrentSprite;
         var aColor = aView.CurrentColor;
 
         aView.SetSprite(bView.CurrentSprite, bView.CurrentColor);
         bView.SetSprite(aSprite, aColor);
-        Debug.Log($"After:  A={aView.CurrentSprite?.name}, B={bView.CurrentSprite?.name}");
     }
     public void ShowGoal(bool show)
     {

@@ -661,31 +661,32 @@ public class BoardView : MonoBehaviour
                 }
                 else
                 {
-                    // Under a blocker: spawn from side and slide under the bone row
-                    int leftX = s.cell.x - 1;
-                    int rightX = s.cell.x + 1;
+                    // Better gravity feel for pieces coming from under a blocker:
+                    // start slightly ABOVE the entry cell and let them accelerate down.
+                    // No fade-in, because fade looks like "appearing", not falling.
 
-                    // pick a side (simple + safe)
-                    int sideX =
-                        (leftX >= 0 && rightX < _width)
-                            ? (UnityEngine.Random.value < 0.5f ? leftX : rightX)
-                            : (leftX >= 0 ? leftX : rightX);
+                    var entryCell = new Vector2Int(s.cell.x, entryY);
+                    var entryView = _cells[entryCell];
 
-                    // reference cell on that side, at the entry row
-                    var sideCell = new Vector2Int(sideX, entryY);
-                    var sideView = _cells[sideCell];
+                    float startAbove = cellH * 0.42f;
 
-                    // start slightly outside the grid on that side, and slightly above
-                    Vector3 sideDir = (sideX < s.cell.x) ? Vector3.left : Vector3.right;
-                    temp.rectTransform.position =
-                        sideView.ImageRect.position + Vector3.up * upOffset + sideDir * (cellW * 0.8f);
-
-                    // “slide under” pivot: same y as entry row, x of target
-                    Vector3 pivot = new Vector3(targetPos.x, sideView.ImageRect.position.y, targetPos.z);
+                    temp.rectTransform.position = entryView.ImageRect.position + Vector3.up * startAbove;
+                    temp.rectTransform.localScale = new Vector3(0.94f, 1.08f, 1f);
+                    temp.color = Color.white;
 
                     Sequence sseq = DOTween.Sequence();
-                    sseq.Append(temp.rectTransform.DOMove(pivot, duration * 0.35f).SetEase(Ease.OutQuad));
-                    sseq.Append(temp.rectTransform.DOMove(targetPos, duration * 0.65f).SetEase(Ease.InQuad));
+
+                    sseq.Append(
+                        temp.rectTransform
+                            .DOMove(targetPos, duration)
+                            .SetEase(Ease.InQuad)
+                    );
+
+                    sseq.Join(
+                        temp.rectTransform
+                            .DOScale(Vector3.one, duration * 0.35f)
+                            .SetEase(Ease.OutQuad)
+                    );
 
                     seq.Join(sseq);
                 }

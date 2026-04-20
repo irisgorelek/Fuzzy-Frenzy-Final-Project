@@ -219,6 +219,10 @@ public class BoardController : MonoBehaviour
 
             TryRollBlackSheep();
 
+            // Animate the blast first, using the same pop FX as normal matches
+            await AnimateBlackSheepBlastFromCenter(sheepPosAfterSwap, swipeVertical);
+
+            // Then actually clear the model and show the result
             _board.TriggerSheepSwipeBlast(sheepPosAfterSwap, swipeVertical);
 
             UpdateGoalUI();
@@ -548,5 +552,81 @@ public class BoardController : MonoBehaviour
     private bool IsAnySheep(Animal piece)
     {
         return IsAnimal(piece, _cfg.blackSheep);
+    }
+
+    private async Task AnimateBlackSheepBlastFromCenter(Vector2Int center, bool swipedVertically)
+    {
+        // vertical swipe => ROW blast (left + right)
+        // horizontal swipe => COLUMN blast (up + down)
+
+        int maxWave = swipedVertically
+            ? Mathf.Max(center.x, (_cfg.weidth - 1) - center.x)
+            : Mathf.Max(center.y, (_cfg.height - 1) - center.y);
+
+        if (AudioManager.instance != null && !swipedVertically) // PLay longer sound
+        {
+            AudioManager.instance.PlaySFXPitchAdjusted(17);
+        }
+
+        if (AudioManager.instance != null && swipedVertically) // Play shorter sound
+        {
+            AudioManager.instance.PlaySFXPitchAdjusted(18);
+        }
+
+        for (int wave = 0; wave <= maxWave; wave++)
+        {
+            var waveCells = new List<Vector2Int>();
+
+            if (swipedVertically)
+            {
+                int y = center.y;
+
+                int leftX = center.x - wave;
+                int rightX = center.x + wave;
+
+                if (leftX >= 0)
+                {
+                    var leftCell = new Vector2Int(leftX, y);
+                    if (_board.GetAnimalFromCell(leftCell) != _cfg.boneBlock)
+                        waveCells.Add(leftCell);
+                }
+
+                if (rightX < _cfg.weidth && rightX != leftX)
+                {
+                    var rightCell = new Vector2Int(rightX, y);
+                    if (_board.GetAnimalFromCell(rightCell) != _cfg.boneBlock)
+                        waveCells.Add(rightCell);
+                }
+            }
+            else
+            {
+                int x = center.x;
+
+                int downY = center.y - wave;
+                int upY = center.y + wave;
+
+                if (downY >= 0)
+                {
+                    var downCell = new Vector2Int(x, downY);
+                    if (_board.GetAnimalFromCell(downCell) != _cfg.boneBlock)
+                        waveCells.Add(downCell);
+                }
+
+                if (upY < _cfg.height && upY != downY)
+                {
+                    var upCell = new Vector2Int(x, upY);
+                    if (_board.GetAnimalFromCell(upCell) != _cfg.boneBlock)
+                        waveCells.Add(upCell);
+                }
+            }
+
+            if (waveCells.Count == 0)
+                continue;
+
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f);
+
+            await _view.AnimateMatchPopFx(waveCells, 0.09f);
+        }
     }
 }

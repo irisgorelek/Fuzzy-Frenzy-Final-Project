@@ -209,7 +209,7 @@ public class BoardView : MonoBehaviour
             int remaining = Mathf.Max(0, g.amount - have);
             bool isComplete = have >= g.amount;
 
-            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete);
+            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete); // HERE - it creates a different row instead of just changing the text. <- BUG
         }
     }
     private void ClearGoalRows()

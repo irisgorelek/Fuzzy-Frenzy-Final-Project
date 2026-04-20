@@ -26,9 +26,9 @@ MonoBehaviour:
   goal: 200
   collectGoals:
   - animal: {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
-    amount: 50
+    amount: 20
   - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
-    amount: 30
+    amount: 20
   wolf: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
   sheep: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
   boneBlock: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}

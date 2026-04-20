@@ -47,7 +47,6 @@ public class BoardController : MonoBehaviour
 
     // For the out of moves shuffle
     private readonly BoardHintFinder _hintFinder = new BoardHintFinder();
-    private bool _playingWinBonus;
 
     private void Awake()
     {

@@ -48,7 +48,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Sprite _matchRingSprite;     // Thin white circle/ring sprite
     [SerializeField] private Sprite _sparkleSprite;       // Tiny star / diamond / soft dot
     [SerializeField] private Color _matchFxColor = new Color(1f, 1f, 1f, 0.95f);
-    [SerializeField] private int _sparklesPerMatch = 3; // For the PC 4 looks great
+    [SerializeField] private int _sparklesPerMatch = 4; // For the PC 4 looks great
 
     [Header("ShuffleBoard")]
     [SerializeField] private TextMeshProUGUI _shuffleMessage;

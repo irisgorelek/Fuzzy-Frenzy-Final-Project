@@ -6470,6 +6470,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1710838854}
     m_Modifications:
+    - target: {fileID: 1384206862033184358, guid: 196fb777c4987214ea481a4707665abf, type: 3}
+      propertyPath: m_Inertia
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1635303112102823466, guid: 196fb777c4987214ea481a4707665abf, type: 3}
       propertyPath: content
       value: 
@@ -10310,6 +10314,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6216108161467766238, guid: 3960892ca2b11664f874aa6660a35719, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6577487287931642615, guid: 3960892ca2b11664f874aa6660a35719, type: 3}
+      propertyPath: m_Inertia
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6738481946833260137, guid: 3960892ca2b11664f874aa6660a35719, type: 3}
@@ -14902,6 +14910,10 @@ PrefabInstance:
     - target: {fileID: 4699021788442898280, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
       propertyPath: m_Name
       value: Lvl new B
+      objectReference: {fileID: 0}
+    - target: {fileID: 5051895234411483509, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
+      propertyPath: m_Inertia
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5051895234411483509, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
       propertyPath: m_Horizontal

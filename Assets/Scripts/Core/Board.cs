@@ -580,8 +580,10 @@ public class Board
             }
         }
 
-        foreach (var cell in toRemove)
+        foreach (var cell in toRemove) // HERE //
+        {
             _grid[cell.x, cell.y] = null;
+        }
     }
 
     private void ResolveWolfSheepInteractions(List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)

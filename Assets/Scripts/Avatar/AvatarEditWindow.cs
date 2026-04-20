@@ -97,6 +97,9 @@ public class AvatarEditWindow : MonoBehaviour
         if (_activeTabIndex == index) return;
         _activeTabIndex = index;
 
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFXPitchAdjusted(19);
+
         for (int i = 0; i < _tabs.Count; i++)
             _tabs[i].SetActive(i == index, tabActive, tabInactive);
 
@@ -140,6 +143,9 @@ public class AvatarEditWindow : MonoBehaviour
 
         if (avatarDisplay != null)
             avatarDisplay.ApplyItem(category.CategoryType, selectedItem);
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFXPitchAdjusted(20);
     }
 
     public void Confirm()

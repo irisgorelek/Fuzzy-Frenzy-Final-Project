@@ -18,10 +18,6 @@ public class BoardConfig : ScriptableObject
     public int maxMoves;
     public List<Animal> animals;
 
-    //[Header("Level VFX")]
-    //[SerializeField] private bool enableRain;
-    ////public bool EnableRain => enableRain;
-
     [Header("Goal Config")]
     public PointsOrMatches goalType = PointsOrMatches.collectAnimals;
     public int goal;

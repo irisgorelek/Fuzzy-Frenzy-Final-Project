@@ -12,7 +12,7 @@ public class BoardController : MonoBehaviour
     [Header("On Screen Pop Ups")]
     [SerializeField] private LevelClearedPopupUI _levelClearedPopupUI;
     [SerializeField] private GameObject _levelLostPopup;
-    [SerializeField] private int framesBetweenSteps = 5;
+    //[SerializeField] private int framesBetweenSteps = 5;
 
     [Header("Rewards Configs")]
     [SerializeField] private RewardsConfig _rewards;
@@ -36,6 +36,8 @@ public class BoardController : MonoBehaviour
     public bool IsTimerBombActive { get; private set; }
     private float _timerBombEndTime;
     private bool _timerBombResolving;
+    private int _lastShownTimerSecond = -1;
+
     public System.Action<bool> OnTimerBombStateChanged;
 
     public int GetWidth() => _cfg.weidth;
@@ -45,7 +47,6 @@ public class BoardController : MonoBehaviour
 
     // For the out of moves shuffle
     private readonly BoardHintFinder _hintFinder = new BoardHintFinder();
-    private bool _playingWinBonus;
 
     private void Awake()
     {
@@ -147,7 +148,6 @@ public class BoardController : MonoBehaviour
 
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
     {
-        Debug.Log($"SwapRequested: {from} -> {to}");
         if (_isBusy || _isLevelOver) return;
         if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
 
@@ -224,10 +224,9 @@ public class BoardController : MonoBehaviour
             UpdateGoalUI();
             _view.AssignSprites(_board);
 
-            await ResolveCascadesAsync(framesBetweenSteps);
+            await ResolveCascadesAsync();
 
             _isBusy = false;
-            Debug.Log($"a={a?._id}, b={b?._id}, sheepInvolved={sheepInvolved}");
             return;
         }
 
@@ -252,7 +251,7 @@ public class BoardController : MonoBehaviour
         // The swap was valid. Resolve cascades with pacing
         _view.AssignSprites(_board); // Sync view to model after swap
         
-        await ResolveCascadesAsync(framesBetweenSteps);
+        await ResolveCascadesAsync();
 
         if (_isLevelOver)
         {
@@ -284,7 +283,6 @@ public class BoardController : MonoBehaviour
         if (movesMade % _cfg.blackSheepUnlockAfterMoves == 0)
         {
             _board.RollForBlackSheep(_cfg.blackSheepRollChance);
-            Debug.Log($"Rolled for black sheep at move {movesMade}");
         }
     }
 
@@ -302,7 +300,7 @@ public class BoardController : MonoBehaviour
         UpdateGoalUI();
 
         await _view.AnimateGravity(fallMoves, spawns, _board, 0.1f);
-        await ResolveCascadesAsync(10);
+        await ResolveCascadesAsync();
     }
 
     public void StartTimerBomb(float durationSeconds)
@@ -312,16 +310,15 @@ public class BoardController : MonoBehaviour
         IsTimerBombActive = true;
         _timerBombResolving = false;
         _timerBombEndTime = Time.time + durationSeconds;
+        _lastShownTimerSecond = -1;
 
         OnTimerBombStateChanged?.Invoke(true);
-
         _view.SetTimerVisible(true);
         UpdateTimerUI();
 
         if (AudioManager.instance != null)
             AudioManager.instance.PlayTimerMusic();
 
-        // allow swiping during the timer
         _view.SwapsEnabled = true;
     }
 
@@ -342,16 +339,16 @@ public class BoardController : MonoBehaviour
         if (AudioManager.instance != null)
             AudioManager.instance.PlayBG((int)_cfg.songNumber);
 
-        await ResolveCascadesAsync(10);
+        await ResolveCascadesAsync();
 
         _isBusy = false;
         _view.SwapsEnabled = true;
         _timerBombResolving = false;
     }
 
-    private async Task ResolveCascadesAsync(int framesBetweenSteps)
+    private async Task ResolveCascadesAsync()
     {
-        if (await TryHandleLevelCompleteAsync())
+        if (TryHandleLevelComplete())
             return;
 
         var matches = _board.FindMatches();
@@ -368,7 +365,7 @@ public class BoardController : MonoBehaviour
             await _view.AnimateGravity(fallMoves, spawns, _board, 0.20f);
             UpdateGoalUI();
 
-            if (await TryHandleLevelCompleteAsync())
+            if (TryHandleLevelComplete())
                 return;
 
             matches = _board.FindMatches();
@@ -377,10 +374,11 @@ public class BoardController : MonoBehaviour
                 await EnsurePlayableBoardAsync();
         }
 
-        await TryHandleLevelCompleteAsync();
+        TryHandleLevelComplete();
     }
 
-    private async Task<bool> TryHandleLevelCompleteAsync()
+    //private async Task<bool> TryHandleLevelCompleteAsync()
+    private bool TryHandleLevelComplete()
     {
         if (_isLevelOver || !AreAllGoalsComplete())
             return false;
@@ -401,7 +399,6 @@ public class BoardController : MonoBehaviour
         if (_levelClearedPopupUI != null)
         {
             _levelClearedPopupUI.Show(level, finalScore, coins, stars);
-            Debug.Log($"LevelClearedPopupUI.Show called: score={finalScore}, coins={coins}, stars={stars}, MovesUsed={movesUsed}");
         }
         else
         {
@@ -412,7 +409,7 @@ public class BoardController : MonoBehaviour
         {
             AudioManager.instance.ChangeMusicVolume(0.4f);
             AudioManager.instance.PlaySFX(16);
-            await WaitFrames(25);
+            //await WaitFrames(25);
             AudioManager.instance.ChangeMusicVolume(1f);
         }
 
@@ -507,17 +504,21 @@ public class BoardController : MonoBehaviour
         _isBusy = false;
     }
 
-    private async Task WaitFrames(int frameCount)
-    {
-        for (int i = 0; i < frameCount; i++)
-            await Task.Yield();
-    }
+    //private async Task WaitFrames(int frameCount)
+    //{
+    //    for (int i = 0; i < frameCount; i++)
+    //        await Task.Yield();
+    //}
+
     private void UpdateTimerUI()
     {
-        float remaining = _timerBombEndTime - Time.time;
-        remaining = Mathf.Max(0f, remaining);
-
+        float remaining = Mathf.Max(0f, _timerBombEndTime - Time.time);
         int seconds = Mathf.CeilToInt(remaining);
+
+        if (seconds == _lastShownTimerSecond)
+            return;
+
+        _lastShownTimerSecond = seconds;
         _view.SetTimerSeconds(seconds);
     }
     private bool AreAllGoalsComplete()

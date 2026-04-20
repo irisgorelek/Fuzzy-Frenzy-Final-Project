@@ -58,7 +58,14 @@ public class BoardView : MonoBehaviour
     [SerializeField] private Sprite _bombRingSprite;
     [SerializeField] private Color _bombRingColor = new Color(1f, 1f, 1f, 0.95f);
 
-
+    private struct GoalRowSpec
+    {
+        public bool IsPrimary;
+        public Sprite Icon;
+        public string Text;
+        public Color Color;
+        public bool IsComplete;
+    }
 
     private Dictionary<Vector2Int, CellView> _cells = new();
     public int _width {get; set;}
@@ -187,18 +194,37 @@ public class BoardView : MonoBehaviour
     }
     public void SetScore(int points, int totalPoints)
     {
-        ClearGoalRows();
-        AddPrimaryGoalRow($"Points: {points}/{totalPoints}");
+        ApplyGoalRows(new List<GoalRowSpec>
+    {
+        new GoalRowSpec
+        {
+            IsPrimary = true,
+            Icon = null,
+            Text = $"Points: {points}/{totalPoints}",
+            Color = Color.white,
+            IsComplete = points >= totalPoints
+        }
+    });
     }
     public void SetMatchedAnimals(int animals, int goal)
     {
-        ClearGoalRows();
         int remaining = Mathf.Max(0, goal - animals);
-        AddPrimaryGoalRow($"Matches: {remaining}");
+
+        ApplyGoalRows(new List<GoalRowSpec>
+    {
+        new GoalRowSpec
+        {
+            IsPrimary = true,
+            Icon = null,
+            Text = $"Matches: {remaining}",
+            Color = Color.white,
+            IsComplete = animals >= goal
+        }
+    });
     }
     public void SetCollectGoals(List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
-        ClearGoalRows();
+        var specs = new List<GoalRowSpec>();
 
         foreach (var g in goals)
         {
@@ -209,9 +235,19 @@ public class BoardView : MonoBehaviour
             int remaining = Mathf.Max(0, g.amount - have);
             bool isComplete = have >= g.amount;
 
-            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete); // HERE - it creates a different row instead of just changing the text. <- BUG
+            specs.Add(new GoalRowSpec
+            {
+                IsPrimary = false,
+                Icon = g.animal._sprite,
+                Text = remaining.ToString(),
+                Color = g.animal.color,
+                IsComplete = isComplete
+            });
         }
+
+        ApplyGoalRows(specs);
     }
+
     private void ClearGoalRows()
     {
         for (int i = 0; i < _rows.Count; i++)
@@ -470,9 +506,17 @@ public class BoardView : MonoBehaviour
     // For level 10
     public void SetPointsAndCollectGoals(int points, int pointsGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
-        ClearGoalRows();
-
-        AddPrimaryGoalRow($"Points: {points}/{pointsGoal}", points >= pointsGoal);
+        var specs = new List<GoalRowSpec>
+    {
+        new GoalRowSpec
+        {
+            IsPrimary = true,
+            Icon = null,
+            Text = $"Points: {points}/{pointsGoal}",
+            Color = Color.white,
+            IsComplete = points >= pointsGoal
+        }
+    };
 
         foreach (var g in goals)
         {
@@ -483,16 +527,34 @@ public class BoardView : MonoBehaviour
             int remaining = Mathf.Max(0, g.amount - have);
             bool isComplete = have >= g.amount;
 
-            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete);
+            specs.Add(new GoalRowSpec
+            {
+                IsPrimary = false,
+                Icon = g.animal._sprite,
+                Text = remaining.ToString(),
+                Color = g.animal.color,
+                IsComplete = isComplete
+            });
         }
+
+        ApplyGoalRows(specs);
     }
 
     public void SetMatchesAndCollectGoals(int matched, int matchGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
     {
-        ClearGoalRows();
-
         int remainingMatches = Mathf.Max(0, matchGoal - matched);
-        AddPrimaryGoalRow(remainingMatches.ToString(), matched >= matchGoal);
+
+        var specs = new List<GoalRowSpec>
+    {
+        new GoalRowSpec
+        {
+            IsPrimary = true,
+            Icon = null,
+            Text = remainingMatches.ToString(),
+            Color = Color.white,
+            IsComplete = matched >= matchGoal
+        }
+    };
 
         foreach (var g in goals)
         {
@@ -503,8 +565,17 @@ public class BoardView : MonoBehaviour
             int remaining = Mathf.Max(0, g.amount - have);
             bool isComplete = have >= g.amount;
 
-            AddAnimalGoalRow(g.animal._sprite, remaining.ToString(), g.animal.color, isComplete);
+            specs.Add(new GoalRowSpec
+            {
+                IsPrimary = false,
+                Icon = g.animal._sprite,
+                Text = remaining.ToString(),
+                Color = g.animal.color,
+                IsComplete = isComplete
+            });
         }
+
+        ApplyGoalRows(specs);
     }
 
     // Animate the gravity 
@@ -1245,5 +1316,51 @@ public class BoardView : MonoBehaviour
     private void AddAnimalGoalRow(Sprite icon, string text, Color color, bool isComplete = false)
     {
         AddGoalRow(_animalGoalRowPrefab, icon, text, color, isComplete);
+    }
+
+    private void ApplyGoalRows(List<GoalRowSpec> specs)
+    {
+        if (!GoalLayoutMatches(specs))
+            RebuildGoalRows(specs);
+
+        for (int i = 0; i < specs.Count; i++)
+        {
+            var spec = specs[i];
+            var row = _rows[i];
+            row.transform.SetSiblingIndex(i);
+            row.Set(spec.Icon, spec.Text, spec.Color, spec.IsComplete);
+        }
+    }
+
+    private bool GoalLayoutMatches(List<GoalRowSpec> specs)
+    {
+        if (_rows.Count != specs.Count)
+            return false;
+
+        for (int i = 0; i < specs.Count; i++)
+        {
+            if (_rows[i] == null)
+                return false;
+
+            bool rowIsPrimary = _isPrimaryGoalRow.TryGetValue(_rows[i], out bool cachedIsPrimary) && cachedIsPrimary;
+            if (rowIsPrimary != specs[i].IsPrimary)
+                return false;
+        }
+
+        return true;
+    }
+
+    private void RebuildGoalRows(List<GoalRowSpec> specs)
+    {
+        ClearGoalRows();
+
+        for (int i = 0; i < specs.Count; i++)
+        {
+            var spec = specs[i];
+            var prefab = spec.IsPrimary ? _primaryGoalRowPrefab : _animalGoalRowPrefab;
+            var row = GetGoalRow(prefab, spec.IsPrimary);
+            row.transform.SetSiblingIndex(i);
+            _rows.Add(row);
+        }
     }
 }

@@ -583,6 +583,7 @@ public class Board
         foreach (var cell in toRemove) // HERE //
         {
             _grid[cell.x, cell.y] = null;
+            OnAnimalsDestroyed?.Invoke(_boneBlock._id,1);
         }
     }
 

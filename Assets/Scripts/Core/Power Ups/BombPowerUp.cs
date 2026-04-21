@@ -91,7 +91,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _boardView.SwapsEnabled = false;
         _boardView.CellTapped += OnCellTapped;
 
-        ShowArmedButtonVfx();
+        //ShowArmedButtonVfx(); - The VFX looks bad with the current UI (Might add something else in a future update)
 
         Debug.Log("Armed bomb");
     }

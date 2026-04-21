@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14157cb3ec7cd6849852d339f1b4f70f, type: 3}
   m_Name: ScoreAchievement
   m_EditorClassIdentifier: FuzzyFrenzy.Data::AchievementSO
-  _id: score_500_total
+  _id: score_1000_total
   _title: Point Machine
-  _description: Score a total of 500 points.
+  _description: Score a total of 1000 points.
   _icon: {fileID: 0}
   _category: 3
-  _goal: 500
+  _goal: 1000
   _animalId: 
   _powerUpName: 

@@ -29,7 +29,10 @@ public class LevelClearedPopupUI : MonoBehaviour
     [Header("Fireworks")]
     [SerializeField] private GameObject fireworksRoot;
 
-        Sequence _sequence;
+    [Header("Achievement")]
+    [SerializeField] private ScoreEventChannelSO scoreAchievementChannel;
+
+    Sequence _sequence;
 
     void Reset()
     {
@@ -49,6 +52,11 @@ public class LevelClearedPopupUI : MonoBehaviour
         if (levelText != null)
             levelText.text = $"{levelPrefix}{levelIndex}";
         int displayScore = finalScore * scoreDisplayMultiplier;
+
+        int finalShownScore = Mathf.RoundToInt(displayScore * (starsEarned / 3f));
+
+        if (scoreAchievementChannel != null)
+            scoreAchievementChannel.RaiseEvent(finalShownScore);
 
         // 1) Reset state
         ResetUIState(coinsEarned);
@@ -141,6 +149,7 @@ public class LevelClearedPopupUI : MonoBehaviour
                     shownScore = x;
                     if (scoreText != null)
                         scoreText.text = shownScore.ToString();
+
                 }, target, scoreChunkDuration)
                 .SetEase(Ease.OutCubic)
             );

@@ -137,8 +137,8 @@ public class BoardController : MonoBehaviour
         _collected.Clear();
         _board.OnAnimalsDestroyed = HandleAnimalsDestroyed;
 
-        _board.OnScoreAdded = amount => _scoreEventChannelSO.RaiseEvent(amount);
-        _board.OnScoreAdded = amount => _levelScoreEventChannelSO.RaiseEvent(amount); // In-Level
+        //_board.OnScoreAdded = amount => _scoreEventChannelSO.RaiseEvent(amount);
+        _board.OnScoreAdded += amount => _levelScoreEventChannelSO.RaiseEvent(amount); // In-Level
 
         _moveCounter.InitializeMoves(_cfg.maxMoves);
 

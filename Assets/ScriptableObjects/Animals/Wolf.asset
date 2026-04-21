@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Animal
   _id: wolf
   _sprite: {fileID: -8591260587891477783, guid: fa9584a778f42bc459b2e6e81cfc9815, type: 3}
-  _points: 5
+  _points: 1
   color: {r: 1, g: 1, b: 1, a: 1}
   _spawnWeight: 0.25
   _canMatch: 1

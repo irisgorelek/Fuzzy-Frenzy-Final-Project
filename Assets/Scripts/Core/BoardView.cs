@@ -600,6 +600,9 @@ public class BoardView : MonoBehaviour
     {
         var tcs = new TaskCompletionSource<bool>();
 
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFXPitchAdjusted(2, 0.5f); // Play bone sound
+
         if (!_cells.TryGetValue(wolfCell, out var wolfSource) ||
             !_cells.TryGetValue(sheepCell, out var sheepSource))
         {

@@ -397,6 +397,7 @@ public class BoardController : MonoBehaviour
 
             // 2. Only now this sheep turns into bones
             _view.RefreshCellSprite(eat.sheep, _board);
+
             UpdateGoalUI();
         }
 

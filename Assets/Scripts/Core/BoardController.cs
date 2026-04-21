@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
 
 public class BoardController : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class BoardController : MonoBehaviour
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
     private bool _isLevelOver = false;
+    private readonly Queue<(Vector2Int wolf, Vector2Int sheep)> _pendingWolfEats = new(); // Shich wolf ate which sheep
 
     private Dictionary<string, int> _collected = new Dictionary<string, int>(); // Track collected animals
 
@@ -38,7 +40,7 @@ public class BoardController : MonoBehaviour
     private bool _timerBombResolving;
     private int _lastShownTimerSecond = -1;
 
-    public System.Action<bool> OnTimerBombStateChanged;
+    public Action<bool> OnTimerBombStateChanged;
 
     public int GetWidth() => _cfg.weidth;
     public int GetHeight() => _cfg.height;
@@ -126,6 +128,11 @@ public class BoardController : MonoBehaviour
     {
         // Technical
         _board = new Board(_cfg);
+
+        _board.OnWolfAteSheep += (wolf, sheep) =>
+        {
+            _pendingWolfEats.Enqueue((wolf, sheep));
+        };
 
         _collected.Clear();
         _board.OnAnimalsDestroyed = HandleAnimalsDestroyed;
@@ -376,6 +383,22 @@ public class BoardController : MonoBehaviour
 
             if (!_isLevelOver && !AreAllGoalsComplete())
                 await EnsurePlayableBoardAsync();
+        }
+
+        // Only after cascades are fully done:
+        _board.ResolveWolfSheepAfterCascades();
+
+        while (_pendingWolfEats.Count > 0)
+        {
+            var eat = _pendingWolfEats.Dequeue();
+
+            // 1. Wolf nudges
+            await _view.AnimateWolfNudge(eat.wolf, eat.sheep, 0.20f);
+
+            // 2. Only now this sheep turns into bones
+            _view.RefreshCellSprite(eat.sheep, _board);
+
+            UpdateGoalUI();
         }
 
         TryHandleLevelComplete();

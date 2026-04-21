@@ -14,6 +14,7 @@ public class BoardController : MonoBehaviour
     [SerializeField] private LevelClearedPopupUI _levelClearedPopupUI;
     [SerializeField] private GameObject _levelLostPopup;
     //[SerializeField] private int framesBetweenSteps = 5;
+    [SerializeField] private LevelVFXToggle _levelVFXToggle;
 
     [Header("Rewards Configs")]
     [SerializeField] private RewardsConfig _rewards;
@@ -24,6 +25,8 @@ public class BoardController : MonoBehaviour
     [SerializeField] private ScoreEventChannelSO _scoreEventChannelSO;
 
     [SerializeField] private LevelScoreEventChannelSO _levelScoreEventChannelSO;
+
+    [Header("Speech Bubble Configs")]
     [SerializeField] private AnimalSpeechConfig _speechConfig;
     [SerializeField] private SpeechBubblePresenter _speechBubblePresenter;
     [SerializeField] private float _normalBubbleDelaySeconds = 2.5f;
@@ -281,7 +284,12 @@ public class BoardController : MonoBehaviour
         if (_moveCounter.MovesLeft <= 0)
         {
             _isLevelOver = true;
+            
+            if (_levelVFXToggle != null)
+                _levelVFXToggle.SetCurrentVFXActive(false);
+
             _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
+
             if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
             _isBusy = false;
             return;
@@ -406,6 +414,9 @@ public class BoardController : MonoBehaviour
 
         _isLevelOver = true;
         
+        if (_levelVFXToggle != null)
+            _levelVFXToggle.SetCurrentVFXActive(false);
+
         _levelCompletedChannelSO?.RaiseEvent(_cfg.levelIndex);
 
         int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;

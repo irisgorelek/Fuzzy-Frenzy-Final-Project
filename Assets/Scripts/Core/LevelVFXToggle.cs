@@ -52,4 +52,23 @@ public class LevelVFXToggle : MonoBehaviour
             r.root.SetActive(enabled);
         }
     }
+
+    //public void SetCurrentVFXActive(bool active)
+    //{
+    //    foreach (var r in roots)
+    //    {
+    //        if (r.root == null) continue;
+    //        r.root.SetActive(active);
+    //    }
+    //}
+
+    public void SetCurrentVFXActive(bool active)
+    {
+        foreach (var r in roots)
+        {
+            if (r.root == null) continue;
+            if (r.root.activeSelf != active)
+                r.root.SetActive(active);
+        }
+    }
 }

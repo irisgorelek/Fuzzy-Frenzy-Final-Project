@@ -28,9 +28,12 @@ public class PowerUpButtonFeedback : MonoBehaviour
     [SerializeField] private float _stateTweenDuration = 0.12f;
     [SerializeField] private float _pressDuration = 0.06f;
     [SerializeField] private float _successDuration = 0.18f;
+    [SerializeField] private float _holdPulseScale = 1.18f;
+    [SerializeField] private float _holdPulseDuration = 0.42f;
 
     private Tween _scaleTween;
     private Tween _colorTween;
+    private Tween _holdTween;
 
     private void Awake()
     {
@@ -44,6 +47,22 @@ public class PowerUpButtonFeedback : MonoBehaviour
             _canvasGroup = GetComponent<CanvasGroup>();
     }
 
+    private void OnDisable()
+    {
+        _scaleTween?.Kill();
+        _colorTween?.Kill();
+        _holdTween?.Kill();
+
+        if (_iconRect != null)
+            _iconRect.localScale = Vector3.one * _normalScale;
+
+        if (_iconImage != null)
+            _iconImage.color = _normalColor;
+
+        if (_selectedFrame != null)
+            _selectedFrame.SetActive(false);
+    }
+
     public void SetSelected(bool selected)
     {
         if (_iconImage == null || _iconRect == null)
@@ -51,6 +70,7 @@ public class PowerUpButtonFeedback : MonoBehaviour
 
         _scaleTween?.Kill();
         _colorTween?.Kill();
+        _holdTween?.Kill();
 
         if (_selectedFrame != null)
             _selectedFrame.SetActive(selected);
@@ -120,5 +140,32 @@ public class PowerUpButtonFeedback : MonoBehaviour
             .DOScale(1.18f, 0.12f)
             .SetLoops(2, LoopType.Yoyo)
             .SetEase(Ease.OutQuad);
+    }
+
+    public void StartHoldLoop()
+    {
+        if (_iconRect == null || _iconImage == null)
+            return;
+
+        _scaleTween?.Kill();
+        _colorTween?.Kill();
+        _holdTween?.Kill();
+
+        if (_selectedFrame != null)
+            _selectedFrame.SetActive(true);
+
+        _iconImage.color = _selectedColor;
+        _iconRect.localScale = Vector3.one * _selectedScale;
+
+        _holdTween = _iconRect
+            .DOScale(_holdPulseScale, _holdPulseDuration)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    public void StopHoldLoop()
+    {
+        _holdTween?.Kill();
+        _holdTween = null;
     }
 }

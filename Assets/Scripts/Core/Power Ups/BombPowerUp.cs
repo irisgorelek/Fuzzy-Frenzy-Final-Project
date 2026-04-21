@@ -67,12 +67,14 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_armed)
         {
             UnarmBomb();
+            _feedback?.StopHoldLoop();
             _feedback?.SetSelected(false);
         }
         else
         {
             ArmBomb();
             _feedback?.SetSelected(true);
+            _feedback?.StartHoldLoop();
         }
     }
 
@@ -109,9 +111,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void OnCellTapped(Vector2Int coord)
     {
-        if (!_armed)
-            return;
-
+        _feedback?.StopHoldLoop();
         UnarmBomb();
         _feedback?.SetSelected(false);
 
@@ -156,7 +156,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _powerUpChannel.RaiseEvent("bomb");
         RefreshAmount();
 
-        _feedback?.PlaySuccess();
+        //_feedback?.PlaySuccess();
         _feedback?.PopAmount();
         _boardView.SwapsEnabled = true;
 

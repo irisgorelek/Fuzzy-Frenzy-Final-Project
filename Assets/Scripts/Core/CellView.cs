@@ -6,9 +6,12 @@ using UnityEngine.UI;
 
 public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
+    [Header("Animal Sprite")]
     [SerializeField] private Image _image;
 
     [Header("Highlight Juice")]
+    [SerializeField] private Image _highlightImage;
+    [SerializeField] private float _highlightScale = 1.12f;
     [SerializeField] private float _selectedScale = 1.08f;
     [SerializeField] private float _pulseDuration = 0.18f;
     [SerializeField] private Vector2 _outlineDistance = new Vector2(10f, 10f);
@@ -57,6 +60,9 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         _image.sprite = sprite;
         _image.color = color;
+
+        if (_highlightImage != null)
+            _highlightImage.sprite = sprite;
     }
 
     public void ConfigureHighlight(Color selectedColor, Color normalColor)
@@ -75,18 +81,21 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         _pulseTween?.Kill();
         ImageRect.DOKill();
 
+        if (_highlightImage != null)
+        {
+            _highlightImage.enabled = on;
+            _highlightImage.color = _selectedColor;
+            _highlightImage.rectTransform.localScale = on
+                ? _baseScale * _highlightScale
+                : _baseScale;
+        }
+
         if (on)
         {
-            _outline.enabled = true;
-            _outline.effectColor = _selectedColor;
-            _outline.effectDistance = _outlineDistance;
-
             ImageRect.localScale = _baseScale;
 
-            // tiny pop on touch
             ImageRect.DOPunchScale(Vector3.one * 0.08f, 0.12f, 1, 0f);
 
-            // soft pulse while selected
             _pulseTween = ImageRect
                 .DOScale(_baseScale * _selectedScale, _pulseDuration)
                 .SetEase(Ease.InOutSine)
@@ -94,8 +103,6 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         }
         else
         {
-            _outline.effectColor = _normalColor;
-            _outline.enabled = false;
             ImageRect.localScale = _baseScale;
         }
     }

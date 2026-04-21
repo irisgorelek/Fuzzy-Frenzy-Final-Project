@@ -32,18 +32,27 @@ MonoBehaviour:
   - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
     lines:
     - Howdy!
-    - Let's go already. Are you a chicken or something?
+    - Go! Are you a chicken or something?
   - animal: {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
     lines:
-    - Oh, I should say something clever... Oink?
+    - Should I say something clever? ...Oink?
     - Looking for some dirt?
   - animal: {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
     lines:
     - Wanna to talk about the weather?
+    - I like the sound of rain.
+  - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+    lines:
+    - That sheep needs a backbone. Soon.
+    - Hello, hello.
+  - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+    lines:
+    - Bhaaaa!!!!!
+    - This COW only talks about the weather.
   triggeredEntries:
   - levelIndex: 6
     triggerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
-    speakerAnimal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
+    speakerAnimal: {fileID: 0}
     lines:
     - Ahhh! Where did that sheep go?
     - B..b... bones?!
@@ -53,3 +62,8 @@ MonoBehaviour:
     lines:
     - At last, you found me!
     - I'm pieced. What do you want?
+  - levelIndex: 5
+    triggerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
+    speakerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
+    lines:
+    - Told ya... Hit me twice to free me!

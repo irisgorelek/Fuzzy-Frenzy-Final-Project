@@ -17,7 +17,12 @@ public class SpeechBubblePresenter : MonoBehaviour
         public Sprite rightSprite;
         public TextMeshProUGUI speechText;
         public Button continueButton;
+        [Tooltip("Fallback if left/right are not assigned.")]
         public Image speakerImage;
+        [Tooltip("Visual-novel left slot (place at bottom-left).")]
+        public Image speakerImageLeft;
+        [Tooltip("Visual-novel right slot (place at bottom-right).")]
+        public Image speakerImageRight;
         public UIPopupTween popupTween;
         public UISlideInTween slideTween;
     }
@@ -50,13 +55,14 @@ public class SpeechBubblePresenter : MonoBehaviour
         UnbindButton(_triggered);
     }
 
-    public async Task ShowTutorialAsync(Sprite speakerSprite, IList<string> lines, bool mirrored)
+    /// <param name="useRightSide">Random per step: left bubble + left speaker vs right bubble + right speaker.</param>
+    public async Task ShowTutorialAsync(Sprite speakerSprite, IList<string> lines, bool useRightSide)
     {
         if (lines == null || lines.Count == 0)
             return;
 
-        SetupModeVisuals(_tutorial, mirrored, showSpeaker: true, speakerSprite);
-        PlayShow(_tutorial, fromRight: mirrored);
+        SetupModeVisuals(_tutorial, useRightSide, showSpeaker: true, speakerSprite);
+        PlayShow(_tutorial, fromRight: useRightSide);
 
         for (int i = 0; i < lines.Count; i++)
         {
@@ -66,30 +72,30 @@ public class SpeechBubblePresenter : MonoBehaviour
             await _clickTcs.Task;
         }
 
-        PlayHide(_tutorial, toRight: mirrored, deactivateAfterHide: true);
+        PlayHide(_tutorial, toRight: useRightSide, deactivateAfterHide: true);
     }
 
-    public async Task ShowNormalAsync(IList<string> lines, Vector3 speakerWorldPosition, bool mirrored, float totalSeconds)
+    public async Task ShowNormalAsync(IList<string> lines, Vector3 speakerWorldPosition, bool useRightSide, float totalSeconds)
     {
         if (lines == null || lines.Count == 0)
             return;
 
-        SetupModeVisuals(_normal, mirrored, showSpeaker: false, null);
+        SetupModeVisuals(_normal, useRightSide, showSpeaker: false, null);
         PositionNormalBubbleAboveSpeaker(speakerWorldPosition);
-        PlayShow(_normal, fromRight: mirrored);
+        PlayShow(_normal, fromRight: useRightSide);
         await RunAutoLineSequence(_normal.speechText, lines, totalSeconds);
-        PlayHide(_normal, toRight: mirrored, deactivateAfterHide: true);
+        PlayHide(_normal, toRight: useRightSide, deactivateAfterHide: true);
     }
 
-    public async Task ShowTriggeredAsync(Sprite speakerSprite, IList<string> lines, bool mirrored, float totalSeconds)
+    public async Task ShowTriggeredAsync(Sprite speakerSprite, IList<string> lines, bool useRightSide, float totalSeconds)
     {
         if (lines == null || lines.Count == 0)
             return;
 
-        SetupModeVisuals(_triggered, mirrored, showSpeaker: true, speakerSprite);
-        PlayShow(_triggered, fromRight: mirrored);
+        SetupModeVisuals(_triggered, useRightSide, showSpeaker: true, speakerSprite);
+        PlayShow(_triggered, fromRight: useRightSide);
         await RunAutoLineSequence(_triggered.speechText, lines, totalSeconds);
-        PlayHide(_triggered, toRight: mirrored, deactivateAfterHide: true);
+        PlayHide(_triggered, toRight: useRightSide, deactivateAfterHide: true);
     }
 
     private async Task RunAutoLineSequence(TextMeshProUGUI textField, IList<string> lines, float totalSeconds)
@@ -129,7 +135,7 @@ public class SpeechBubblePresenter : MonoBehaviour
         mode.root.SetActive(false);
     }
 
-    private void SetupModeVisuals(BubbleModeRefs mode, bool mirrored, bool showSpeaker, Sprite speakerSprite)
+    private void SetupModeVisuals(BubbleModeRefs mode, bool useRightSide, bool showSpeaker, Sprite speakerSprite)
     {
         if (mode == null || mode.root == null)
             return;
@@ -138,15 +144,51 @@ public class SpeechBubblePresenter : MonoBehaviour
 
         if (mode.bubbleImage != null)
         {
-            if (mirrored && mode.rightSprite != null)
+            if (useRightSide && mode.rightSprite != null)
                 mode.bubbleImage.sprite = mode.rightSprite;
-            else if (!mirrored && mode.leftSprite != null)
+            else if (!useRightSide && mode.leftSprite != null)
+                mode.bubbleImage.sprite = mode.leftSprite;
+            else if (mode.leftSprite != null)
                 mode.bubbleImage.sprite = mode.leftSprite;
         }
 
-        if (mode.speakerImage != null)
+        SetupSpeakerSlots(mode, speakerSprite, useRightSide, showSpeaker);
+    }
+
+    private static void SetupSpeakerSlots(BubbleModeRefs mode, Sprite speakerSprite, bool useRightSide, bool showSpeaker)
+    {
+        if (mode == null)
+            return;
+
+        if (!showSpeaker)
         {
-            mode.speakerImage.enabled = showSpeaker && speakerSprite != null;
+            if (mode.speakerImageLeft != null) mode.speakerImageLeft.enabled = false;
+            if (mode.speakerImageRight != null) mode.speakerImageRight.enabled = false;
+            if (mode.speakerImage != null) mode.speakerImage.enabled = false;
+            return;
+        }
+
+        bool hasDual = mode.speakerImageLeft != null && mode.speakerImageRight != null;
+        if (hasDual)
+        {
+            if (mode.speakerImageLeft != null)
+            {
+                mode.speakerImageLeft.enabled = !useRightSide && speakerSprite != null;
+                mode.speakerImageLeft.sprite = speakerSprite;
+            }
+
+            if (mode.speakerImageRight != null)
+            {
+                mode.speakerImageRight.enabled = useRightSide && speakerSprite != null;
+                mode.speakerImageRight.sprite = speakerSprite;
+            }
+
+            if (mode.speakerImage != null)
+                mode.speakerImage.enabled = false;
+        }
+        else if (mode.speakerImage != null)
+        {
+            mode.speakerImage.enabled = speakerSprite != null;
             mode.speakerImage.sprite = speakerSprite;
         }
     }

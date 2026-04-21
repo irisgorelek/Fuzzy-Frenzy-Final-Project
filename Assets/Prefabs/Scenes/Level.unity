@@ -5950,6 +5950,81 @@ RectTransform:
   m_AnchoredPosition: {x: 0.01210022, y: 0.0074005127}
   m_SizeDelta: {x: 0.7534, y: 0.7687}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &388258039
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388258040}
+  - component: {fileID: 388258042}
+  - component: {fileID: 388258041}
+  m_Layer: 5
+  m_Name: Animal Image R
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &388258040
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388258039}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1716324681}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -75, y: 62}
+  m_SizeDelta: {x: 150, y: 150}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &388258041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388258039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &388258042
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388258039}
+  m_CullTransparentMesh: 1
 --- !u!1 &471077409
 GameObject:
   m_ObjectHideFlags: 0
@@ -6365,7 +6440,7 @@ GameObject:
   - component: {fileID: 663113702}
   - component: {fileID: 663113703}
   m_Layer: 5
-  m_Name: Animal Image
+  m_Name: Animal Image L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6387,7 +6462,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 75, y: 62}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &663113702
@@ -17908,9 +17983,9 @@ RectTransform:
   - {fileID: 981571649}
   m_Father: {fileID: 1716324681}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -125, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 220, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1107971780
@@ -18255,8 +18330,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.16, y: 0}
-  m_SizeDelta: {x: 134.77, y: 39.32}
+  m_AnchoredPosition: {x: 0.86, y: 4.93}
+  m_SizeDelta: {x: 77.34, y: 67.12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1268088738
 MonoBehaviour:
@@ -18305,8 +18380,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -18389,6 +18464,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1672242499}
+  - {fileID: 1980788226}
   - {fileID: 471077410}
   m_Father: {fileID: 1566517729}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19586,8 +19662,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: FunzzyFrenzy.core::SpeechBubblePresenter
   _screenBoundsRect: {fileID: 244020273}
   _uiCamera: {fileID: 519420031}
-  _normalYOffset: 140
-  _screenPadding: 24
+  _normalYOffset: 120
+  _screenPadding: 55
   _tutorial:
     root: {fileID: 1716324680}
     bubbleRect: {fileID: 1107971779}
@@ -19596,18 +19672,22 @@ MonoBehaviour:
     rightSprite: {fileID: 9194405636415078204, guid: f63685206f772a24ca7c6a925fe03dfe, type: 3}
     speechText: {fileID: 200570785}
     continueButton: {fileID: 981571650}
-    speakerImage: {fileID: 663113703}
+    speakerImage: {fileID: 0}
+    speakerImageLeft: {fileID: 663113703}
+    speakerImageRight: {fileID: 388258041}
     popupTween: {fileID: 1716324682}
     slideTween: {fileID: 0}
   _normal:
     root: {fileID: 2121941171}
     bubbleRect: {fileID: 1650064350}
     bubbleImage: {fileID: 1650064351}
-    leftSprite: {fileID: 5318543539490761355, guid: b1ec03b70e2af024cb9c359ebb8c23b0, type: 3}
-    rightSprite: {fileID: -6986841780345360287, guid: c2f04d05f07c90b4fafc549268958686, type: 3}
+    leftSprite: {fileID: 8261477068500582047, guid: 61c2709c05125394aae3fb3444e17200, type: 3}
+    rightSprite: {fileID: 4961098706882438774, guid: bc60e9af93fad4140a7eb57905588ce3, type: 3}
     speechText: {fileID: 1268088738}
     continueButton: {fileID: 0}
     speakerImage: {fileID: 0}
+    speakerImageLeft: {fileID: 0}
+    speakerImageRight: {fileID: 0}
     popupTween: {fileID: 2121941173}
     slideTween: {fileID: 0}
   _triggered:
@@ -19618,7 +19698,9 @@ MonoBehaviour:
     rightSprite: {fileID: -173984126548746751, guid: 4196bca0a2275d24cbdf5b43a61a4a7f, type: 3}
     speechText: {fileID: 1703455127}
     continueButton: {fileID: 0}
-    speakerImage: {fileID: 1672242500}
+    speakerImage: {fileID: 0}
+    speakerImageLeft: {fileID: 1672242500}
+    speakerImageRight: {fileID: 1980788227}
     popupTween: {fileID: 0}
     slideTween: {fileID: 1279486484}
 --- !u!225 &1566517731
@@ -24643,8 +24725,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 40, y: 84}
-  m_SizeDelta: {x: 180, y: 90}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1650064351
 MonoBehaviour:
@@ -24666,7 +24748,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6986841780345360287, guid: c2f04d05f07c90b4fafc549268958686, type: 3}
+  m_Sprite: {fileID: 4961098706882438774, guid: bc60e9af93fad4140a7eb57905588ce3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -24798,7 +24880,7 @@ GameObject:
   - component: {fileID: 1672242501}
   - component: {fileID: 1672242500}
   m_Layer: 5
-  m_Name: Animal Image
+  m_Name: Animal Image L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25359,13 +25441,14 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 663113700}
+  - {fileID: 388258040}
   - {fileID: 1107971779}
   m_Father: {fileID: 1566517729}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -57.27002, y: -451.12}
-  m_SizeDelta: {x: -189.33, y: -902.24}
+  m_AnchoredPosition: {x: 0.010009766, y: -451.11987}
+  m_SizeDelta: {x: -74.78, y: -902.24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1716324682
 MonoBehaviour:
@@ -25386,7 +25469,7 @@ MonoBehaviour:
   showEase: 27
   hideDuration: 0.18
   hideScaleTo: 0.85
-  hideEase: 5
+  hideEase: 26
 --- !u!225 &1716324683
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -35785,6 +35868,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1966593336}
   m_CullTransparentMesh: 1
+--- !u!1 &1980788225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1980788226}
+  - component: {fileID: 1980788228}
+  - component: {fileID: 1980788227}
+  m_Layer: 5
+  m_Name: Animal Image R
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1980788226
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1980788225}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1279486483}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 567, y: -56}
+  m_SizeDelta: {x: 200, y: 200}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1980788227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1980788225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1980788228
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1980788225}
+  m_CullTransparentMesh: 1
 --- !u!114 &2044731411 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
@@ -35950,7 +36108,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2121941172
 RectTransform:
   m_ObjectHideFlags: 0
@@ -80594,7 +80752,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: cccd6c098b480ba4e862180a638d5016, type: 2}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _normalBubbleVisibleSeconds
-      value: 2.5
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

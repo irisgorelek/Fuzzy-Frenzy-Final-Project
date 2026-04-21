@@ -58,7 +58,6 @@ public class BoardController : MonoBehaviour
     private readonly BoardHintFinder _hintFinder = new BoardHintFinder();
     private bool _bubbleActive;
     private readonly HashSet<int> _triggeredEntryIndicesShown = new HashSet<int>();
-    private bool _lastSpeakerWasOnRight;
 
     private void Awake()
     {
@@ -140,7 +139,6 @@ public class BoardController : MonoBehaviour
         // Technical
         _board = new Board(_cfg);
         _triggeredEntryIndicesShown.Clear();
-        _lastSpeakerWasOnRight = false;
 
         _collected.Clear();
         _board.OnAnimalsDestroyed = HandleAnimalsDestroyed;
@@ -624,13 +622,11 @@ public class BoardController : MonoBehaviour
                 }
 
                 var speakerCell = matchingCells[UnityEngine.Random.Range(0, matchingCells.Count)];
-                bool speakerOnRight = speakerCell.x >= (_board.Width * 0.5f);
-                bool mirrored = i == 0 ? false : (speakerOnRight != _lastSpeakerWasOnRight);
-                _lastSpeakerWasOnRight = speakerOnRight;
+                bool useRightSide = UnityEngine.Random.Range(0, 2) == 1;
 
                 _board.SetLockedCells(new[] { speakerCell });
                 _view.SetTutorialLockedCell(speakerCell);
-                await _speechBubblePresenter.ShowTutorialAsync(step.animal._sprite, step.lines, mirrored);
+                await _speechBubblePresenter.ShowTutorialAsync(step.animal._sprite, step.lines, useRightSide);
                 _board.ClearLockedCells();
                 _view.SetTutorialLockedCell(null);
             }
@@ -677,8 +673,9 @@ public class BoardController : MonoBehaviour
             {
                 int randomIndex = UnityEngine.Random.Range(0, options.Count);
                 var lines = new List<string> { options[randomIndex] };
-                bool mirrored = coord.x >= (_board.Width * 0.5f);
-                await _speechBubblePresenter.ShowNormalAsync(lines, _view.GetCellWorldPosition(coord), mirrored, _normalBubbleVisibleSeconds);
+                bool useRightSide = coord.x >= (_board.Width * 0.5f);
+                await _view.AnimateBlockedTap(coord);
+                await _speechBubblePresenter.ShowNormalAsync(lines, _view.GetCellWorldPosition(coord), useRightSide, _normalBubbleVisibleSeconds);
                 return;
             }
         }
@@ -699,28 +696,62 @@ public class BoardController : MonoBehaviour
                 continue;
 
             var e = entries[i];
-            if (e.triggerAnimal == null || e.speakerAnimal == null || e.lines == null || e.lines.Count == 0)
+            if (e.triggerAnimal == null || e.lines == null || e.lines.Count == 0)
                 continue;
 
-            if (_board.FindCellsWithAnimal(e.triggerAnimal).Count == 0)
+            var triggerCells = _board.FindCellsWithAnimal(e.triggerAnimal);
+            if (triggerCells.Count == 0)
                 continue;
 
-            var speakerCells = _board.FindCellsWithAnimal(e.speakerAnimal);
-            if (speakerCells.Count == 0)
-                continue;
+            var triggerCell = triggerCells[UnityEngine.Random.Range(0, triggerCells.Count)];
 
-            var speakerCell = speakerCells[UnityEngine.Random.Range(0, speakerCells.Count)];
-            bool speakerOnRight = speakerCell.x >= (_board.Width * 0.5f);
-            bool mirrored = speakerOnRight != _lastSpeakerWasOnRight;
-            _lastSpeakerWasOnRight = speakerOnRight;
+            Vector2Int speakerCell;
+            Animal speakerAnimal;
+            if (e.speakerAnimal != null)
+            {
+                var speakerCells = _board.FindCellsWithAnimal(e.speakerAnimal);
+                if (speakerCells.Count == 0)
+                    continue;
+
+                speakerCell = speakerCells[UnityEngine.Random.Range(0, speakerCells.Count)];
+                speakerAnimal = e.speakerAnimal;
+            }
+            else
+            {
+                var candidates = new List<Vector2Int>();
+                for (int x = 0; x < _board.Width; x++)
+                {
+                    for (int y = 0; y < _board.Height; y++)
+                    {
+                        var c = new Vector2Int(x, y);
+                        if (_board.GetAnimalFromCell(c) != null)
+                            candidates.Add(c);
+                    }
+                }
+
+                if (candidates.Count == 0)
+                    continue;
+
+                speakerCell = candidates[UnityEngine.Random.Range(0, candidates.Count)];
+                speakerAnimal = _board.GetAnimalFromCell(speakerCell);
+                if (speakerAnimal == null)
+                    continue;
+            }
 
             int randomLineIndex = UnityEngine.Random.Range(0, e.lines.Count);
             var lines = new List<string> { e.lines[randomLineIndex] };
 
+            if (triggerCell == speakerCell)
+                await _view.AnimateBlockedTap(triggerCell);
+            else
+                await Task.WhenAll(_view.AnimateBlockedTap(triggerCell), _view.AnimateBlockedTap(speakerCell));
+
+            bool useRightSide = UnityEngine.Random.Range(0, 2) == 1;
+
             _bubbleActive = true;
             try
             {
-                await _speechBubblePresenter.ShowTriggeredAsync(e.speakerAnimal._sprite, lines, mirrored, _triggeredBubbleVisibleSeconds);
+                await _speechBubblePresenter.ShowTriggeredAsync(speakerAnimal._sprite, lines, useRightSide, _triggeredBubbleVisibleSeconds);
                 _triggeredEntryIndicesShown.Add(i);
             }
             finally

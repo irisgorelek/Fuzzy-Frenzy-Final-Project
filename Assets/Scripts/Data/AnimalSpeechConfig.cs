@@ -60,7 +60,7 @@ public class AnimalSpeechConfig : ScriptableObject
         var result = new List<TriggeredSpeechEntry>();
         for (int i = 0; i < triggeredEntries.Count; i++)
         {
-            if (triggeredEntries[i].levelIndex == levelIndex && triggeredEntries[i].speakerAnimal != null)
+            if (triggeredEntries[i].levelIndex == levelIndex && triggeredEntries[i].triggerAnimal != null)
                 result.Add(triggeredEntries[i]);
         }
         return result;
@@ -93,6 +93,7 @@ public struct TriggeredSpeechEntry
 {
     public int levelIndex;
     public Animal triggerAnimal;
+    [Tooltip("Optional. If empty, a random animal on the board is chosen as the speaker.")]
     public Animal speakerAnimal;
     [TextArea(1, 3)] public List<string> lines; // random pick one
 }

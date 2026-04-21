@@ -17,4 +17,6 @@ MonoBehaviour:
   _description: Complete three different levels.
   _icon: {fileID: 0}
   _category: 0
-  _goal: 0
+  _goal: 3
+  _animalId: 
+  _powerUpName: 

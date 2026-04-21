@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
 
 public class BoardController : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class BoardController : MonoBehaviour
     [SerializeField] private ScoreEventChannelSO _scoreEventChannelSO;
 
     [SerializeField] private LevelScoreEventChannelSO _levelScoreEventChannelSO;
+    [SerializeField] private AnimalSpeechConfig _speechConfig;
+    [SerializeField] private SpeechBubblePresenter _speechBubblePresenter;
+    [SerializeField] private float _normalBubbleDelaySeconds = 2.5f;
+    [SerializeField] private float _normalBubbleVisibleSeconds = 3f;
+    [SerializeField] private float _triggeredBubbleVisibleSeconds = 3f;
 
     public BoardConfig Config => _cfg;
 
@@ -47,6 +53,9 @@ public class BoardController : MonoBehaviour
 
     // For the out of moves shuffle
     private readonly BoardHintFinder _hintFinder = new BoardHintFinder();
+    private bool _bubbleActive;
+    private readonly HashSet<int> _triggeredEntryIndicesShown = new HashSet<int>();
+    private bool _lastSpeakerWasOnRight;
 
     private void Awake()
     {
@@ -70,6 +79,7 @@ public class BoardController : MonoBehaviour
         UpdateGoalUI();
 
         await EnsurePlayableBoardAsync();
+        await HandleLevelStartBubblesAsync();
     }
 
     private void Update()
@@ -126,6 +136,8 @@ public class BoardController : MonoBehaviour
     {
         // Technical
         _board = new Board(_cfg);
+        _triggeredEntryIndicesShown.Clear();
+        _lastSpeakerWasOnRight = false;
 
         _collected.Clear();
         _board.OnAnimalsDestroyed = HandleAnimalsDestroyed;
@@ -148,7 +160,7 @@ public class BoardController : MonoBehaviour
 
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
     {
-        if (_isBusy || _isLevelOver) return;
+        if (_isBusy || _isLevelOver || _bubbleActive) return;
         if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
 
         var a = _board.GetAnimalFromCell(from);
@@ -177,6 +189,7 @@ public class BoardController : MonoBehaviour
                 AudioManager.instance.PlaySFXPitchAdjusted(12, 0.2f); // Play swap sound.
             }
             await _view.AnimateSwap(from, to, 0.18f);
+            await TryShowTriggeredBubbleAsync();
             return;
         }
 
@@ -229,6 +242,7 @@ public class BoardController : MonoBehaviour
             _view.AssignSprites(_board);
 
             await ResolveCascadesAsync();
+            await TryShowTriggeredBubbleAsync();
 
             _isBusy = false;
             return;
@@ -256,6 +270,7 @@ public class BoardController : MonoBehaviour
         _view.AssignSprites(_board); // Sync view to model after swap
         
         await ResolveCascadesAsync();
+        await TryShowTriggeredBubbleAsync();
 
         if (_isLevelOver)
         {
@@ -305,6 +320,7 @@ public class BoardController : MonoBehaviour
 
         await _view.AnimateGravity(fallMoves, spawns, _board, 0.1f);
         await ResolveCascadesAsync();
+        await TryShowTriggeredBubbleAsync();
     }
 
     public void StartTimerBomb(float durationSeconds)
@@ -379,6 +395,7 @@ public class BoardController : MonoBehaviour
         }
 
         TryHandleLevelComplete();
+        await TryShowTriggeredBubbleAsync();
     }
 
     //private async Task<bool> TryHandleLevelCompleteAsync()
@@ -542,6 +559,9 @@ public class BoardController : MonoBehaviour
         if (coord.x < 0 || coord.x >= GetWidth() || coord.y < 0 || coord.y >= GetHeight())
             return false;
 
+        if (_board.IsCellLocked(coord))
+            return false;
+
         var animal = _board.GetAnimalFromCell(coord);
         return animal != null && animal._canSwap;
     }
@@ -552,6 +572,152 @@ public class BoardController : MonoBehaviour
     private bool IsAnySheep(Animal piece)
     {
         return IsAnimal(piece, _cfg.blackSheep);
+    }
+
+    private async Task HandleLevelStartBubblesAsync()
+    {
+        if (_speechConfig == null || _speechBubblePresenter == null || _isLevelOver)
+            return;
+
+        if (_speechConfig.TryGetTutorialLevel(_cfg.levelIndex, out var tutorialLevel))
+        {
+            await ShowTutorialLevelAsync(tutorialLevel);
+            return;
+        }
+
+        await ShowRandomNormalBubbleAsync();
+    }
+
+    private async Task ShowTutorialLevelAsync(TutorialLevelEntry tutorialLevel)
+    {
+        if (tutorialLevel.steps == null || tutorialLevel.steps.Count == 0)
+            return;
+
+        _bubbleActive = true;
+        _isBusy = true;
+        _view.SwapsEnabled = false;
+
+        try
+        {
+            for (int i = 0; i < tutorialLevel.steps.Count; i++)
+            {
+                var step = tutorialLevel.steps[i];
+                if (step.animal == null || step.lines == null || step.lines.Count == 0)
+                    continue;
+
+                var matchingCells = _board.FindCellsWithAnimal(step.animal);
+                if (matchingCells.Count == 0)
+                {
+                    Debug.LogWarning($"Tutorial step skipped: no '{step.animal.name}' on level {_cfg.levelIndex} board.");
+                    continue;
+                }
+
+                var speakerCell = matchingCells[UnityEngine.Random.Range(0, matchingCells.Count)];
+                bool speakerOnRight = speakerCell.x >= (_board.Width * 0.5f);
+                bool mirrored = i == 0 ? false : (speakerOnRight != _lastSpeakerWasOnRight);
+                _lastSpeakerWasOnRight = speakerOnRight;
+
+                _board.SetLockedCells(new[] { speakerCell });
+                _view.SetTutorialLockedCell(speakerCell);
+                await _speechBubblePresenter.ShowTutorialAsync(step.animal._sprite, step.lines, mirrored);
+                _board.ClearLockedCells();
+                _view.SetTutorialLockedCell(null);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"Tutorial bubble ended early: {ex.Message}");
+        }
+        finally
+        {
+            _bubbleActive = false;
+            _isBusy = false;
+            _view.SwapsEnabled = true;
+            _board.ClearLockedCells();
+            _view.SetTutorialLockedCell(null);
+        }
+    }
+
+    private async Task ShowRandomNormalBubbleAsync()
+    {
+        float delay = Mathf.Max(0f, _normalBubbleDelaySeconds);
+        if (delay > 0f)
+            await Task.Delay(Mathf.RoundToInt(delay * 1000f));
+
+        if (_isLevelOver || _speechConfig == null || _speechBubblePresenter == null)
+            return;
+
+        var allCells = new List<Vector2Int>();
+        for (int x = 0; x < _board.Width; x++)
+            for (int y = 0; y < _board.Height; y++)
+                allCells.Add(new Vector2Int(x, y));
+
+        for (int i = allCells.Count - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (allCells[i], allCells[j]) = (allCells[j], allCells[i]);
+        }
+
+        for (int i = 0; i < allCells.Count; i++)
+        {
+            var coord = allCells[i];
+            var animal = _board.GetAnimalFromCell(coord);
+            if (_speechConfig.TryGetRandomNormalLines(animal, out var options))
+            {
+                int randomIndex = UnityEngine.Random.Range(0, options.Count);
+                var lines = new List<string> { options[randomIndex] };
+                bool mirrored = coord.x >= (_board.Width * 0.5f);
+                await _speechBubblePresenter.ShowNormalAsync(lines, _view.GetCellWorldPosition(coord), mirrored, _normalBubbleVisibleSeconds);
+                return;
+            }
+        }
+    }
+
+    private async Task TryShowTriggeredBubbleAsync()
+    {
+        if (_bubbleActive || _isLevelOver || _speechConfig == null || _speechBubblePresenter == null)
+            return;
+
+        var entries = _speechConfig.GetTriggeredEntriesForLevel(_cfg.levelIndex);
+        if (entries.Count == 0)
+            return;
+
+        for (int i = 0; i < entries.Count; i++)
+        {
+            if (_triggeredEntryIndicesShown.Contains(i))
+                continue;
+
+            var e = entries[i];
+            if (e.triggerAnimal == null || e.speakerAnimal == null || e.lines == null || e.lines.Count == 0)
+                continue;
+
+            if (_board.FindCellsWithAnimal(e.triggerAnimal).Count == 0)
+                continue;
+
+            var speakerCells = _board.FindCellsWithAnimal(e.speakerAnimal);
+            if (speakerCells.Count == 0)
+                continue;
+
+            var speakerCell = speakerCells[UnityEngine.Random.Range(0, speakerCells.Count)];
+            bool speakerOnRight = speakerCell.x >= (_board.Width * 0.5f);
+            bool mirrored = speakerOnRight != _lastSpeakerWasOnRight;
+            _lastSpeakerWasOnRight = speakerOnRight;
+
+            int randomLineIndex = UnityEngine.Random.Range(0, e.lines.Count);
+            var lines = new List<string> { e.lines[randomLineIndex] };
+
+            _bubbleActive = true;
+            try
+            {
+                await _speechBubblePresenter.ShowTriggeredAsync(e.speakerAnimal._sprite, lines, mirrored, _triggeredBubbleVisibleSeconds);
+                _triggeredEntryIndicesShown.Add(i);
+            }
+            finally
+            {
+                _bubbleActive = false;
+            }
+            return;
+        }
     }
 
     private async Task AnimateBlackSheepBlastFromCenter(Vector2Int center, bool swipedVertically)

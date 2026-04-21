@@ -25,6 +25,8 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private Color _selectedColor = Color.white;
     private Color _normalColor = Color.clear;
+    private Color _tutorialLockedColor = new Color(1f, 0.9f, 0.35f, 1f);
+    private bool _tutorialLocked;
 
     public event Action<Vector2Int, Vector2> PointerDown;
     public event Action<Vector2Int, Vector2> Drag;
@@ -65,30 +67,51 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         _normalColor = normalColor;
     }
 
+    public void ConfigureTutorialLock(Color lockColor)
+    {
+        _tutorialLockedColor = lockColor;
+    }
+
     public void SetHighlighted(bool on)
     {
         if (_highlighted == on)
             return;
 
         _highlighted = on;
+        ApplyVisualState();
+    }
 
+    public void SetTutorialLocked(bool locked)
+    {
+        if (_tutorialLocked == locked)
+            return;
+
+        _tutorialLocked = locked;
+        ApplyVisualState();
+    }
+
+    private void ApplyVisualState()
+    {
         _pulseTween?.Kill();
         ImageRect.DOKill();
 
-        if (on)
+        if (_highlighted || _tutorialLocked)
         {
             _outline.enabled = true;
-            _outline.effectColor = _selectedColor;
+            _outline.effectColor = _highlighted ? _selectedColor : _tutorialLockedColor;
             _outline.effectDistance = _outlineDistance;
 
             ImageRect.localScale = _baseScale;
 
-            // tiny pop on touch
-            ImageRect.DOPunchScale(Vector3.one * 0.08f, 0.12f, 1, 0f);
+            if (_highlighted)
+            {
+                // tiny pop on touch
+                ImageRect.DOPunchScale(Vector3.one * 0.08f, 0.12f, 1, 0f);
+            }
 
-            // soft pulse while selected
+            float targetScale = _highlighted ? _selectedScale : 1.04f;
             _pulseTween = ImageRect
-                .DOScale(_baseScale * _selectedScale, _pulseDuration)
+                .DOScale(_baseScale * targetScale, _pulseDuration)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo);
         }
@@ -110,6 +133,7 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             _outline.enabled = false;
 
         _highlighted = false;
+        _tutorialLocked = false;
     }
 
     public void OnPointerDown(PointerEventData eventData) => PointerDown?.Invoke(Coord, eventData.position);

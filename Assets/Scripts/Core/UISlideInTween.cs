@@ -68,6 +68,11 @@ public class UISlideInTween : MonoBehaviour
             });
     }
 
+    public void SetFromSide(FromSide side)
+    {
+        from = side;
+    }
+
     void EnsureRefs()
     {
         if (rect == null) rect = GetComponent<RectTransform>();

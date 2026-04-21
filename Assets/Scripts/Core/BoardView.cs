@@ -20,6 +20,7 @@ public class BoardView : MonoBehaviour
     [Header("Highlighting")] // For highlighting
     [SerializeField] Color _selectedColor;
     [SerializeField] Color _normalColor;
+    [SerializeField] Color _tutorialLockedColor = new Color(1f, 0.9f, 0.35f, 1f);
 
     [Header("Animation")]
     [SerializeField] private RectTransform _swapOverlay;
@@ -124,6 +125,7 @@ public class BoardView : MonoBehaviour
                 var cellView = go.GetComponent<CellView>();
                 cellView.Init(coord);
                 cellView.ConfigureHighlight(_selectedColor, _normalColor);
+                cellView.ConfigureTutorialLock(_tutorialLockedColor);
 
                 // Subscribe to raw input events
                 cellView.PointerDown += OnCellPointerDown;
@@ -1149,6 +1151,15 @@ public class BoardView : MonoBehaviour
             return cell.ImageRect.position;
 
         return Vector3.zero;
+    }
+
+    public void SetTutorialLockedCell(Vector2Int? coord)
+    {
+        foreach (var kvp in _cells)
+            kvp.Value.SetTutorialLocked(false);
+
+        if (coord.HasValue && _cells.TryGetValue(coord.Value, out var cell))
+            cell.SetTutorialLocked(true);
     }
 
     public Vector3 GetCellScenePosition(Vector2Int coord, Camera worldCamera, float worldZ = 0f)

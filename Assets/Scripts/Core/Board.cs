@@ -57,6 +57,7 @@ public class Board
 
     public Action<string, int> OnAnimalsDestroyed;
     public Action<int> OnScoreAdded;
+    public Action<Vector2Int, Vector2Int> OnWolfAteSheep;
 
     public Board(BoardConfig config)
     {
@@ -324,7 +325,7 @@ public class Board
         ApplyGravity(fallMoves);
         Refill(spawns);
 
-        ResolveWolfSheepInteractions(fallMoves, spawns);
+        //ResolveWolfSheepInteractions(fallMoves, spawns);
     }
 
     // Apply gravity to the cells
@@ -586,7 +587,29 @@ public class Board
             OnAnimalsDestroyed?.Invoke(_boneBlock._id,1);
         }
     }
+    public void ResolveWolfSheepAfterCascades()
+    {
+        if (_wolf == null || _sheep == null || _boneBlock == null)
+            return;
 
+        bool changed;
+        int safety = 0;
+
+        do
+        {
+            changed = ResolveWolfSheepOnce(out int eatenCount, out int pointsGained);
+
+            if (changed)
+            {
+                if (pointsGained > 0)
+                    OnScoreAdded?.Invoke(pointsGained);
+
+                if (eatenCount > 0)
+                    OnAnimalsDestroyed?.Invoke(_sheep._id, eatenCount);
+            }
+        }
+        while (changed && safety++ < 100);
+    }
     private void ResolveWolfSheepInteractions(List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
     {
         if (_wolf == null || _sheep == null || _boneBlock == null)
@@ -620,23 +643,26 @@ public class Board
         eatenCount = 0;
         pointsGained = 0;
 
-        var sheepToEat = new HashSet<Vector2Int>();
+        var sheepToEat = new List<(Vector2Int sheep, Vector2Int wolf)>();
 
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                if (_grid[x, y] != _sheep) continue;
+                if (_grid[x, y] != _sheep)
+                    continue;
 
-                var cell = new Vector2Int(x, y);
+                var sheepCell = new Vector2Int(x, y);
+
                 for (int d = 0; d < OrthogonalDirs.Length; d++)
                 {
-                    var n = cell + OrthogonalDirs[d];
-                    if (!IsCellInBounds(n)) continue;
+                    var wolfCell = sheepCell + OrthogonalDirs[d];
+                    if (!IsCellInBounds(wolfCell))
+                        continue;
 
-                    if (_grid[n.x, n.y] == _wolf)
+                    if (_grid[wolfCell.x, wolfCell.y] == _wolf)
                     {
-                        sheepToEat.Add(cell);
+                        sheepToEat.Add((sheepCell, wolfCell));
                         break;
                     }
                 }
@@ -646,19 +672,23 @@ public class Board
         if (sheepToEat.Count == 0)
             return false;
 
-        foreach (var cell in sheepToEat)
+        foreach (var pair in sheepToEat)
         {
-            Debug.Log($"Wolf ate sheep at {cell} -> bone");
-            var a = _grid[cell.x, cell.y];
-            if (a == null) continue;
+            var sheepCell = pair.sheep;
+            var sheepAnimal = _grid[sheepCell.x, sheepCell.y];
+            if (sheepAnimal == null)
+                continue;
 
             eatenCount++;
-            _points += a._points; // Add the points of the sheep eaten
-            pointsGained += a._points;
-            _matchedAnimals++; // Add the sheep as 1 match 
+            _points += sheepAnimal._points;
+            pointsGained += sheepAnimal._points;
+            _matchedAnimals++;
 
-            // Sheep turns into a bone block
-            _grid[cell.x, cell.y] = _boneBlock;
+            // Turn sheep into bone
+            _grid[sheepCell.x, sheepCell.y] = _boneBlock;
+
+            // Tell the controller which wolf and which sheep were involved
+            OnWolfAteSheep?.Invoke(pair.wolf, pair.sheep);
         }
 
         return true;
@@ -812,7 +842,7 @@ public class Board
 
         ApplyGravity();
         Refill();
-        ResolveWolfSheepInteractions();
+        //ResolveWolfSheepInteractions();
     }
 
     // Helper for gravaity + bone animation
@@ -924,6 +954,6 @@ public class Board
 
         ApplyGravity(fallMoves);
         Refill(spawns);
-        ResolveWolfSheepInteractions(fallMoves, spawns);
+        //ResolveWolfSheepInteractions(fallMoves, spawns);
     }
 }

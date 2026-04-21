@@ -156,6 +156,22 @@ public class BoardView : MonoBehaviour
             }
         }
     }
+
+    public void RefreshCellSprite(Vector2Int coord, Board board)
+    {
+        if (!_cells.TryGetValue(coord, out var cellView))
+            return;
+
+        var animal = board.GetAnimalFromCell(coord);
+
+        if (animal == null)
+        {
+            cellView.SetSprite(_defaultSprite, Color.red);
+            return;
+        }
+
+        cellView.SetSprite(animal._sprite, animal.color);
+    }
     public void SetLevelNumber(int level)
     {
         _levelNumberText.text = level.ToString();
@@ -459,6 +475,9 @@ public class BoardView : MonoBehaviour
         img.DOKill();
         img.rectTransform.DOKill();
 
+        // Hide first, so resetting transform doesn't become visible for one frame
+        img.gameObject.SetActive(false);
+
         img.sprite = null;
         img.color = Color.white;
 
@@ -467,7 +486,6 @@ public class BoardView : MonoBehaviour
         rt.localRotation = Quaternion.identity;
         rt.anchoredPosition3D = Vector3.zero;
 
-        img.gameObject.SetActive(false);
         pool.Push(img);
     }
     private GoalRowView GetGoalRow(GoalRowView prefab, bool isPrimary)
@@ -576,6 +594,44 @@ public class BoardView : MonoBehaviour
         }
 
         ApplyGoalRows(specs);
+    }
+
+    public Task AnimateWolfNudge(Vector2Int wolfCell, Vector2Int sheepCell, float duration = 0.10f)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+
+        if (!_cells.TryGetValue(wolfCell, out var wolfSource) ||
+            !_cells.TryGetValue(sheepCell, out var sheepSource))
+        {
+            tcs.SetResult(true);
+            return tcs.Task;
+        }
+
+        RectTransform wolfRt = wolfSource.ImageRect;
+
+        wolfRt.DOKill();
+
+        Vector2 start = wolfRt.anchoredPosition;
+
+        Vector2 dir = new Vector2(
+            Mathf.Clamp(sheepCell.x - wolfCell.x, -1, 1),
+            Mathf.Clamp(sheepCell.y - wolfCell.y, -1, 1)
+        );
+
+        float pixels = 15f;
+        Vector2 target = start + dir * pixels;
+
+        var seq = DOTween.Sequence();
+        seq.Append(wolfRt.DOAnchorPos(target, duration * 0.45f).SetEase(Ease.OutQuad));
+        seq.Append(wolfRt.DOAnchorPos(start, duration * 0.55f).SetEase(Ease.OutQuad));
+
+        seq.OnComplete(() =>
+        {
+            wolfRt.anchoredPosition = start;
+            tcs.TrySetResult(true);
+        });
+
+        return tcs.Task;
     }
 
     // Animate the gravity 

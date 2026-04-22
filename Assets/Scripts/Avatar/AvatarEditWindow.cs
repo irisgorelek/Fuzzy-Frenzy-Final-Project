@@ -8,6 +8,7 @@ public class AvatarEditWindow : MonoBehaviour
     [Header("Data")]
     [SerializeField] private AvatarCatalogSO catalog;
     [SerializeField] private GameBootstrapper bootstrapper;
+    [SerializeField] private VoidEventChannelSO avatarChangedChannel;
 
     [Header("Tabs")]
     [SerializeField] private Transform tabContainer;
@@ -158,6 +159,8 @@ public class AvatarEditWindow : MonoBehaviour
         // Persist
         bootstrapper.Economy.State.avatarSelections = new Dictionary<AvatarCategoryType, int>(_savedSelections);
         bootstrapper.Economy.Save();
+
+        avatarChangedChannel?.RaiseEvent();
     }
 
     public void Cancel()

@@ -5,8 +5,26 @@ public class AvatarLoader : MonoBehaviour
     [SerializeField] private AvatarDisplay avatarDisplay;
     [SerializeField] private AvatarCatalogSO catalog;
     [SerializeField] private GameBootstrapper bootstrapper;
+    [SerializeField] private VoidEventChannelSO avatarChangedChannel;
 
     private void Start()
+    {
+        Refresh();
+    }
+
+    private void OnEnable()
+    {
+        if (avatarChangedChannel != null)
+            avatarChangedChannel.OnEventRaised += Refresh;
+    }
+
+    private void OnDisable()
+    {
+        if (avatarChangedChannel != null)
+            avatarChangedChannel.OnEventRaised -= Refresh;
+    }
+
+    private void Refresh()
     {
         var selections = bootstrapper.Economy.State.avatarSelections;
 

@@ -20,9 +20,6 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     [SerializeField] private GameObject _bombExplosionPrefab;
     [SerializeField] private GameObject _heldPowerUpPrefab;
     [SerializeField] private RectTransform _armedVfxAnchor;
-    [SerializeField] private float _heldPowerUpWorldZ = 0f;
-    [SerializeField] private Vector3 _heldPowerUpWorldOffset = Vector3.zero;
-
 
     [Header("Selected Visuals")]
     [SerializeField] private PowerUpButtonFeedback _feedback;
@@ -35,12 +32,11 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private bool _armed;
     private GameObject _armedHeldFxInstance;
-    private RectTransform _buttonRect;
+    private bool _bombInProgress;
 
     private void Awake()
     {
         _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
-        _buttonRect = transform as RectTransform;
 
         if (_bootstrapper == null)
             Debug.LogError("BombPowerUp: GameBootstrapper not found (should be DontDestroyOnLoad).");
@@ -51,6 +47,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_bootstrapper != null)
             _bootstrapper.Economy.OnChanged += RefreshAmount;
 
+        if (_board != null)
+            _board.OnTimerBombStateChanged += HandleTimerStateChanged;
+
         RefreshAmount();
     }
 
@@ -60,11 +59,20 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
         if (_bootstrapper != null)
             _bootstrapper.Economy.OnChanged -= RefreshAmount;
+
+        if (_board != null)
+            _board.OnTimerBombStateChanged -= HandleTimerStateChanged;
     } 
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (_bombInProgress)
+            return;
+
         if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
+        if (_board != null && _board.IsTimerBombActive)
             return;
 
         if (_armed)
@@ -83,10 +91,13 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void ArmBomb()
     {
-        if (_armed || _bootstrapper == null)
+        if (_armed || _bombInProgress || _bootstrapper == null)
             return;
 
         if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
+        if (_board != null && _board.IsTimerBombActive)
             return;
 
         int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast);
@@ -117,7 +128,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void OnCellTapped(Vector2Int coord)
     {
-        if (!_armed)
+        if (!_armed || _bombInProgress)
             return;
 
         if (_board != null && _board.IsSpeechBubbleInputBlocked)
@@ -132,49 +143,58 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public async void TryUseBomb(Vector2Int coord)
     {
+        if (_bombInProgress)
+            return;
+
         if (_board != null && _board.IsSpeechBubbleInputBlocked)
             return;
 
-        if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
-            return;
-
-        _boardView.SwapsEnabled = false;
-        var affected = new List<Vector2Int>(9);
-
-        for (int dx = -1; dx <= 1; dx++)
-        {
-            for (int dy = -1; dy <= 1; dy++)
-            {
-                int nx = coord.x + dx;
-
-                int ny = coord.y + dy;
-
-                if (nx < 0 || nx >= _board.GetWidth() || ny < 0 || ny >= _board.GetHeight())
-                    continue;
-
-                affected.Add(new Vector2Int(nx, ny));
-            }
-        }
-
-        await _boardView.AnimateBombWarning(coord, 1.5f);
-
-        PlayVFX(coord, _bombExplosionPrefab); // Bomb vfx
-
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySFXPitchAdjusted(1, 0.5f); // Play swap sound.
-        }
-
-        await _boardView.AnimateBombImpact(affected, 0.28f); // Bomb impact
-
-        _board.TryRemoveCellsFromGrid(affected);
-        _powerUpChannel.RaiseEvent("bomb");
+        _bombInProgress = true;
         RefreshAmount();
 
-        //_feedback?.PlaySuccess();
-        _feedback?.PopAmount();
-        _boardView.SwapsEnabled = true;
+        try
+        {
+            if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1))
+                return;
 
+            _boardView.SwapsEnabled = false;
+            var affected = new List<Vector2Int>(9);
+
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    int nx = coord.x + dx;
+                    int ny = coord.y + dy;
+
+                    if (nx < 0 || nx >= _board.GetWidth() || ny < 0 || ny >= _board.GetHeight())
+                        continue;
+
+                    affected.Add(new Vector2Int(nx, ny));
+                }
+            }
+
+            await _boardView.AnimateBombWarning(coord, 1.5f);
+
+            PlayVFX(coord, _bombExplosionPrefab);
+
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFXPitchAdjusted(1, 0.5f);
+
+            await _boardView.AnimateBombImpact(affected, 0.28f);
+
+            _board.TryRemoveCellsFromGrid(affected);
+            _powerUpChannel.RaiseEvent("bomb");
+            RefreshAmount();
+
+            _feedback?.PopAmount();
+        }
+        finally
+        {
+            _boardView.SwapsEnabled = true;
+            _bombInProgress = false;
+            RefreshAmount();
+        }
     }
 
     private void PlayVFX(Vector2Int coord, GameObject vfx)
@@ -212,31 +232,8 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast);
         _amount.text = count.ToString();
 
-        _feedback?.SetAvailable(count > 0);
-    }
-
-    private void ShowArmedButtonVfx()
-    {
-        if (_heldPowerUpPrefab == null || _worldCamera == null || _buttonRect == null)
-            return;
-
-        RectTransform anchor = _armedVfxAnchor != null ? _armedVfxAnchor : transform as RectTransform;
-        if (anchor == null)
-            return;
-
-        Vector3 screenPoint = RectTransformUtility.WorldToScreenPoint(null, anchor.position);
-
-        float camDistance = Mathf.Abs(_worldCamera.transform.position.z - _heldPowerUpWorldZ);
-        Vector3 worldPoint = _worldCamera.ScreenToWorldPoint(
-            new Vector3(screenPoint.x, screenPoint.y, camDistance)
-        );
-
-        worldPoint.z = _heldPowerUpWorldZ;
-        worldPoint += _heldPowerUpWorldOffset;
-
-        _armedHeldFxInstance = Instantiate(_heldPowerUpPrefab, worldPoint, Quaternion.identity);
-
-        RestartParticleSystems(_armedHeldFxInstance);
+        bool available = count > 0 && !_bombInProgress && (_board == null || !_board.IsTimerBombActive);
+        _feedback?.SetAvailable(available);
     }
 
     private void HideArmedButtonVfx()
@@ -248,20 +245,16 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _armedHeldFxInstance = null;
     }
 
-    private void RestartParticleSystems(GameObject fxRoot)
+    private void HandleTimerStateChanged(bool active)
     {
-        if (fxRoot == null)
-            return;
-
-        var systems = fxRoot.GetComponentsInChildren<ParticleSystem>(true);
-
-        for (int i = 0; i < systems.Length; i++)
+        if (active && _armed)
         {
-            var ps = systems[i];
-            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            ps.Clear(true);
-            ps.Play(true);
+            _feedback?.StopHoldLoop();
+            UnarmBomb();
+            _feedback?.SetSelected(false);
         }
+
+        RefreshAmount();
     }
 
 }

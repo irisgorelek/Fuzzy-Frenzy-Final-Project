@@ -117,12 +117,36 @@ public class PowerUpButtonFeedback : MonoBehaviour
 
     public void SetAvailable(bool available)
     {
-        if (_iconImage != null)
-            _iconImage.color = available ? _normalColor : _disabledColor;
+        _scaleTween?.Kill();
+        _colorTween?.Kill();
+        _holdTween?.Kill();
+
+        if (!available)
+        {
+            if (_selectedFrame != null)
+                _selectedFrame.SetActive(false);
+
+            if (_iconRect != null)
+                _iconRect.localScale = Vector3.one * _normalScale;
+
+            if (_iconImage != null)
+                _iconImage.color = _disabledColor;
+
+            if (_amountText != null)
+                _amountText.alpha = 0.6f;
+        }
+        else
+        {
+            if (_iconImage != null)
+                _iconImage.color = _normalColor;
+
+            if (_amountText != null)
+                _amountText.alpha = 1f;
+        }
 
         if (_canvasGroup != null)
         {
-            _canvasGroup.alpha = available ? 1f : 0.8f;
+            _canvasGroup.alpha = available ? 1f : 0.55f;
             _canvasGroup.blocksRaycasts = available;
             _canvasGroup.interactable = available;
         }

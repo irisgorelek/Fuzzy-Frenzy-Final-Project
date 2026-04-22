@@ -6,6 +6,7 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
 {
     [Header("Config")]
     [SerializeField] private MoveCounter moves;
+    [SerializeField] private BoardController _boardController;
     [SerializeField] private TextMeshProUGUI _amount;
 
     [Header("Feedback")]
@@ -20,6 +21,9 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
         _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
         if (_bootstrapper == null)
             Debug.LogError("ExtraMove: GameBootstrapper not found (should be DontDestroyOnLoad).");
+
+        if (_boardController == null)
+            _boardController = FindFirstObjectByType<BoardController>();
     }
 
     private void OnEnable()
@@ -44,6 +48,9 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if (_bootstrapper == null)
+            return;
+
+        if (_boardController != null && _boardController.IsSpeechBubbleInputBlocked)
             return;
 
         _feedback?.PlayPress();

@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &31314100
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6268,6 +6268,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1684133698}
+  - {fileID: 763581300}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &531662906 stripped
@@ -6673,6 +6674,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 731217458}
   m_CullTransparentMesh: 1
+--- !u!1 &763581299
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 763581300}
+  - component: {fileID: 763581301}
+  m_Layer: 0
+  m_Name: LevelDebugFlowCheat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &763581300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 763581299}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 519948547}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &763581301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 763581299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 889c66c5a669ae644a3eb61600f212f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::LevelDebugFlowCheats
+  _board: {fileID: 2044731411}
+  _bootstrapper: {fileID: 0}
 --- !u!1 &771761661
 GameObject:
   m_ObjectHideFlags: 0
@@ -7333,6 +7380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::MovesPowerUp
   moves: {fileID: 190064116}
+  _boardController: {fileID: 2044731411}
   _amount: {fileID: 1028601145}
   _feedback: {fileID: 831584825}
 --- !u!114 &831584823
@@ -18670,7 +18718,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1383790499
 RectTransform:
   m_ObjectHideFlags: 0
@@ -80789,6 +80837,10 @@ PrefabInstance:
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _normalBubbleVisibleSeconds
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: _speechCellHighlightDuration
+      value: 0.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

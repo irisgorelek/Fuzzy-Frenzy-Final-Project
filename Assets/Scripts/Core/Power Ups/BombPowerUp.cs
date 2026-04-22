@@ -64,6 +64,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
         if (_armed)
         {
             UnarmBomb();
@@ -79,6 +82,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
     private void ArmBomb()
     {
         if (_armed || _bootstrapper == null)
+            return;
+
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
             return;
 
         int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast);
@@ -112,6 +118,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (!_armed)
             return;
 
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
         UnarmBomb();
         _feedback?.SetSelected(false);
 
@@ -120,6 +129,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public async void TryUseBomb(Vector2Int coord)
     {
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
         if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
             return;
 

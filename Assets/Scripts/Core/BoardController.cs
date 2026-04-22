@@ -32,8 +32,12 @@ public class BoardController : MonoBehaviour
     [SerializeField] private float _normalBubbleDelaySeconds = 2.5f;
     [SerializeField] private float _normalBubbleVisibleSeconds = 3f;
     [SerializeField] private float _triggeredBubbleVisibleSeconds = 3f;
+    [SerializeField] private float _speechCellHighlightDuration = 0.48f;
 
     public BoardConfig Config => _cfg;
+
+    /// <summary>True while tutorial sequence runs or a triggered bubble is showing (normal bubble does not set this).</summary>
+    public bool IsSpeechBubbleInputBlocked => _bubbleActive;
 
     private Board _board;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
@@ -110,11 +114,14 @@ public class BoardController : MonoBehaviour
 
         if (_moveCounter != null && _view != null)
         {
-            _moveCounter.OnMovesChanged += _view.SetMovesText;
-            _view.SetMovesText(_moveCounter.MovesLeft);
+            _moveCounter.OnMovesChanged += OnMovesChangedForView;
+            OnMovesChangedForView(_moveCounter.MovesLeft);
         }
 
-        _view.SetTimerVisible(false);
+        _lastShownTimerSecond = -1;
+        _view.SetTimerVisible(IsTimerBombActive);
+        if (IsTimerBombActive)
+            UpdateTimerUI();
 
         if (AudioManager.instance != null)
         {
@@ -131,7 +138,54 @@ public class BoardController : MonoBehaviour
         }
 
         if (_moveCounter != null && _view != null)
-            _moveCounter.OnMovesChanged -= _view.SetMovesText;
+            _moveCounter.OnMovesChanged -= OnMovesChangedForView;
+    }
+
+    private void OnMovesChangedForView(int movesLeft)
+    {
+        if (_view == null)
+            return;
+
+        _view.SetMovesText(movesLeft);
+        _view.SetMovesLastMoveTension(movesLeft == 1);
+    }
+
+    public void DebugForceWin()
+    {
+        if (_isLevelOver || _board == null)
+            return;
+
+        _board.DebugCheatFillPrimaryGoal();
+
+        if (HasCollectGoals && _cfg.collectGoals != null)
+        {
+            foreach (var g in _cfg.collectGoals)
+            {
+                if (g.animal == null || string.IsNullOrEmpty(g.animal._id))
+                    continue;
+                _collected[g.animal._id] = g.amount;
+            }
+        }
+
+        UpdateGoalUI();
+        TryHandleLevelComplete();
+    }
+
+    public void DebugForceLose()
+    {
+        if (_isLevelOver)
+            return;
+
+        _isLevelOver = true;
+        _view.SwapsEnabled = false;
+        IsTimerBombActive = false;
+        _view.SetTimerVisible(false);
+
+        if (_locator != null && _locator.Bootstrapper != null)
+            _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
+
+        if (_levelLostPopup != null)
+            _levelLostPopup.SetActive(true);
     }
 
     public void InitializeGame()
@@ -614,21 +668,23 @@ public class BoardController : MonoBehaviour
                 if (step.animal == null || step.lines == null || step.lines.Count == 0)
                     continue;
 
-                var matchingCells = _board.FindCellsWithAnimal(step.animal);
-                if (matchingCells.Count == 0)
-                {
-                    Debug.LogWarning($"Tutorial step skipped: no '{step.animal.name}' on level {_cfg.levelIndex} board.");
-                    continue;
-                }
-
-                var speakerCell = matchingCells[UnityEngine.Random.Range(0, matchingCells.Count)];
                 bool useRightSide = UnityEngine.Random.Range(0, 2) == 1;
+                var matchingCells = _board.FindCellsWithAnimal(step.animal);
 
-                _board.SetLockedCells(new[] { speakerCell });
-                _view.SetTutorialLockedCell(speakerCell);
-                await _speechBubblePresenter.ShowTutorialAsync(step.animal._sprite, step.lines, useRightSide);
-                _board.ClearLockedCells();
-                _view.SetTutorialLockedCell(null);
+                if (matchingCells.Count > 0)
+                {
+                    var speakerCell = matchingCells[UnityEngine.Random.Range(0, matchingCells.Count)];
+                    _board.SetLockedCells(new[] { speakerCell });
+                    _view.SetTutorialLockedCell(speakerCell);
+                    await _view.AnimateBlockedTap(speakerCell, _speechCellHighlightDuration);
+                    await _speechBubblePresenter.ShowTutorialAsync(step.animal._sprite, step.lines, useRightSide);
+                    _board.ClearLockedCells();
+                    _view.SetTutorialLockedCell(null);
+                }
+                else
+                {
+                    await _speechBubblePresenter.ShowTutorialAsync(step.animal._sprite, step.lines, useRightSide);
+                }
             }
         }
         catch (Exception ex)
@@ -674,7 +730,7 @@ public class BoardController : MonoBehaviour
                 int randomIndex = UnityEngine.Random.Range(0, options.Count);
                 var lines = new List<string> { options[randomIndex] };
                 bool useRightSide = coord.x >= (_board.Width * 0.5f);
-                await _view.AnimateBlockedTap(coord);
+                await _view.AnimateBlockedTap(coord, _speechCellHighlightDuration);
                 await _speechBubblePresenter.ShowNormalAsync(lines, _view.GetCellWorldPosition(coord), useRightSide, _normalBubbleVisibleSeconds);
                 return;
             }
@@ -742,9 +798,11 @@ public class BoardController : MonoBehaviour
             var lines = new List<string> { e.lines[randomLineIndex] };
 
             if (triggerCell == speakerCell)
-                await _view.AnimateBlockedTap(triggerCell);
+                await _view.AnimateBlockedTap(triggerCell, _speechCellHighlightDuration);
             else
-                await Task.WhenAll(_view.AnimateBlockedTap(triggerCell), _view.AnimateBlockedTap(speakerCell));
+                await Task.WhenAll(
+                    _view.AnimateBlockedTap(triggerCell, _speechCellHighlightDuration),
+                    _view.AnimateBlockedTap(speakerCell, _speechCellHighlightDuration));
 
             bool useRightSide = UnityEngine.Random.Range(0, 2) == 1;
 

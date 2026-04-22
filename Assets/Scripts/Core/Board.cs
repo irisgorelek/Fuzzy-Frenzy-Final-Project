@@ -539,7 +539,7 @@ public class Board
 
     private Animal PickRandomAllowedAnimal()
     {
-        // If there’s nothing to pick from, return null
+        // If there's nothing to pick from, return null
         if (_allowedAnimals == null || _allowedAnimals.Count == 0)
             return null;
 
@@ -555,7 +555,7 @@ public class Board
         // Pick a random number in [0, total)
         float r = Random.value * total;
 
-        // Walk through the animals, adding weights until we “cross” r
+        // Walk through the animals, adding weights until we "cross" r
         float cumulative = 0f;
         for (int i = 0; i < _allowedAnimals.Count; i++)
         {
@@ -979,5 +979,14 @@ public class Board
     public bool IsCellLocked(Vector2Int cell)
     {
         return _lockedCells.Contains(cell);
+    }
+
+    /// <summary>Debug / cheats only: satisfy the board's primary goal (points or matches).</summary>
+    public void DebugCheatFillPrimaryGoal()
+    {
+        if (_goalType == PointsOrMatches.points)
+            _points = Mathf.Max(_points, _goalAmount);
+        else if (_goalType == PointsOrMatches.matches)
+            _matchedAnimals = Mathf.Max(_matchedAnimals, _goalAmount);
     }
 }

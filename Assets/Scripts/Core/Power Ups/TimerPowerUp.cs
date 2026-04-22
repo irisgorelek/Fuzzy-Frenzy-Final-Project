@@ -63,6 +63,9 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         if (_board == null) 
             return;
 
+        if (_board.IsSpeechBubbleInputBlocked)
+            return;
+
         // Don't start it twice
         if (_board.IsTimerBombActive)
             return;

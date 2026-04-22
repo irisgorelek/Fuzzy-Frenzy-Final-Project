@@ -555,7 +555,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.41400003, y: 0.23681964}
   m_AnchorMax: {x: 0.9825792, y: 0.404}
-  m_AnchoredPosition: {x: 3.5, y: 21}
+  m_AnchoredPosition: {x: 3.5, y: 21.000854}
   m_SizeDelta: {x: -0.89642334, y: -4.6629944}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &118288716
@@ -10900,6 +10900,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675388967}
   m_CullTransparentMesh: 1
+--- !u!224 &1676890396 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1099313550697460717, guid: f92de3a3b98d5824d9696821b759c89f, type: 3}
+  m_PrefabInstance: {fileID: 7632130232870221927}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1681167156 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8908399629934379801, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
@@ -11444,7 +11449,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc23258a3db9d664cb2a3b89ef1607c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::UIPopupTween
-  rect: {fileID: 1822427985}
+  rect: {fileID: 1676890396}
   canvasGroup: {fileID: 1822427988}
   showDuration: 0.26
   showScaleFrom: 0.85

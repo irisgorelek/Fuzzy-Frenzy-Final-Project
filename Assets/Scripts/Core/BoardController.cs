@@ -523,6 +523,14 @@ public class BoardController : MonoBehaviour
             Debug.LogError("LevelClearedPopupUI is not assigned on BoardController.");
         }
 
+        if (_locator != null && _locator.Bootstrapper != null)
+        {
+            var leaderboard = _locator.Bootstrapper.Leaderboard;
+            var state = _locator.Bootstrapper.Economy.State;
+            if (leaderboard != null && leaderboard.IsReady)
+                _ = leaderboard.AddScore("Player", state.totalPointsEarned);
+        }
+
         if (AudioManager.instance != null)
         {
             AudioManager.instance.ChangeMusicVolume(0.4f);

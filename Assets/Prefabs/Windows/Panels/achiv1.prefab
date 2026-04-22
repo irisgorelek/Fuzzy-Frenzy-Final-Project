@@ -871,6 +871,7 @@ MonoBehaviour:
   titleText: {fileID: 7178731328678956727}
   descriptionText: {fileID: 8244421646237053803}
   progressNumberText: {fileID: 4939739041788046515}
+  coinRewardText: {fileID: 4680056244441142733}
   fillImage: {fileID: 5580113709235822475}
   completedStamp: {fileID: 6445665523537294222}
 --- !u!1 &6445665523537294222

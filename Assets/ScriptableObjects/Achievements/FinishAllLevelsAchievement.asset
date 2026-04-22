@@ -18,3 +18,6 @@ MonoBehaviour:
   _icon: {fileID: 0}
   _category: 0
   _goal: 0
+  _animalId: 
+  _powerUpName: 
+  _coinReward: 500

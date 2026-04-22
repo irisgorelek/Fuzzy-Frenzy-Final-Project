@@ -19,3 +19,5 @@ MonoBehaviour:
   _category: 1
   _goal: 20
   _animalId: cow
+  _powerUpName: 
+  _coinReward: 120

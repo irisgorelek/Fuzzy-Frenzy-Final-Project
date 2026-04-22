@@ -19,3 +19,5 @@ MonoBehaviour:
   _category: 1
   _goal: 10
   _animalId: sheep
+  _powerUpName: 
+  _coinReward: 150

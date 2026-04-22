@@ -14,4 +14,7 @@ public class Animal : ScriptableObject
     public bool _canMatch = true;             // Can be part of a 3+ match
     public bool _canSwap = true;              // Can be swapped by the player
     public bool _affectedByGravity = true;    // Falls during gravity
+
+    [Header("Audio")]
+    public int _speakSfxId;
 }

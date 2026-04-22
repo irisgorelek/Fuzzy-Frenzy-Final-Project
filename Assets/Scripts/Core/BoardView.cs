@@ -235,7 +235,7 @@ public class BoardView : MonoBehaviour
         {
             IsPrimary = true,
             Icon = null,
-            Text = $"Matches: {remaining}",
+            Text = $"Matches: \n{remaining}",
             Color = Color.white,
             IsComplete = animals >= goal
         }

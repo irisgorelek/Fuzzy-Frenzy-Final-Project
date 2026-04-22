@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: FuzzyFrenzy.Data::AchievementSO
   _id: destroy_50_animals
   _title: Barnyard Breaker
-  _description: Destroy 50 animals.
+  _description: Destroy 300 animals.
   _icon: {fileID: 0}
   _category: 1
-  _goal: 50
+  _goal: 300
   _animalId: 
   _powerUpName: 
-  _coinReward: 150
+  _coinReward: 350

@@ -7349,6 +7349,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1013265277}
+  - component: {fileID: 1013265278}
+  - component: {fileID: 1013265279}
   m_Layer: 5
   m_Name: Avatar
   m_TagString: Untagged
@@ -7380,6 +7382,38 @@ RectTransform:
   m_AnchoredPosition: {x: -0.0000038146973, y: -79}
   m_SizeDelta: {x: 182.7934, y: 341.5226}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1013265278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013265276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 074e79668f3ad9b4b90c1167229c9a62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AvatarLoader
+  avatarDisplay: {fileID: 1013265279}
+  catalog: {fileID: 11400000, guid: 2d0cd82de63f46044bf0b7225e1633f7, type: 2}
+  bootstrapper: {fileID: 1573166759}
+  avatarChangedChannel: {fileID: 11400000, guid: 2a22e345251040a42b52f8e7f5e5634c, type: 2}
+--- !u!114 &1013265279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013265276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7584481a319be478602e3ae4da1f7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AvatarDisplay
+  bodyImage: {fileID: 1407378791}
+  hairImage: {fileID: 68792646}
+  clothesImage: {fileID: 973782099}
+  eyeColorImage: {fileID: 1478332080}
 --- !u!1 &1028653838
 GameObject:
   m_ObjectHideFlags: 0
@@ -9190,6 +9224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AvatarEditWindow
   catalog: {fileID: 11400000, guid: 2d0cd82de63f46044bf0b7225e1633f7, type: 2}
   bootstrapper: {fileID: 1573166759}
+  avatarChangedChannel: {fileID: 11400000, guid: 2a22e345251040a42b52f8e7f5e5634c, type: 2}
   tabContainer: {fileID: 408746486}
   tabPrefab: {fileID: 3799679124343099922, guid: 15b2748511e514f47858d62a627fabe4, type: 3}
   itemContainer: {fileID: 440609555}

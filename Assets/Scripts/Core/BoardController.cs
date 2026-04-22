@@ -404,7 +404,10 @@ public class BoardController : MonoBehaviour
         UpdateTimerUI();
 
         if (AudioManager.instance != null)
+        {
             AudioManager.instance.PlayTimerMusic();
+            AudioManager.instance.PlaySFX(13);
+        }
 
         _view.SwapsEnabled = true;
     }

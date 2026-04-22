@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: PurpleHair
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
+  itemId: 9
   displayName: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 683c3c69530d08d42af1e431c734d537, type: 3}
   avatarSprite: {fileID: 0}
   color: {r: 0.5754717, g: 0.06786222, b: 0.44674018, a: 1}
+  price: 500

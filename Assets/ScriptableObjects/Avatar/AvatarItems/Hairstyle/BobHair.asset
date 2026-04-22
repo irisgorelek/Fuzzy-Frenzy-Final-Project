@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: BobHair
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
+  itemId: 1
   displayName: Bob
   icon: {fileID: -6328795703713206961, guid: 0f56362b99abcc247b553085a6418a2f, type: 3}
   avatarSprite: {fileID: 21300000, guid: f8d4dda7968924a4abbdb9801927cd3e, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
+  price: 0

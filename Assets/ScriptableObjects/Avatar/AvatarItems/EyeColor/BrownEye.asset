@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: BrownEye
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
+  itemId: 11
   displayName: 
   icon: {fileID: 115629257686198394, guid: 7f83f00e14b3e6946b45777de2e407fa, type: 3}
   avatarSprite: {fileID: 0}
   color: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}
+  price: 150

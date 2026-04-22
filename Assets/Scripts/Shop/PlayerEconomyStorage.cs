@@ -51,6 +51,7 @@ public static class PlayerEconomyStorage
         public int totalPointsEarned;
         public List<AvatarSelectionEntry> avatarSelections = new();
         public List<LevelStarEntry> levelStars = new();
+        public List<string> unlockedAvatarItems = new();
     }
 
     public static void Save(PlayerEconomyState state)
@@ -83,6 +84,8 @@ public static class PlayerEconomyStorage
 
         foreach (var kvp in state.levelStars)
             data.levelStars.Add(new LevelStarEntry { levelIndex = kvp.Key, stars = kvp.Value });
+
+        data.unlockedAvatarItems = new List<string>(state.unlockedAvatarItems);
 
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(Key, json);
@@ -154,6 +157,9 @@ public static class PlayerEconomyStorage
                 foreach (var entry in data.levelStars)
                     state.levelStars[entry.levelIndex] = entry.stars;
             }
+
+            if (data.unlockedAvatarItems != null)
+                state.unlockedAvatarItems = new HashSet<string>(data.unlockedAvatarItems);
         }
         catch
         {

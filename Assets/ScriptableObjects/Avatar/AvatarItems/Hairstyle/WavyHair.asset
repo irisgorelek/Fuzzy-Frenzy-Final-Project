@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: WavyHair
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
+  itemId: 5
   displayName: Wavy
   icon: {fileID: 5203929170796031948, guid: d7031c9aa3a2f62459dc42753398f105, type: 3}
   avatarSprite: {fileID: 21300000, guid: 659fd539663dd55468fe336db0c93f4e, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
+  price: 300

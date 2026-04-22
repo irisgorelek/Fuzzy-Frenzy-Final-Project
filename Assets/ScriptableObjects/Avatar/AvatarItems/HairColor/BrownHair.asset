@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
   itemId: 8
   displayName: 
-  icon: {fileID: 21300000, guid: 683c3c69530d08d42af1e431c734d537, type: 3}
+  icon: {fileID: -7149404795290240005, guid: 5a6f61ce4e430964c9bb623aaad255db, type: 3}
   avatarSprite: {fileID: 0}
   color: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}
   price: 250

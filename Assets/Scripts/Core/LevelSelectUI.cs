@@ -20,17 +20,18 @@ public class LevelSelectUI : MonoBehaviour
         foreach (Transform child in content)
             Destroy(child.gameObject);
 
-        var completedLevels = _bootstrapper.Economy.State.completedLevels;
+        var state = _bootstrapper.Economy.State;
 
         for (int i = 0; i < allLevels.Levels.Count; i++)
         {
             var config = allLevels.Levels[i];
             int levelIndex = config.levelIndex;
 
-            bool unlocked = levelIndex == 1 || completedLevels.Contains(levelIndex - 1);
+            bool unlocked = levelIndex == 1 || state.completedLevels.Contains(levelIndex - 1);
+            state.levelStars.TryGetValue(levelIndex, out int starCount);
 
             var buttonObj = Instantiate(levelButtonPrefab, content);
-            buttonObj.SetData(levelIndex, unlocked, () => SelectLevel(config));
+            buttonObj.SetData(levelIndex, unlocked, starCount, () => SelectLevel(config));
         }
     }
 

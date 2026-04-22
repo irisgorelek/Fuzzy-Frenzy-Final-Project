@@ -13,6 +13,7 @@ public class PlayerEconomyState
     // Achievement tracking
     public HashSet<string> unlockedAchievements = new();
     public HashSet<int> completedLevels = new();
+    public Dictionary<int, int> levelStars = new();
     public HashSet<string> discoveredAnimals = new();
     public Dictionary<string, int> destroyedAnimals = new();
     public int totalDestroyedAnimals = 0;

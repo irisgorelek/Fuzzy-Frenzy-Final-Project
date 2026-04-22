@@ -500,7 +500,15 @@ public class BoardController : MonoBehaviour
         int level = _cfg.levelIndex;
 
         if (_locator != null && _locator.Bootstrapper != null)
+        {
             _locator.Bootstrapper.Economy.AddCoins(coins);
+
+            // Save best star count per level (only update if new score is higher)
+            var state = _locator.Bootstrapper.Economy.State;
+            state.levelStars.TryGetValue(level, out int bestStars);
+            if (stars > bestStars)
+                state.levelStars[level] = stars;
+        }
 
         if (_levelClearedPopupUI != null)
         {

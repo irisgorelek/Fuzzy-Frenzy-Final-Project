@@ -70,12 +70,14 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_armed)
         {
             UnarmBomb();
+            _feedback?.StopHoldLoop();
             _feedback?.SetSelected(false);
         }
         else
         {
             ArmBomb();
             _feedback?.SetSelected(true);
+            _feedback?.StartHoldLoop();
         }
     }
 
@@ -95,7 +97,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _boardView.SwapsEnabled = false;
         _boardView.CellTapped += OnCellTapped;
 
-        ShowArmedButtonVfx();
+        //ShowArmedButtonVfx(); - The VFX looks bad with the current UI (Might add something else in a future update)
 
         Debug.Log("Armed bomb");
     }
@@ -121,6 +123,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_board != null && _board.IsSpeechBubbleInputBlocked)
             return;
 
+        _feedback?.StopHoldLoop();
         UnarmBomb();
         _feedback?.SetSelected(false);
 
@@ -168,7 +171,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _powerUpChannel.RaiseEvent("bomb");
         RefreshAmount();
 
-        _feedback?.PlaySuccess();
+        //_feedback?.PlaySuccess();
         _feedback?.PopAmount();
         _boardView.SwapsEnabled = true;
 

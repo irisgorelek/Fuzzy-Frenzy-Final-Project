@@ -10,6 +10,7 @@ public class AchievementsManager : MonoBehaviour
 
     [SerializeField] private List<AchievementSO> _achievements;
     [SerializeField] private LevelsData _allLevels;
+    [SerializeField] private BootstrapperLocator _locator;
 
     private EconomyContext _economy;
     private const int TotalAnimalTypes = 5;
@@ -19,8 +20,7 @@ public class AchievementsManager : MonoBehaviour
 
     private void Start()
     {
-        var bootstrapper = FindFirstObjectByType<GameBootstrapper>();
-        _economy = bootstrapper.Economy;
+        _economy = _locator.Bootstrapper.Economy;
     }
 
     private void OnEnable()

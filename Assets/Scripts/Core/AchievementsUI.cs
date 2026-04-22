@@ -7,13 +7,14 @@ public class AchievementsUI : MonoBehaviour
     [SerializeField] private AchievementCardData cardPrefab;
     [SerializeField] private List<AchievementSO> achievements;
     [SerializeField] private LevelsData allLevels;
+    [SerializeField] private GameBootstrapper _bootstrapper;
 
     private const int TotalAnimalTypes = 5;
     private PlayerEconomyState _state;
 
     private void Start()
     {
-        _state = FindFirstObjectByType<GameBootstrapper>().Economy.State;
+        _state = _bootstrapper.Economy.State;
         LoadAchievements();
     }
 

@@ -12275,17 +12275,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1642376563}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.35, y: 1.35, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1793213504}
-  m_Father: {fileID: 1661220285}
+  m_Children: []
+  m_Father: {fileID: 1865161895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -429, y: 140}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 336, y: 355}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1642376565
@@ -12582,7 +12581,7 @@ RectTransform:
   - {fileID: 1575463284}
   - {fileID: 701172145}
   - {fileID: 1854990199}
-  - {fileID: 1642376564}
+  - {fileID: 1865161895}
   - {fileID: 1420532135}
   m_Father: {fileID: 1710838854}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -13437,17 +13436,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1793213503}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.35, y: 1.35, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1013265277}
-  m_Father: {fileID: 1642376564}
+  m_Father: {fileID: 1865161895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.0000011302764}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 185.4245, y: 185.4245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1793213505
@@ -13680,6 +13679,43 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1854990198}
   m_CullTransparentMesh: 1
+--- !u!1 &1865161894
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1865161895}
+  m_Layer: 5
+  m_Name: SunGO
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1865161895
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865161894}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1642376564}
+  - {fileID: 1793213504}
+  m_Father: {fileID: 1661220285}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -429, y: 140}
+  m_SizeDelta: {x: 453.59998, y: 479.25}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1877434634 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3630187920505173062, guid: d6e97c57dc000794a8fb69f8581292b2, type: 3}

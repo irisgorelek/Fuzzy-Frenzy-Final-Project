@@ -11,6 +11,7 @@ public class AchievementsManager : MonoBehaviour
     [SerializeField] private List<AchievementSO> _achievements;
     [SerializeField] private LevelsData _allLevels;
     [SerializeField] private BootstrapperLocator _locator;
+    [SerializeField] private AchievementEventChannelSO _achievementUnlockedChannel;
 
     private EconomyContext _economy;
     private const int TotalAnimalTypes = 5;
@@ -123,6 +124,7 @@ public class AchievementsManager : MonoBehaviour
             S.AddCoins(achievement.CoinReward);
 
         _economy.Save();
+        _achievementUnlockedChannel?.RaiseEvent(achievement);
         Debug.Log($"Achievement unlocked: {achievement.Title}");
     }
 

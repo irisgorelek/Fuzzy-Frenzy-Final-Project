@@ -81,9 +81,27 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public void SetHighlighted(bool on)
     {
         if (_highlighted == on)
+        {
             return;
+        }
 
         _highlighted = on;
+
+        ApplyVisualState(on);
+
+    }
+
+    public void SetTutorialLocked(bool locked)
+    {
+        if (_tutorialLocked == locked)
+            return;
+
+        _tutorialLocked = locked;
+        ApplyVisualState(locked);
+    }
+
+    private void ApplyVisualState(bool on)
+    {
         _pulseTween?.Kill();
         ImageRect.DOKill();
 
@@ -107,51 +125,7 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo);
         }
-        else
         {
-            ImageRect.localScale = _baseScale;
-        }
-
-    }
-
-    public void SetTutorialLocked(bool locked)
-    {
-        if (_tutorialLocked == locked)
-            return;
-
-        _tutorialLocked = locked;
-        ApplyVisualState();
-    }
-
-    private void ApplyVisualState()
-    {
-        _pulseTween?.Kill();
-        ImageRect.DOKill();
-
-        if (_highlighted || _tutorialLocked)
-        {
-            _outline.enabled = true;
-            _outline.effectColor = _highlighted ? _selectedColor : _tutorialLockedColor;
-            _outline.effectDistance = _outlineDistance;
-
-            ImageRect.localScale = _baseScale;
-
-            if (_highlighted)
-            {
-                // tiny pop on touch
-                ImageRect.DOPunchScale(Vector3.one * 0.08f, 0.12f, 1, 0f);
-            }
-
-            float targetScale = _highlighted ? _selectedScale : 1.04f;
-            _pulseTween = ImageRect
-                .DOScale(_baseScale * targetScale, _pulseDuration)
-                .SetEase(Ease.InOutSine)
-                .SetLoops(-1, LoopType.Yoyo);
-        }
-        else
-        {
-            _outline.effectColor = _normalColor;
-            _outline.enabled = false;
             ImageRect.localScale = _baseScale;
         }
     }

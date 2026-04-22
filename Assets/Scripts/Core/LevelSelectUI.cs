@@ -6,10 +6,11 @@ public class LevelSelectUI : MonoBehaviour
     [SerializeField] private LevelsData allLevels;
     [SerializeField] private Transform content;
     [SerializeField] private LevelButtonUI levelButtonPrefab;
-    [SerializeField] private GameBootstrapper _bootstrapper;
+    private GameBootstrapper _bootstrapper;
 
     private void Start()
     {
+        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
         LoadLevelButtons();
     }
 

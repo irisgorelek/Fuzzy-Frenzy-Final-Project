@@ -7,8 +7,9 @@ public class AvatarEditWindow : MonoBehaviour
 {
     [Header("Data")]
     [SerializeField] private AvatarCatalogSO catalog;
-    [SerializeField] private GameBootstrapper bootstrapper;
     [SerializeField] private VoidEventChannelSO avatarChangedChannel;
+
+    private GameBootstrapper bootstrapper;
 
     [Header("Tabs")]
     [SerializeField] private Transform tabContainer;
@@ -40,6 +41,7 @@ public class AvatarEditWindow : MonoBehaviour
 
     private void Start()
     {
+        bootstrapper = FindFirstObjectByType<GameBootstrapper>();
         LoadSelections();
         BuildTabs();
 

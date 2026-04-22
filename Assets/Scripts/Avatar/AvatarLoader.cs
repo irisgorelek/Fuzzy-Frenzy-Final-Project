@@ -4,11 +4,13 @@ public class AvatarLoader : MonoBehaviour
 {
     [SerializeField] private AvatarDisplay avatarDisplay;
     [SerializeField] private AvatarCatalogSO catalog;
-    [SerializeField] private GameBootstrapper bootstrapper;
     [SerializeField] private VoidEventChannelSO avatarChangedChannel;
+
+    private GameBootstrapper bootstrapper;
 
     private void Start()
     {
+        bootstrapper = FindFirstObjectByType<GameBootstrapper>();
         Refresh();
     }
 

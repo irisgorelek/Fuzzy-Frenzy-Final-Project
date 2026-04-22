@@ -113,6 +113,7 @@ public class AvatarEditWindow : MonoBehaviour
             Destroy(child.gameObject);
         _items.Clear();
 
+        var unlocked = bootstrapper.Economy.State.unlockedAvatarItems;
         int selectedIndex = _tempSelections.GetValueOrDefault(category.CategoryType, 0);
 
         for (int i = 0; i < category.Items.Count; i++)
@@ -123,7 +124,8 @@ public class AvatarEditWindow : MonoBehaviour
 
             bool isColorCategory = category.CategoryType == AvatarCategoryType.HairColor
                                 || category.CategoryType == AvatarCategoryType.EyeColor;
-            itemBtn.Setup(item, isColorCategory);
+            bool isLocked = !item.IsFree && !unlocked.Contains(item.ItemId);
+            itemBtn.Setup(item, isColorCategory, isLocked);
             itemBtn.SetSelected(i == selectedIndex);
 
             int itemIndex = i;
@@ -134,6 +136,8 @@ public class AvatarEditWindow : MonoBehaviour
 
     private void OnItemClicked(AvatarCategorySO category, int index)
     {
+        if (_items[index].Locked) return;
+
         _tempSelections[category.CategoryType] = index;
 
         for (int i = 0; i < _items.Count; i++)

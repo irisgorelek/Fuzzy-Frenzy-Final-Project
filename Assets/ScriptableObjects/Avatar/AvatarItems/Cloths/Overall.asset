@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: Overall
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
+  itemId: 14
   displayName: Overall
   icon: {fileID: 21300000, guid: 4d06fc9dec2a2924a8dff9356af5190e, type: 3}
   avatarSprite: {fileID: 21300000, guid: cc5edbdd2a2486f49a444f7a55b28561, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
+  price: 300

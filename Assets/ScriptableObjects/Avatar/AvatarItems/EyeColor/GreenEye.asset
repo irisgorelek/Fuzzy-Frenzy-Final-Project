@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: GreenEye
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
+  itemId: 12
   displayName: 
   icon: {fileID: 115629257686198394, guid: 7f83f00e14b3e6946b45777de2e407fa, type: 3}
   avatarSprite: {fileID: 0}
   color: {r: 0.09449368, g: 0.3584906, b: 0.08962265, a: 1}
+  price: 150

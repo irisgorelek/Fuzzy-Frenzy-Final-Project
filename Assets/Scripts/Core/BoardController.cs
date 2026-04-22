@@ -855,7 +855,7 @@ public class BoardController : MonoBehaviour
 
     private void PlayAnimalSpeakSfx(Animal animal)
     {
-        if (animal == null) return;
+        if (animal == null || animal._speakSfxId == 0) return;
         if (AudioManager.instance == null) return;
 
         AudioManager.instance.PlaySFX(animal._speakSfxId);

@@ -7,6 +7,7 @@ public class AchievementCardData : MonoBehaviour
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text progressNumberText;
+    [SerializeField] private TMP_Text coinRewardText;
     [SerializeField] private Image fillImage;
     [SerializeField] private GameObject completedStamp;
 
@@ -17,6 +18,9 @@ public class AchievementCardData : MonoBehaviour
 
         progressNumberText.text = $"{current}/{goal}";
         fillImage.fillAmount = goal > 0 ? (float)current / goal : 0f;
+
+        if (coinRewardText != null)
+            coinRewardText.text = achievement.CoinReward.ToString();
 
         bool isCompleted = current >= goal;
         completedStamp.SetActive(isCompleted);

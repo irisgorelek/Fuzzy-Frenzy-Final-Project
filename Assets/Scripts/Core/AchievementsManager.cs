@@ -118,6 +118,10 @@ public class AchievementsManager : MonoBehaviour
     private void Unlock(AchievementSO achievement)
     {
         S.unlockedAchievements.Add(achievement.Id);
+
+        if (achievement.CoinReward > 0)
+            S.AddCoins(achievement.CoinReward);
+
         _economy.Save();
         Debug.Log($"Achievement unlocked: {achievement.Title}");
     }

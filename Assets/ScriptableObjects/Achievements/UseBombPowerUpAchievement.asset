@@ -20,3 +20,4 @@ MonoBehaviour:
   _goal: 1
   _animalId: 
   _powerUpName: bomb
+  _coinReward: 150

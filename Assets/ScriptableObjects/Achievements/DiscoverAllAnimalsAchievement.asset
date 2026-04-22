@@ -19,3 +19,5 @@ MonoBehaviour:
   _category: 1
   _goal: 0
   _animalId: 
+  _powerUpName: 
+  _coinReward: 350

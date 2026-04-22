@@ -20,3 +20,4 @@ MonoBehaviour:
   _goal: 1000
   _animalId: 
   _powerUpName: 
+  _coinReward: 500

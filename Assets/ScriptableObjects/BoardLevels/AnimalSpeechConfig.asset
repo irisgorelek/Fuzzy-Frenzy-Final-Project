@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54464c5da6c69554a8e5ec8818359120, type: 3}
+  m_Name: AnimalSpeechConfig
+  m_EditorClassIdentifier: FuzzyFrenzy.Data::AnimalSpeechConfig
+  tutorialLevels:
+  - levelIndex: 1
+    steps:
+    - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+      lines:
+      - 'Yo. Hear me out! '
+      - More matchs in less moves, equal BETTER Score.
+      - Score better, get MORE coins!
+  - levelIndex: 5
+    steps:
+    - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+      lines:
+      - 'Get me sheeps, I''ll get you a gift. '
+    - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+      lines:
+      - 'Bhaa, please don''t. '
+  - levelIndex: 10
+    steps:
+    - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+      lines:
+      - Yo, hear me one last time.
+      - I hope you went shopping, because you'd need it.
+    - animal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
+      lines:
+      - 'Try finding me again. Time for CHAOS! '
+  normalEntries:
+  - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
+    lines:
+    - Howdy!
+    - Go! Are you a chicken or something?
+  - animal: {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
+    lines:
+    - Should I say something clever? ...Oink?
+    - Looking for some dirt?
+  - animal: {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
+    lines:
+    - Wanna to talk about the weather?
+    - I like the sound of rain.
+  - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+    lines:
+    - That sheep needs a backbone. Soon.
+    - Hello, hello.
+  - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+    lines:
+    - Bhaaaa!!!!!
+    - This COW only talks about the weather.
+  triggeredEntries:
+  - levelIndex: 6
+    triggerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
+    speakerAnimal: {fileID: 0}
+    lines:
+    - Ahhh! Where did that sheep go?
+    - B..b... bones?!
+  - levelIndex: 9
+    triggerAnimal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
+    speakerAnimal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
+    lines:
+    - At last, you found me!
+    - I'm pieced. What do you want?
+  - levelIndex: 5
+    triggerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
+    speakerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
+    lines:
+    - Told ya... Hit me twice to free me!
+  - levelIndex: 10
+    triggerAnimal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
+    speakerAnimal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+    lines:
+    - Uh. Not YOU again...

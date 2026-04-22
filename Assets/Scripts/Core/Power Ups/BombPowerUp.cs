@@ -64,23 +64,27 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
         if (_armed)
         {
             UnarmBomb();
-            _feedback?.StopHoldLoop();
             _feedback?.SetSelected(false);
         }
         else
         {
             ArmBomb();
             _feedback?.SetSelected(true);
-            _feedback?.StartHoldLoop();
         }
     }
 
     private void ArmBomb()
     {
         if (_armed || _bootstrapper == null)
+            return;
+
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
             return;
 
         int count = _bootstrapper.Economy.GetBoosterCount(BoosterEffectType.FuzzyBlast);
@@ -91,7 +95,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _boardView.SwapsEnabled = false;
         _boardView.CellTapped += OnCellTapped;
 
-        //ShowArmedButtonVfx(); - The VFX looks bad with the current UI (Might add something else in a future update)
+        ShowArmedButtonVfx();
 
         Debug.Log("Armed bomb");
     }
@@ -111,7 +115,12 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void OnCellTapped(Vector2Int coord)
     {
-        _feedback?.StopHoldLoop();
+        if (!_armed)
+            return;
+
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
         UnarmBomb();
         _feedback?.SetSelected(false);
 
@@ -120,6 +129,9 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     public async void TryUseBomb(Vector2Int coord)
     {
+        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+            return;
+
         if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1)) // or Blast
             return;
 
@@ -156,7 +168,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         _powerUpChannel.RaiseEvent("bomb");
         RefreshAmount();
 
-        //_feedback?.PlaySuccess();
+        _feedback?.PlaySuccess();
         _feedback?.PopAmount();
         _boardView.SwapsEnabled = true;
 

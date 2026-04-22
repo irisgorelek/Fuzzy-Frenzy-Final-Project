@@ -20,6 +20,7 @@ public class BoardView : MonoBehaviour
     [Header("Highlighting")] // For highlighting
     [SerializeField] Color _selectedColor;
     [SerializeField] Color _normalColor;
+    [SerializeField] Color _tutorialLockedColor = new Color(1f, 0.9f, 0.35f, 1f);
 
     [Header("Animation")]
     [SerializeField] private RectTransform _swapOverlay;
@@ -78,6 +79,7 @@ public class BoardView : MonoBehaviour
     // Swipe state
     private bool _gestureActive;
     private bool _swipeCommitted;
+    private bool _suppressNextCellTap;
     private Vector2Int _startCell;
     private Vector2 _startScreenPos;
     private Vector2Int? _highlightedCell;
@@ -124,6 +126,7 @@ public class BoardView : MonoBehaviour
                 var cellView = go.GetComponent<CellView>();
                 cellView.Init(coord);
                 cellView.ConfigureHighlight(_selectedColor, _normalColor);
+                cellView.ConfigureTutorialLock(_tutorialLockedColor);
 
                 // Subscribe to raw input events
                 cellView.PointerDown += OnCellPointerDown;
@@ -277,6 +280,7 @@ public class BoardView : MonoBehaviour
         {
             _gestureActive = false;
             _swipeCommitted = false;
+            _suppressNextCellTap = true;
 
             _startCell = coord;
             _startScreenPos = screenPos;
@@ -288,6 +292,7 @@ public class BoardView : MonoBehaviour
             return;
         }
 
+        _suppressNextCellTap = false;
         _gestureActive = true;
         _swipeCommitted = false;
         _startCell = coord;
@@ -304,6 +309,14 @@ public class BoardView : MonoBehaviour
     private void OnCellPointerUp(Vector2Int coord, Vector2 screenPos)
     {
         TryCommitSwipe(screenPos);
+
+        if (_suppressNextCellTap)
+        {
+            _suppressNextCellTap = false;
+            _gestureActive = false;
+            ClearHighlightedCell();
+            return;
+        }
 
         if (!_swipeCommitted)
             CellTapped?.Invoke(coord);
@@ -350,18 +363,46 @@ public class BoardView : MonoBehaviour
     
     public void SetMovesText(int movesLeft)
     {
-        _movesCountText.text = movesLeft.ToString();
+        if (_movesCountText != null)
+            _movesCountText.text = movesLeft.ToString();
+    }
+
+    private Tween _lastMoveShakeTween;
+
+    public void SetMovesLastMoveTension(bool active)
+    {
+        if (_movesCountText == null)
+            return;
+
+        var rt = _movesCountText.rectTransform;
+        rt.DOKill();
+        _lastMoveShakeTween?.Kill();
+        _lastMoveShakeTween = null;
+
+        if (!active)
+        {
+            rt.localScale = Vector3.one;
+            rt.localRotation = Quaternion.identity;
+            return;
+        }
+
+        _lastMoveShakeTween = rt
+            .DOShakeAnchorPos(0.35f, strength: 18f, vibrato: 40, randomness: 90f, snapping: false)
+            .SetLoops(-1, LoopType.Restart);
     }
 
     public void SetTimerVisible(bool visible)
     {
-        _timerPowerUp.gameObject.SetActive(visible);
-        _timerBackground.gameObject.SetActive(visible);
+        if (_timerPowerUp != null)
+            _timerPowerUp.gameObject.SetActive(visible);
+        if (_timerBackground != null)
+            _timerBackground.gameObject.SetActive(visible);
     }
 
     public void SetTimerSeconds(int seconds)
     {
-        _timerPowerUp.text = $"Match Time!\n{seconds}";
+        if (_timerPowerUp != null)
+            _timerPowerUp.text = $"Match Time!\n{seconds}";
     }
 
     // Dotween animation
@@ -381,7 +422,7 @@ public class BoardView : MonoBehaviour
         aView.SetImageEnabled(false);
         bView.SetImageEnabled(false);
 
-        var tcs = new TaskCompletionSource<bool>(); // Create a future task that Iíll mark as finished later.
+        var tcs = new TaskCompletionSource<bool>(); // Create a future task that Iùll mark as finished later.
 
         Sequence seq = DOTween.Sequence(); // Create a sequence of animations
         seq.Join(tempA.rectTransform.DOMove(bView.ImageRect.position, duration).SetEase(Ease.InOutQuad));
@@ -1208,6 +1249,15 @@ public class BoardView : MonoBehaviour
             return cell.ImageRect.position;
 
         return Vector3.zero;
+    }
+
+    public void SetTutorialLockedCell(Vector2Int? coord)
+    {
+        foreach (var kvp in _cells)
+            kvp.Value.SetTutorialLocked(false);
+
+        if (coord.HasValue && _cells.TryGetValue(coord.Value, out var cell))
+            cell.SetTutorialLocked(true);
     }
 
     public Vector3 GetCellScenePosition(Vector2Int coord, Camera worldCamera, float worldZ = 0f)

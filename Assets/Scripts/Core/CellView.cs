@@ -6,12 +6,9 @@ using UnityEngine.UI;
 
 public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    [Header("Animal Sprite")]
     [SerializeField] private Image _image;
 
     [Header("Highlight Juice")]
-    [SerializeField] private Image _highlightImage;
-    [SerializeField] private float _highlightScale = 1.12f;
     [SerializeField] private float _selectedScale = 1.08f;
     [SerializeField] private float _pulseDuration = 0.18f;
     [SerializeField] private Vector2 _outlineDistance = new Vector2(10f, 10f);
@@ -28,6 +25,8 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private Color _selectedColor = Color.white;
     private Color _normalColor = Color.clear;
+    private Color _tutorialLockedColor = new Color(1f, 0.9f, 0.35f, 1f);
+    private bool _tutorialLocked;
 
     public event Action<Vector2Int, Vector2> PointerDown;
     public event Action<Vector2Int, Vector2> Drag;
@@ -60,9 +59,6 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         _image.sprite = sprite;
         _image.color = color;
-
-        if (_highlightImage != null)
-            _highlightImage.sprite = sprite;
     }
 
     public void ConfigureHighlight(Color selectedColor, Color normalColor)
@@ -71,38 +67,58 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         _normalColor = normalColor;
     }
 
+    public void ConfigureTutorialLock(Color lockColor)
+    {
+        _tutorialLockedColor = lockColor;
+    }
+
     public void SetHighlighted(bool on)
     {
         if (_highlighted == on)
             return;
 
         _highlighted = on;
+        ApplyVisualState();
+    }
 
+    public void SetTutorialLocked(bool locked)
+    {
+        if (_tutorialLocked == locked)
+            return;
+
+        _tutorialLocked = locked;
+        ApplyVisualState();
+    }
+
+    private void ApplyVisualState()
+    {
         _pulseTween?.Kill();
         ImageRect.DOKill();
 
-        if (_highlightImage != null)
+        if (_highlighted || _tutorialLocked)
         {
-            _highlightImage.enabled = on;
-            _highlightImage.color = _selectedColor;
-            _highlightImage.rectTransform.localScale = on
-                ? _baseScale * _highlightScale
-                : _baseScale;
-        }
+            _outline.enabled = true;
+            _outline.effectColor = _highlighted ? _selectedColor : _tutorialLockedColor;
+            _outline.effectDistance = _outlineDistance;
 
-        if (on)
-        {
             ImageRect.localScale = _baseScale;
 
-            ImageRect.DOPunchScale(Vector3.one * 0.08f, 0.12f, 1, 0f);
+            if (_highlighted)
+            {
+                // tiny pop on touch
+                ImageRect.DOPunchScale(Vector3.one * 0.08f, 0.12f, 1, 0f);
+            }
 
+            float targetScale = _highlighted ? _selectedScale : 1.04f;
             _pulseTween = ImageRect
-                .DOScale(_baseScale * _selectedScale, _pulseDuration)
+                .DOScale(_baseScale * targetScale, _pulseDuration)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo);
         }
         else
         {
+            _outline.effectColor = _normalColor;
+            _outline.enabled = false;
             ImageRect.localScale = _baseScale;
         }
     }
@@ -117,6 +133,7 @@ public class CellView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             _outline.enabled = false;
 
         _highlighted = false;
+        _tutorialLocked = false;
     }
 
     public void OnPointerDown(PointerEventData eventData) => PointerDown?.Invoke(Coord, eventData.position);

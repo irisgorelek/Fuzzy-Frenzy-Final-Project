@@ -29,6 +29,7 @@ public class Board
 
     private int _goalAmount = 0;
     private PointsOrMatches _goalType;
+    private readonly HashSet<Vector2Int> _lockedCells = new HashSet<Vector2Int>();
 
     // Special Pieces
     private readonly Animal _wolf;
@@ -292,6 +293,7 @@ public class Board
         {
             var a = _grid[matches[i].x, matches[i].y];
             if (a == null) continue;
+            if (IsCellLocked(matches[i])) continue;
 
             if (AudioManager.instance != null)
             {
@@ -341,6 +343,12 @@ public class Board
                 var piece = _grid[x, y];
                 if (piece == null)
                     continue;
+
+                if (IsCellLocked(new Vector2Int(x, y)))
+                {
+                    writeY = y - 1;
+                    continue;
+                }
 
                 // If bone block, don't apply gravity
                 if (!piece._affectedByGravity)
@@ -499,6 +507,8 @@ public class Board
 
     public bool SwapCellsRaw(Vector2Int cell1, Vector2Int cell2)
     {
+        if (IsCellLocked(cell1) || IsCellLocked(cell2)) return false;
+
         var a = _grid[cell1.x, cell1.y];
         var b = _grid[cell2.x, cell2.y];
 
@@ -530,7 +540,7 @@ public class Board
 
     private Animal PickRandomAllowedAnimal()
     {
-        // If there’s nothing to pick from, return null
+        // If there's nothing to pick from, return null
         if (_allowedAnimals == null || _allowedAnimals.Count == 0)
             return null;
 
@@ -546,7 +556,7 @@ public class Board
         // Pick a random number in [0, total)
         float r = Random.value * total;
 
-        // Walk through the animals, adding weights until we “cross” r
+        // Walk through the animals, adding weights until we "cross" r
         float cumulative = 0f;
         for (int i = 0; i < _allowedAnimals.Count; i++)
         {
@@ -815,6 +825,7 @@ public class Board
             var c = cells[i];
             var a = _grid[c.x, c.y];
             if (a == null) continue;
+            if (IsCellLocked(c)) continue;
 
             // Dont clear bone blocks
             if (_boneBlock != null && a == _boneBlock)
@@ -923,6 +934,8 @@ public class Board
             var a = _grid[cell.x, cell.y];
             if (a == null)
                 continue;
+            if (IsCellLocked(cell))
+                continue;
 
             // don't count / clear bone blocks
             if (_boneBlock != null && a == _boneBlock)
@@ -955,5 +968,55 @@ public class Board
         ApplyGravity(fallMoves);
         Refill(spawns);
         //ResolveWolfSheepInteractions(fallMoves, spawns);
+    }
+
+    public List<Vector2Int> FindCellsWithAnimal(Animal animal)
+    {
+        var result = new List<Vector2Int>();
+        if (animal == null)
+            return result;
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                if (_grid[x, y] == animal)
+                    result.Add(new Vector2Int(x, y));
+            }
+        }
+
+        return result;
+    }
+
+    public void SetLockedCells(IEnumerable<Vector2Int> cells)
+    {
+        _lockedCells.Clear();
+        if (cells == null)
+            return;
+
+        foreach (var cell in cells)
+        {
+            if (IsCellInBounds(cell))
+                _lockedCells.Add(cell);
+        }
+    }
+
+    public void ClearLockedCells()
+    {
+        _lockedCells.Clear();
+    }
+
+    public bool IsCellLocked(Vector2Int cell)
+    {
+        return _lockedCells.Contains(cell);
+    }
+
+    /// <summary>Debug / cheats only: satisfy the board's primary goal (points or matches).</summary>
+    public void DebugCheatFillPrimaryGoal()
+    {
+        if (_goalType == PointsOrMatches.points)
+            _points = Mathf.Max(_points, _goalAmount);
+        else if (_goalType == PointsOrMatches.matches)
+            _matchedAnimals = Mathf.Max(_matchedAnimals, _goalAmount);
     }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee029291298beba4984d3a96b6ec8ef3, type: 3}
   m_Name: BlackSheep
   m_EditorClassIdentifier: FuzzyFrenzy.Data::Animal
-  _id: 
+  _id: BlackSheep
   _sprite: {fileID: -7944123492364980465, guid: 6cef78e711b5be04f8d6f8db3ca872bf, type: 3}
   _points: 0
   color: {r: 1, g: 1, b: 1, a: 1}
@@ -20,3 +20,4 @@ MonoBehaviour:
   _canMatch: 0
   _canSwap: 1
   _affectedByGravity: 1
+  _speakSfxId: 22

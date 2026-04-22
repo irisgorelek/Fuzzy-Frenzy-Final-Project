@@ -20,3 +20,4 @@ MonoBehaviour:
   _canMatch: 1
   _canSwap: 1
   _affectedByGravity: 1
+  _speakSfxId: 21

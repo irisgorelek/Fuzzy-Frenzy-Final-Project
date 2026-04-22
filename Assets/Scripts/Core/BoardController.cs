@@ -51,6 +51,7 @@ public class BoardController : MonoBehaviour
     private float _timerBombEndTime;
     private bool _timerBombResolving;
     private int _lastShownTimerSecond = -1;
+    public float _speakSfxDuration = 1f;
 
     public Action<bool> OnTimerBombStateChanged;
 
@@ -762,7 +763,7 @@ public class BoardController : MonoBehaviour
                 var lines = new List<string> { options[randomIndex] };
                 bool useRightSide = coord.x >= (_board.Width * 0.5f);
                 await _view.AnimateBlockedTap(coord, _speechCellHighlightDuration);
-                PlayAnimalSpeakSfx(animal); // Animal Sound
+                await PlayAnimalSpeakSfx(animal); // Animal Sound
                 await _speechBubblePresenter.ShowNormalAsync(lines, _view.GetCellWorldPosition(coord), useRightSide, _normalBubbleVisibleSeconds);
                 return;
             }
@@ -841,7 +842,7 @@ public class BoardController : MonoBehaviour
             _bubbleActive = true;
             try
             {
-                PlayAnimalSpeakSfx(speakerAnimal); // Animal Sound
+                await PlayAnimalSpeakSfx(speakerAnimal); // Animal Sound
                 await _speechBubblePresenter.ShowTriggeredAsync(speakerAnimal._sprite, lines, useRightSide, _triggeredBubbleVisibleSeconds);
                 _triggeredEntryIndicesShown.Add(i);
             }
@@ -853,12 +854,15 @@ public class BoardController : MonoBehaviour
         }
     }
 
-    private void PlayAnimalSpeakSfx(Animal animal)
+    private async Task PlayAnimalSpeakSfx(Animal animal)
     {
         if (animal == null || animal._speakSfxId == 0) return;
         if (AudioManager.instance == null) return;
 
         AudioManager.instance.PlaySFX(animal._speakSfxId);
+
+        if (_speakSfxDuration > 0f)
+            await Task.Delay(Mathf.CeilToInt(_speakSfxDuration * 1000f));
     }
 
     private async Task AnimateBlackSheepBlastFromCenter(Vector2Int center, bool swipedVertically)

@@ -826,7 +826,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 0191b65b66658664ea83bd8fb356c294, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -16234,6 +16234,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AudioManager
       objectReference: {fileID: 0}
+    - target: {fileID: 3241192537851770496, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+      propertyPath: m_Name
+      value: Timer
+      objectReference: {fileID: 0}
     - target: {fileID: 4595531777926971079, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
       propertyPath: m_Volume
       value: 0.5
@@ -16286,6 +16290,10 @@ PrefabInstance:
       propertyPath: m_Resource
       value: 
       objectReference: {fileID: 8300000, guid: c5a29e286b3b2a048929e580fb7c32b1, type: 3}
+    - target: {fileID: 6863784403158096850, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 17c1573601ac12f4096763cc294e7a59, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

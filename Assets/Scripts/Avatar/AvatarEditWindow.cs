@@ -7,6 +7,7 @@ public class AvatarEditWindow : MonoBehaviour
 {
     [Header("Data")]
     [SerializeField] private AvatarCatalogSO catalog;
+    [SerializeField] private GameBootstrapper bootstrapper;
 
     [Header("Tabs")]
     [SerializeField] private Transform tabContainer;
@@ -54,7 +55,6 @@ public class AvatarEditWindow : MonoBehaviour
 
     private void LoadSelections()
     {
-        var bootstrapper = FindFirstObjectByType<GameBootstrapper>();
         if (bootstrapper != null)
         {
             foreach (var kvp in bootstrapper.Economy.State.avatarSelections)
@@ -156,12 +156,8 @@ public class AvatarEditWindow : MonoBehaviour
             _savedSelections[kvp.Key] = kvp.Value;
 
         // Persist
-        var bootstrapper = FindFirstObjectByType<GameBootstrapper>();
-        if (bootstrapper != null)
-        {
-            bootstrapper.Economy.State.avatarSelections = new Dictionary<AvatarCategoryType, int>(_savedSelections);
-            bootstrapper.Economy.Save();
-        }
+        bootstrapper.Economy.State.avatarSelections = new Dictionary<AvatarCategoryType, int>(_savedSelections);
+        bootstrapper.Economy.Save();
     }
 
     public void Cancel()

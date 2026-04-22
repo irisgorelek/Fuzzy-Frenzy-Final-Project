@@ -19004,6 +19004,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 172f7467d39bb7e49aa016c942967bf9, type: 2}
   - {fileID: 11400000, guid: 802480cba930b144f9aea76b16b9ee08, type: 2}
   _allLevels: {fileID: 11400000, guid: 9567066a3c289c54a9a420eb7e66cea4, type: 2}
+  _locator: {fileID: 1684133699}
 --- !u!1 &1436932845
 GameObject:
   m_ObjectHideFlags: 0

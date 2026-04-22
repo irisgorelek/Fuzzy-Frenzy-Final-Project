@@ -44,9 +44,6 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         if (_board != null)
             _board.OnTimerBombStateChanged += HandleTimerStateChanged;
 
-        if (_frostOverlay != null)
-            _frostOverlay.SetAmountImmediate(0f);
-
         RefreshAmount();
     }
 

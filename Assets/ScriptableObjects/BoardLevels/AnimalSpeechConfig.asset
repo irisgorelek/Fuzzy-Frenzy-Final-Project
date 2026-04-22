@@ -18,13 +18,13 @@ MonoBehaviour:
     - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
       lines:
       - 'Yo. Hear me out! '
-      - More matchs in less moves, equal BETTER Score.
+      - More matches in less moves, equals a BETTER Score.
       - Score better, get MORE coins!
   - levelIndex: 5
     steps:
     - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
       lines:
-      - 'Get me sheeps, I''ll get you a gift. '
+      - 'Get me sheep, I''ll get you a gift. '
     - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
       lines:
       - 'Bhaa, please don''t. '
@@ -32,8 +32,8 @@ MonoBehaviour:
     steps:
     - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
       lines:
-      - Yo, hear me one last time.
-      - I hope you went shopping, because you'd need it.
+      - Yo, hear me out one last time.
+      - I hope you went shopping, because you'll need it.
     - animal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
       lines:
       - 'Try finding me again. Time for CHAOS! '
@@ -48,7 +48,7 @@ MonoBehaviour:
     - Looking for some dirt?
   - animal: {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
     lines:
-    - Wanna to talk about the weather?
+    - Wanna talk about the weather?
     - I like the sound of rain.
   - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
     lines:
@@ -75,7 +75,7 @@ MonoBehaviour:
     triggerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
     speakerAnimal: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
     lines:
-    - Told ya... Hit me twice to free me!
+    - Told ya... Match next to me to free me!
   - levelIndex: 10
     triggerAnimal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
     speakerAnimal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}

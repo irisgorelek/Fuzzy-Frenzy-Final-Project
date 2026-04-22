@@ -17,6 +17,11 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
     [Header("Feedback")]
     [SerializeField] private PowerUpButtonFeedback _feedback;
 
+    [Header("Frost")]
+    [SerializeField] private FrostOverlay _frostOverlay;
+    [SerializeField] private float _frostFadeDuration = 0.35f;
+    [SerializeField] private float _frostAmountWhenActive = 0.65f;
+
     private GameBootstrapper _bootstrapper;
 
     private void Awake()
@@ -39,6 +44,9 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         if (_board != null)
             _board.OnTimerBombStateChanged += HandleTimerStateChanged;
 
+        if (_frostOverlay != null)
+            _frostOverlay.SetAmountImmediate(0f);
+
         RefreshAmount();
     }
 
@@ -50,11 +58,22 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
 
         if (_board != null)
             _board.OnTimerBombStateChanged -= HandleTimerStateChanged;
+
+        if (_frostOverlay != null)
+            _frostOverlay.SetAmountImmediate(0f);
     }
 
     private void HandleTimerStateChanged(bool active)
     {
         RefreshAmount();
+
+        if (_frostOverlay == null)
+            return;
+
+        _frostOverlay.AnimateTo(
+            active ? _frostAmountWhenActive : 0f,
+            _frostFadeDuration
+        );
     }
 
 
@@ -89,6 +108,8 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         _board.StartTimerBomb(_timerLength);
 
         RefreshAmount();
+
+        // TODO: Add frost effect
 
         _feedback?.PlaySuccess();
         _feedback?.PopAmount();

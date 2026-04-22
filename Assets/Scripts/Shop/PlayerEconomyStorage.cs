@@ -28,6 +28,13 @@ public static class PlayerEconomyStorage
     }
 
     [Serializable]
+    private class LevelStarEntry
+    {
+        public int levelIndex;
+        public int stars;
+    }
+
+    [Serializable]
     private class SaveData
     {
         public int coins;
@@ -43,6 +50,7 @@ public static class PlayerEconomyStorage
         public int totalDestroyedAnimals;
         public int totalPointsEarned;
         public List<AvatarSelectionEntry> avatarSelections = new();
+        public List<LevelStarEntry> levelStars = new();
     }
 
     public static void Save(PlayerEconomyState state)
@@ -72,6 +80,9 @@ public static class PlayerEconomyStorage
 
         foreach (var kvp in state.avatarSelections)
             data.avatarSelections.Add(new AvatarSelectionEntry { category = kvp.Key, index = kvp.Value });
+
+        foreach (var kvp in state.levelStars)
+            data.levelStars.Add(new LevelStarEntry { levelIndex = kvp.Key, stars = kvp.Value });
 
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(Key, json);
@@ -135,6 +146,13 @@ public static class PlayerEconomyStorage
             {
                 foreach (var entry in data.avatarSelections)
                     state.avatarSelections[entry.category] = entry.index;
+            }
+
+            state.levelStars.Clear();
+            if (data.levelStars != null)
+            {
+                foreach (var entry in data.levelStars)
+                    state.levelStars[entry.levelIndex] = entry.stars;
             }
         }
         catch

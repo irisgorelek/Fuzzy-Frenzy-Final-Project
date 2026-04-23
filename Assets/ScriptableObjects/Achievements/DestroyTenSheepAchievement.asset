@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: FuzzyFrenzy.Data::AchievementSO
   _id: destroy_10_sheep
   _title: Sheep Sweeper
-  _description: Destroy 10 sheep.
+  _description: Destroy 100 sheep.
   _icon: {fileID: 0}
   _category: 1
-  _goal: 10
+  _goal: 100
   _animalId: sheep
   _powerUpName: 
-  _coinReward: 150
+  _coinReward: 250

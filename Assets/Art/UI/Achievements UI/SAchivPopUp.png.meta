@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: dbb57db3944691243abae35f6ce41f7d
+guid: c5956df32e8978d4d9fff34c0b1e1d31
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -985427848325705076
-    second: achivPopUp_0
+      213: 2513711199630910148
+    second: SAchivPopUp_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 2
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: achivPopUp_0
+      name: SAchivPopUp_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 723
-        height: 313
+        width: 1001
+        height: 211
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c82d4ccc79e0352f0800000000000000
-      internalID: -985427848325705076
+      spriteID: 4c2ebe1940f72e220800000000000000
+      internalID: 2513711199630910148
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      achivPopUp_0: -985427848325705076
+      SAchivPopUp_0: 2513711199630910148
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

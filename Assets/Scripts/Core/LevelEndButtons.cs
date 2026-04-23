@@ -13,7 +13,7 @@ public class LevelEndButtons : MonoBehaviour
 
     private void Start()
     {
-        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _bootstrapper = GameBootstrapper.Instance;
 
         menuButton.onClick.AddListener(GoToMenu);
         redoButton.onClick.AddListener(RedoLevel);

@@ -1397,6 +1397,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6873703291598736100, guid: d6e97c57dc000794a8fb69f8581292b2, type: 3}
   m_PrefabInstance: {fileID: 198217120}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &209015922 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5918736000257450410, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &209265516
 GameObject:
   m_ObjectHideFlags: 0
@@ -1926,7 +1937,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
-  bootstrapper: {fileID: 1573166759}
   itemDefinition: {fileID: 11400000, guid: 499729b5b52148c4d99a30036378b6be, type: 2}
   buyButton: {fileID: 1199857341}
   priceText: {fileID: 1212608243}
@@ -2090,7 +2100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee561dcd1e8134ab7b1a9282711e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EconomyDebugPanel
-  bootstrapper: {fileID: 1573166759}
 --- !u!4 &323662598
 Transform:
   m_ObjectHideFlags: 0
@@ -2118,7 +2127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0f1e662367860a4e98354fc33e0042f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopDebugPurchase
-  bootstrapper: {fileID: 1573166759}
   freeSwitchItem: {fileID: 11400000, guid: 32647bee8336dd74baff43d526c2fa4b, type: 2}
   powerNapItem: {fileID: 11400000, guid: f5af1af43f5c57b458a88dbee4c209c3, type: 2}
   lifeItem: {fileID: 11400000, guid: 57dd489e6d80bf3409239fa5136292a5, type: 2}
@@ -3386,11 +3394,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
-  bootstrapper: {fileID: 1573166759}
   itemDefinition: {fileID: 11400000, guid: 5b0b03b310362c142b2ac4d7d2313d4d, type: 2}
   buyButton: {fileID: 345237086}
   priceText: {fileID: 144374616}
   ownedText: {fileID: 1970054507}
+--- !u!114 &429849246 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &440609554
 GameObject:
   m_ObjectHideFlags: 0
@@ -3734,6 +3752,27 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2030948093105650950, guid: cf59a23d83767044687d37d85fcf9ddc, type: 3}
   m_PrefabInstance: {fileID: 489184897}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &493743203 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &493743209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493743203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
+  itemDefinition: {fileID: 11400000, guid: 52baaa6ae15412b45bfcf0b4b28976fe, type: 2}
+  buyButton: {fileID: 429849246}
+  priceText: {fileID: 209015922}
+  ownedText: {fileID: 0}
 --- !u!1 &493787149
 GameObject:
   m_ObjectHideFlags: 0
@@ -9454,7 +9493,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae9c7a90b1816c1449a9acde944dfcc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::MainMenuDeveloperResetDrawer
-  _bootstrapper: {fileID: 1573166759}
   _drawerRoot: {fileID: 1773130727}
   _hiddenAnchoredX: 200
   _shownAnchoredX: -100
@@ -9951,7 +9989,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189eec31d6b99144e95c8b6faf1ef8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ShopAssemblyDef::TopBarUI
-  bootstrapper: {fileID: 1573166759}
   coinsText: {fileID: 2087978954}
   livesText: {fileID: 379076558}
   lifeTimerText: {fileID: 1444428959}
@@ -12911,7 +12948,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189eec31d6b99144e95c8b6faf1ef8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ShopAssemblyDef::TopBarUI
-  bootstrapper: {fileID: 1573166759}
   coinsText: {fileID: 604200382}
   livesText: {fileID: 1890340887}
   lifeTimerText: {fileID: 1527015039}
@@ -13730,7 +13766,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
-  bootstrapper: {fileID: 1573166759}
   itemDefinition: {fileID: 11400000, guid: f5af1af43f5c57b458a88dbee4c209c3, type: 2}
   buyButton: {fileID: 555606128}
   priceText: {fileID: 1478035886}
@@ -15945,6 +15980,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1124542483}
     m_Modifications:
+    - target: {fileID: 261196810727364849, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 3455479494163008996, guid: 71627f4733a269e4180da5bc11918777, type: 3}
+    - target: {fileID: 310035388123662232, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 402417418788635762, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -16365,6 +16408,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -125.65313
       objectReference: {fileID: 0}
+    - target: {fileID: 6146012306283247635, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: m_Name
+      value: Braids Hair
+      objectReference: {fileID: 0}
     - target: {fileID: 6378786350576320236, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -16396,6 +16443,14 @@ PrefabInstance:
     - target: {fileID: 6465444064493265519, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -171.285
+      objectReference: {fileID: 0}
+    - target: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: m_Name
+      value: Pigtails Hair
+      objectReference: {fileID: 0}
+    - target: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -16540,8 +16595,57 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6146012306283247635, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6148667276057263412}
+    - targetCorrespondingSourceObject: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 493743209}
   m_SourcePrefab: {fileID: 100100000, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+--- !u!114 &6148667276057263409 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7396667374885017412, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &6148667276057263410 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!1 &6148667276057263411 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6146012306283247635, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6148667276057263412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6148667276057263411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
+  itemDefinition: {fileID: 11400000, guid: ccd352b54bfc67944903f849a486bcda, type: 2}
+  buyButton: {fileID: 6148667276057263410}
+  priceText: {fileID: 6148667276057263409}
+  ownedText: {fileID: 0}
 --- !u!1001 &7632130232870221927
 PrefabInstance:
   m_ObjectHideFlags: 0

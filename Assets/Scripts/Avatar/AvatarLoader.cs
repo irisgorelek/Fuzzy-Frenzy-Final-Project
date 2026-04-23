@@ -10,7 +10,7 @@ public class AvatarLoader : MonoBehaviour
 
     private void Start()
     {
-        bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        bootstrapper = GameBootstrapper.Instance;
         Refresh();
     }
 

@@ -3,5 +3,6 @@ public enum PurchaseFailReason
     None,
     NotEnoughCoins,
     NotAllowedRightNow,
-    ItemNotConfigured
+    ItemNotConfigured,
+    AlreadyOwned
 }

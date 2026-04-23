@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class GameBootstrapper : MonoBehaviour
 {
+    public static GameBootstrapper Instance { get; private set; }
+
     public EconomyContext Economy { get; private set; }
     public ShopService Shop { get; private set; }
 
@@ -11,8 +13,14 @@ public class GameBootstrapper : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);      // for next scenes
-        //Debug.Log("Bootstrapper Awake - instance: " + GetInstanceID()); // DEBUG: check that instace is not duplicated
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
 
         Economy = new EconomyContext();
         Economy.InitializeLivesIfNeeded();

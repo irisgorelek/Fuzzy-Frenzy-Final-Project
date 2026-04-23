@@ -36,7 +36,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void Awake()
     {
-        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _bootstrapper = GameBootstrapper.Instance;
 
         if (_bootstrapper == null)
             Debug.LogError("BombPowerUp: GameBootstrapper not found (should be DontDestroyOnLoad).");

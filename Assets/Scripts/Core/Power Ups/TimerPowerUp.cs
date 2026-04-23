@@ -26,7 +26,7 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void Awake()
     {
-        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _bootstrapper = GameBootstrapper.Instance;
         if (_bootstrapper == null)
             Debug.LogError("TimerBomb: GameBootstrapper not found (should be DontDestroyOnLoad).");
     }

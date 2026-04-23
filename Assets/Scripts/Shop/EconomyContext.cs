@@ -121,7 +121,7 @@ public class EconomyContext
     {
         if (State.currentLives >= State.maxLives)
         {
-            // Keep timestamp fresh so it doesn’t “bank” time while full
+            // Keep timestamp fresh so it doesnï¿½t ï¿½bankï¿½ time while full
             State.lastLifeTimestampUtcSeconds = GetUtcNowSeconds();
             Save();
             return;
@@ -166,7 +166,7 @@ public class EconomyContext
 
         State.currentLives -= 1;
 
-        // Start regen “clock” when you drop below max
+        // Start regen ï¿½clockï¿½ when you drop below max
         if (State.currentLives < State.maxLives)
             State.lastLifeTimestampUtcSeconds = GetUtcNowSeconds();
 
@@ -219,6 +219,18 @@ public class EconomyContext
 
         secondsRemaining = Mathf.Max(0, remaining);
         return true;
+    }
+
+    public bool IsAvatarItemUnlocked(string itemId)
+    {
+        return State.unlockedAvatarItems.Contains(itemId);
+    }
+
+    public void UnlockAvatarItem(string itemId)
+    {
+        State.unlockedAvatarItems.Add(itemId);
+        Save();
+        OnChanged?.Invoke();
     }
 
     public bool TrySpendLifeOnLevelFail()

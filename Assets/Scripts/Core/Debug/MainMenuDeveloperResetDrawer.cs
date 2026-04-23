@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 public class MainMenuDeveloperResetDrawer : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [Header("References")]
-    [SerializeField] private GameBootstrapper _bootstrapper;
     [SerializeField] private RectTransform _drawerRoot;
 
     [Header("Drawer Positions")]
@@ -123,16 +122,13 @@ public class MainMenuDeveloperResetDrawer : MonoBehaviour, IBeginDragHandler, ID
 
     public void WipeEconomyFromButton()
     {
-        if (_bootstrapper == null)
-            _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
-
-        if (_bootstrapper == null)
+        if (GameBootstrapper.Instance == null)
         {
             Debug.LogWarning("MainMenuDeveloperResetDrawer: no GameBootstrapper.");
             return;
         }
 
-        _bootstrapper.Economy.Wipe();
+        GameBootstrapper.Instance.Economy.Wipe();
 
         if (_reloadSceneAfterWipe && !string.IsNullOrEmpty(_sceneToReload))
             SceneManager.LoadScene(_sceneToReload);

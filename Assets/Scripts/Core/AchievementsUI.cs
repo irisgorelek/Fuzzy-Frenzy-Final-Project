@@ -13,7 +13,7 @@ public class AchievementsUI : MonoBehaviour
 
     private void Start()
     {
-        _state = FindFirstObjectByType<GameBootstrapper>().Economy.State;
+        _state = GameBootstrapper.Instance.Economy.State;
         LoadAchievements();
     }
 

@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class TopBarUI : MonoBehaviour
 {
-    [SerializeField] private GameBootstrapper bootstrapper;
     [SerializeField] private TextMeshProUGUI coinsText;
     [SerializeField] private TextMeshProUGUI livesText;
     [SerializeField] private TextMeshProUGUI lifeTimerText;
@@ -21,13 +20,11 @@ public class TopBarUI : MonoBehaviour
             Refresh();
         }
     }
-    private void Awake()
-    {
-        if (bootstrapper == null) 
-            bootstrapper = FindFirstObjectByType<GameBootstrapper>();
-    }
+    private GameBootstrapper bootstrapper;
+
     private void Start()
     {
+        bootstrapper = GameBootstrapper.Instance;
         TrySubscribeAndRefresh();
     }
 

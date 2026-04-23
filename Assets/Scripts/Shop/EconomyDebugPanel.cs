@@ -3,45 +3,43 @@ using UnityEngine.InputSystem;
 
 public class EconomyDebugPanel : MonoBehaviour
 {
-    [SerializeField] private GameBootstrapper bootstrapper;
-
     private void Update()
     {
         if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
         {
-            bootstrapper.Economy.AddCoins(100);
-            Debug.Log($"Coins now: {bootstrapper.Economy.State.coins}");
+            GameBootstrapper.Instance.Economy.AddCoins(100);
+            Debug.Log($"Coins now: {GameBootstrapper.Instance.Economy.State.coins}");
         }
 
         //if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
         //{
-        //    bootstrapper.Economy.AddBooster(BoosterEffectType.FreeSwitch, 1);
-        //    Debug.Log($"FreeSwitch now: {bootstrapper.Economy.State.GetBoosterCount(BoosterEffectType.FreeSwitch)}");
+        //    GameBootstrapper.Instance.Economy.AddBooster(BoosterEffectType.FreeSwitch, 1);
+        //    Debug.Log($"FreeSwitch now: {GameBootstrapper.Instance.Economy.State.GetBoosterCount(BoosterEffectType.FreeSwitch)}");
         //}
 
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
-            bootstrapper.Economy.Wipe();
+            GameBootstrapper.Instance.Economy.Wipe();
             Debug.Log("Wiped + reloaded economy.");
         }
 
         if (Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame)
         {
-            Debug.Log($"ExtraMoves now: {bootstrapper.Economy.State.extraMoveCount}");
+            Debug.Log($"ExtraMoves now: {GameBootstrapper.Instance.Economy.State.extraMoveCount}");
         }
 
         if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)
         {
-            bool ok = bootstrapper.Economy.TrySpendLifeForLevelStart();
+            bool ok = GameBootstrapper.Instance.Economy.TrySpendLifeForLevelStart();
             Debug.Log(ok
-                ? $"START LEVEL: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}"
-                : $"NO LIVES: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}");
+                ? $"START LEVEL: Lives={GameBootstrapper.Instance.Economy.State.currentLives}/{GameBootstrapper.Instance.Economy.State.maxLives}"
+                : $"NO LIVES: Lives={GameBootstrapper.Instance.Economy.State.currentLives}/{GameBootstrapper.Instance.Economy.State.maxLives}");
         }
 
         if (Keyboard.current != null && Keyboard.current.tKey.wasPressedThisFrame)
         {
-            bootstrapper.Economy.ApplyLifeRegen();
-            Debug.Log($"REGEN CHECK: Lives={bootstrapper.Economy.State.currentLives}/{bootstrapper.Economy.State.maxLives}");
+            GameBootstrapper.Instance.Economy.ApplyLifeRegen();
+            Debug.Log($"REGEN CHECK: Lives={GameBootstrapper.Instance.Economy.State.currentLives}/{GameBootstrapper.Instance.Economy.State.maxLives}");
         }
 
     }

@@ -21,7 +21,7 @@ public class RewardedRetryButton : MonoBehaviour
 
     private void Start()
     {
-        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _bootstrapper = GameBootstrapper.Instance;
 
         if (adCanvasRoot != null)
             adCanvasRoot.SetActive(false);

@@ -9,8 +9,6 @@ public class AvatarEditWindow : MonoBehaviour
     [SerializeField] private AvatarCatalogSO catalog;
     [SerializeField] private VoidEventChannelSO avatarChangedChannel;
 
-    private GameBootstrapper bootstrapper;
-
     [Header("Tabs")]
     [SerializeField] private Transform tabContainer;
     [SerializeField] private GameObject tabPrefab;
@@ -36,12 +34,13 @@ public class AvatarEditWindow : MonoBehaviour
     private readonly Dictionary<AvatarCategoryType, int> _savedSelections = new();
 
     private int _activeTabIndex = -1;
+    private GameBootstrapper bootstrapper;
 
     public event Action<AvatarCategoryType, AvatarItemSO> OnItemSelected;
 
     private void Start()
     {
-        bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        bootstrapper = GameBootstrapper.Instance;
         LoadSelections();
         BuildTabs();
 
@@ -54,6 +53,21 @@ public class AvatarEditWindow : MonoBehaviour
             SelectTab(0);
 
         ApplyAllToDisplay();
+
+        if (bootstrapper != null)
+            bootstrapper.Economy.OnChanged += RefreshCurrentTab;
+    }
+
+    private void OnDestroy()
+    {
+        if (bootstrapper != null)
+            bootstrapper.Economy.OnChanged -= RefreshCurrentTab;
+    }
+
+    private void RefreshCurrentTab()
+    {
+        if (_activeTabIndex >= 0 && _activeTabIndex < catalog.Categories.Count)
+            PopulateItems(catalog.Categories[_activeTabIndex]);
     }
 
     private void LoadSelections()

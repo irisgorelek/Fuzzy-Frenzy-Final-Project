@@ -17,4 +17,4 @@ MonoBehaviour:
   icon: {fileID: 3455479494163008996, guid: 71627f4733a269e4180da5bc11918777, type: 3}
   avatarSprite: {fileID: 21300000, guid: 75c48ca93348e7e4c83ad004fb4adb9d, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
-  price: 300
+  isPurchasable: 1

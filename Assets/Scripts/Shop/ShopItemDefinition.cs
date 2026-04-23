@@ -9,7 +9,8 @@ public enum ShopItemType
 {
     Booster,
     Lives,
-    ExtraMoves
+    ExtraMoves,
+    AvatarItem
 }
 
 public enum BoosterEffectType
@@ -47,6 +48,9 @@ public class ShopItemDefinition : ScriptableObject
     [Header("Extra Moves Data (only if itemType = ExtraMoves)")]
     [Min(1)][SerializeField] private int extraMovesGranted = 3;
 
+    [Header("Avatar Item Data (only if itemType = AvatarItem)")]
+    [SerializeField] private AvatarItemSO avatarItem;
+
     // Read-only accessors (so other code can read but not modify runtime)
     public string ItemId => itemId;
     public string DisplayName => displayName;
@@ -64,4 +68,6 @@ public class ShopItemDefinition : ScriptableObject
     public int LivesAmountGranted => livesAmountGranted;
 
     public int ExtraMovesGranted => extraMovesGranted;
+
+    public AvatarItemSO AvatarItem => avatarItem;
 }

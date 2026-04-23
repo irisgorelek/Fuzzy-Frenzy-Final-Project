@@ -6,7 +6,7 @@ public class BootstrapperLocator : MonoBehaviour
 
     private void Awake()
     {
-        Bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        Bootstrapper = GameBootstrapper.Instance;
         if (Bootstrapper == null)
             Debug.LogError("No GameBootstrapper found. Make sure it exists and is DontDestroyOnLoad.");
     }

@@ -14,7 +14,7 @@ public class LeaderboardUI : MonoBehaviour
 
     private void Start()
     {
-        _leaderboard = FindFirstObjectByType<GameBootstrapper>().Leaderboard;
+        _leaderboard = GameBootstrapper.Instance.Leaderboard;
 
         if (_leaderboard.IsReady)
             LoadLeaderboard();

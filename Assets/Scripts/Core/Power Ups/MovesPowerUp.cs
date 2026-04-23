@@ -18,7 +18,7 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
 
     private void Awake()
     {
-        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _bootstrapper = GameBootstrapper.Instance;
         if (_bootstrapper == null)
             Debug.LogError("ExtraMove: GameBootstrapper not found (should be DontDestroyOnLoad).");
 

@@ -34,6 +34,13 @@ public class ShopService
             return false;
         }
 
+        if (item.ItemType == ShopItemType.AvatarItem)
+        {
+            if (item.AvatarItem == null)
+            { reason = PurchaseFailReason.ItemNotConfigured; return false; }
+            if (economy.IsAvatarItemUnlocked(item.AvatarItem.ItemId))
+            { reason = PurchaseFailReason.AlreadyOwned; return false; }
+        }
 
         return true;
     }
@@ -65,6 +72,10 @@ public class ShopService
 
             case ShopItemType.Lives:
                 economy.AddLives(item.LivesAmountGranted);
+                break;
+
+            case ShopItemType.AvatarItem:
+                economy.UnlockAvatarItem(item.AvatarItem.ItemId);
                 break;
         }
 

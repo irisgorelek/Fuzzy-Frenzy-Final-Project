@@ -10,7 +10,7 @@ public class LevelSelectUI : MonoBehaviour
 
     private void Start()
     {
-        _bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        _bootstrapper = GameBootstrapper.Instance;
         LoadLevelButtons();
     }
 

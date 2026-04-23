@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class ShopPanelUI : MonoBehaviour
 {
-    [SerializeField] private GameBootstrapper bootstrapper;
     [SerializeField] private GameObject shopPanelRoot;
     [SerializeField] private Transform contentRoot;
     [SerializeField] private ShopItemRowUI rowPrefab;
@@ -26,14 +25,14 @@ public class ShopPanelUI : MonoBehaviour
         foreach (var item in items)
         {
             var row = Instantiate(rowPrefab, contentRoot);
-            row.Bind(bootstrapper, item);
+            row.Bind(GameBootstrapper.Instance, item);
             spawned.Add(row);
         }
     }
 
     public void Open()
     {
-        bootstrapper.Economy.ApplyLifeRegen();
+        GameBootstrapper.Instance.Economy.ApplyLifeRegen();
         shopPanelRoot.SetActive(true);
     }
 

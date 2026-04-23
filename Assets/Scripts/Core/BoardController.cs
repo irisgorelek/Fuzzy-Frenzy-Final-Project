@@ -70,7 +70,7 @@ public class BoardController : MonoBehaviour
         //_levelClearedPopup.gameObject.SetActive(false);
         //_levelLostPopup.gameObject.SetActive(false);
 
-        var bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        var bootstrapper = GameBootstrapper.Instance;
         if (bootstrapper != null && bootstrapper.SelectedLevel != null)
             _cfg = bootstrapper.SelectedLevel;
     }

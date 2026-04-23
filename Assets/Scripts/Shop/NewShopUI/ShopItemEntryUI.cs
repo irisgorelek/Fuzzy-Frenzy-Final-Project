@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class ShopItemEntryUI : MonoBehaviour
 {
-    [SerializeField] private GameBootstrapper bootstrapper;
     [SerializeField] private ShopItemDefinition itemDefinition;
 
     [Header("UI")]
@@ -12,10 +11,11 @@ public class ShopItemEntryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI priceText;
     [SerializeField] private TextMeshProUGUI ownedText;
 
+    private GameBootstrapper bootstrapper;
+
     private void Awake()
     {
-        if (bootstrapper == null)
-            bootstrapper = FindFirstObjectByType<GameBootstrapper>();
+        bootstrapper = GameBootstrapper.Instance;
     }
 
     private void OnEnable()
@@ -80,6 +80,12 @@ public class ShopItemEntryUI : MonoBehaviour
 
             case ShopItemType.Lives:
                 return state.currentLives;
+
+            case ShopItemType.AvatarItem:
+                if (itemDefinition.AvatarItem != null &&
+                    state.unlockedAvatarItems.Contains(itemDefinition.AvatarItem.ItemId))
+                    return 1;
+                return 0;
 
             default:
                 return 0;

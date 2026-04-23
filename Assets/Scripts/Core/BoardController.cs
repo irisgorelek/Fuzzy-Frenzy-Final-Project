@@ -211,6 +211,8 @@ public class BoardController : MonoBehaviour
 
         _board.Initialize();
 
+        //_board.InitializeStaticDeadBoard(); // For the shuffle tests
+
         //_blackSheepTriggered = false;
 
         // Visual
@@ -481,6 +483,9 @@ public class BoardController : MonoBehaviour
         }
 
         TryHandleLevelComplete();
+
+        await EnsurePlayableBoardAsync();
+
         await TryShowTriggeredBubbleAsync();
     }
 
@@ -589,7 +594,20 @@ public class BoardController : MonoBehaviour
         }
         return true;
     }
+    public async Task ShowHintOrHandleDeadBoardAsync()
+    {
+        if (_isBusy || _isLevelOver || _board == null)
+            return;
 
+        if (_hintFinder.TryFindHint(_board, out HintMove hint))
+        {
+            await _view.AnimateHint(hint.From, hint.To);
+        }
+        else
+        {
+            await EnsurePlayableBoardAsync();
+        }
+    }
     private async Task EnsurePlayableBoardAsync()
     {
         if (_isLevelOver) return;
@@ -603,18 +621,9 @@ public class BoardController : MonoBehaviour
 
         await _view.ShowShuffleMessage("No more moves!");
 
-
-        int safety = 0;
-        bool playable = false;
-
-        do
-        {
-            _board.ShuffleSwappablePieces();
-            safety++;
-
-            playable = !_board.HasAnyMatch() && _hintFinder.TryFindHint(_board, out _);
-        }
-        while (!playable && safety < 100);
+        bool playable = _board.ShuffleUntilPlayable(_hintFinder);
+        if (!playable)
+            Debug.LogWarning("Failed to find a playable shuffle.");
 
         await _view.AnimateShuffle(_board);
 
@@ -711,7 +720,7 @@ public class BoardController : MonoBehaviour
                     _board.SetLockedCells(new[] { speakerCell });
                     _view.SetTutorialLockedCell(speakerCell);
                     await _view.AnimateBlockedTap(speakerCell, _speechCellHighlightDuration);
-                    PlayAnimalSpeakSfx(step.animal);    // Animal sound
+                    await PlayAnimalSpeakSfx(step.animal);    // Animal sound
                     await _speechBubblePresenter.ShowTutorialAsync(step.animal._sprite, step.lines, useRightSide);
                     _board.ClearLockedCells();
                     _view.SetTutorialLockedCell(null);

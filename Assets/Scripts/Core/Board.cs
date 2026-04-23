@@ -60,6 +60,8 @@ public class Board
     public Action<int> OnScoreAdded;
     public Action<Vector2Int, Vector2Int> OnWolfAteSheep;
 
+    private readonly Queue<Animal> _debugForcedSpawns = new Queue<Animal>(); // For the shuffle test
+
     public Board(BoardConfig config)
     {
         _width = config.weidth;
@@ -125,7 +127,10 @@ public class Board
         if (_width != 5 || _height != 5)
             throw new InvalidOperationException("InitializeStaticDeadBoard supports only a 5x5 board.");
 
-        // Use only normal playable pieces
+        if (_wolf == null || _sheep == null || _boneBlock == null)
+            throw new InvalidOperationException("Wolf/Sheep/BoneBlock references are missing in BoardConfig.");
+
+        // Only normal playable animals
         var pool = new List<Animal>();
         foreach (var animal in _allowedAnimals)
         {
@@ -133,26 +138,40 @@ public class Board
             if (!animal._canSwap) continue;
             if (!animal._canMatch) continue;
 
+            if (animal == _wolf) continue;
+            if (animal == _sheep) continue;
+            if (animal == _boneBlock) continue;
+
             pool.Add(animal);
         }
 
-        if (pool.Count < 5)
-            throw new InvalidOperationException("Need at least 5 swappable/matchable animals for this static dead board.");
+        if (pool.Count < 3)
+            throw new InvalidOperationException("Need at least 3 normal swappable/matchable animals for this test board.");
 
-        // Pick 5 animals in a fixed order
         Animal A = pool[0];
         Animal B = pool[1];
         Animal C = pool[2];
-        Animal D = pool[3];
-        Animal E = pool[4];
 
+        // Intended move:
+        // swap (3,0) with (4,0)
+        //
+        // Top row before move: A B B A B
+        // Top row after move : A B B B A -> match at x = 1,2,3
+        //
+        // Forced refill:
+        // (1,0) = C
+        // (2,0) = C
+        // (3,0) = A
+        //
+        // After cascades, the wolf at (3,1) eats the sheep at (3,2),
+        // and then your dead-board shuffle logic should trigger.
         Animal[,] pattern = new Animal[5, 5]
         {
-        { B, D, C, C, D },
-        { A, D, C, A, A },
-        { C, A, E, A, D },
-        { D, B, E, C, E },
-        { E, A, D, D, E }
+        { A, A, B, B, C },            // x = 0
+        { B, A, C, B, C },            // x = 1
+        { B, B, C, A, A },            // x = 2
+        { A, _wolf, _sheep, A, A },   // x = 3
+        { B, C, C, B, B }             // x = 4
         };
 
         for (int x = 0; x < _width; x++)
@@ -163,17 +182,41 @@ public class Board
             }
         }
 
-        // Safety validation
+        _blackSheepArmed = false;
+        _blackSheepArmed = false;
+
+        // Refill the three cleared top cells deterministically
+        DebugSetForcedSpawns(C, C, A);
+
         if (FindMatches().Count > 0)
-            throw new InvalidOperationException("Static dead board is invalid: it contains starting matches.");
+            throw new InvalidOperationException("Test board is invalid: it contains starting matches.");
 
         var hintFinder = new BoardHintFinder();
-        if (hintFinder.TryFindHint(this, out var hint))
-            throw new InvalidOperationException(
-                $"Static dead board is invalid: found a legal move {hint.From} -> {hint.To}");
+        if (!hintFinder.TryFindHint(this, out var hint))
+            throw new InvalidOperationException("Test board is invalid: it has no legal move.");
+
+        //if (hint.From != new Vector2Int(3, 0) || hint.To != new Vector2Int(4, 0))
+        //    throw new InvalidOperationException(
+        //        $"Test board is invalid: expected only move (3,0)->(4,0), but got {hint.From}->{hint.To}");
+
+        Debug.Log("3-animal wolf/sheep test ready. Make move: swap (3,0) with (4,0).");
     }
 
-    // ============================================================= //
+    public void DebugSetForcedSpawns(params Animal[] animals)
+    {
+        _debugForcedSpawns.Clear();
+
+        if (animals == null)
+            return;
+
+        for (int i = 0; i < animals.Length; i++)
+        {
+            if (animals[i] != null)
+                _debugForcedSpawns.Enqueue(animals[i]);
+        }
+    }
+
+    // ============================== TEST =============================== //
 
 
     // Find matches on the board and return a list of matches found
@@ -412,7 +455,7 @@ public class Board
         // Fill remaining empties with normal animals
         foreach (var cell in empties)
         {
-            var spawned = PickRandomAllowedAnimal();
+            var spawned = _debugForcedSpawns.Count > 0 ? _debugForcedSpawns.Dequeue() : PickRandomAllowedAnimal(); // Depends on if we use the test board
             _grid[cell.x, cell.y] = spawned;
 
             spawns?.Add(new SpawnInfo

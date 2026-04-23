@@ -8,7 +8,7 @@ public class HintController : MonoBehaviour
 
     private BoardHintFinder _hintFinder = new BoardHintFinder();
 
-    public void OnHintButtonPressed()
+    public async void OnHintButtonPressed()
     {
         if (_boardController == null || _boardView == null)
             return;
@@ -23,8 +23,8 @@ public class HintController : MonoBehaviour
         }
         else
         {
-            if (_noMovesPopup != null) // no options for matches found -> activate PopUp
-                _noMovesPopup.SetActive(true);
+            // no options for matches found -> activate PopUp
+            await _boardController.ShowHintOrHandleDeadBoardAsync();
         }
     }
 }

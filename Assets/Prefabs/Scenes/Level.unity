@@ -942,6 +942,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3780368158036881831, guid: aa5dbcd52b989d4419a00418e8532b88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 226208735}
+    - targetCorrespondingSourceObject: {fileID: 3780368158036881831, guid: aa5dbcd52b989d4419a00418e8532b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 226208736}
   m_SourcePrefab: {fileID: 100100000, guid: aa5dbcd52b989d4419a00418e8532b88, type: 3}
 --- !u!224 &226208730 stripped
 RectTransform:
@@ -1005,6 +1008,19 @@ MonoBehaviour:
   coinsText: {fileID: 0}
   livesText: {fileID: 250067770}
   lifeTimerText: {fileID: 250067769}
+--- !u!114 &226208736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226208731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28bc32ed6a98b4147b5a101aca8cae42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::LevelLostPopupUI
+  popupTween: {fileID: 226208734}
 --- !u!1 &244020272
 GameObject:
   m_ObjectHideFlags: 0
@@ -6945,6 +6961,82 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FunzzyFrenzy.core::LevelDebugFlowCheats
   _board: {fileID: 2044731411}
+--- !u!1 &765208638
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 765208639}
+  - component: {fileID: 765208641}
+  - component: {fileID: 765208640}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &765208639
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 765208638}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1966593337}
+  m_Father: {fileID: 1199046893}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 130.4, y: -579.3}
+  m_SizeDelta: {x: 286.7, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &765208640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 765208638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 2033613311789972620, guid: 1cb4710b70036a547848d5b3a17c7819, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &765208641
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 765208638}
+  m_CullTransparentMesh: 1
 --- !u!1 &771761661
 GameObject:
   m_ObjectHideFlags: 0
@@ -7141,7 +7233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -18696,7 +18788,8 @@ MonoBehaviour:
   adCanvasRoot: {fileID: 1199046892}
   slideImage: {fileID: 786586142}
   slides:
-  - {fileID: 813059893306609957, guid: 9f9c239e92ef27947a54aa155e47d1b8, type: 3}
+  - {fileID: 5973923098020200185, guid: 9f9c239e92ef27947a54aa155e47d1b8, type: 3}
+  - {fileID: 1919133894203413869, guid: 8ee14343de7bf8c49ba966d85d0819b2, type: 3}
   - {fileID: -3338986452619212325, guid: b92636bb2712d6f448d40ea37c08b42c, type: 3}
   - {fileID: -4717898685981270901, guid: 0621aa45d654cc1469e714a1412b2512, type: 3}
   countdownText: {fileID: 1966593338}
@@ -19158,7 +19251,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 786586141}
-  - {fileID: 1966593337}
+  - {fileID: 765208639}
   m_Father: {fileID: 1071409650}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -36855,11 +36948,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1199046893}
+  m_Father: {fileID: 765208639}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 130.26965, y: -576.3655}
+  m_AnchoredPosition: {x: -161.08035, y: 52.934326}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1966593338
@@ -81807,6 +81900,10 @@ PrefabInstance:
       propertyPath: _levelVFXToggle
       value: 
       objectReference: {fileID: 1422359914}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: _levelLostPopupUI
+      value: 
+      objectReference: {fileID: 226208736}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _levelClearedPopup
       value: 

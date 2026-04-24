@@ -12,7 +12,8 @@ public class BoardController : MonoBehaviour
 
     [Header("On Screen Pop Ups")]
     [SerializeField] private LevelClearedPopupUI _levelClearedPopupUI;
-    [SerializeField] private GameObject _levelLostPopup;
+    //[SerializeField] private GameObject _levelLostPopup;
+    [SerializeField] private LevelLostPopupUI _levelLostPopupUI;
     //[SerializeField] private int framesBetweenSteps = 5;
     [SerializeField] private LevelVFXToggle _levelVFXToggle;
 
@@ -185,9 +186,12 @@ public class BoardController : MonoBehaviour
 
         if (_locator != null && _locator.Bootstrapper != null)
             _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
+        
+        if (_levelVFXToggle != null)
+            _levelVFXToggle.SetCurrentVFXActive(false);
 
-        if (_levelLostPopup != null)
-            _levelLostPopup.SetActive(true);
+        if (_levelLostPopupUI != null)
+            _levelLostPopupUI.Show();
     }
 
     public void InitializeGame()
@@ -351,7 +355,10 @@ public class BoardController : MonoBehaviour
 
             _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
 
-            if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
+            if (_levelLostPopupUI != null)
+                _levelLostPopupUI.Show();
+
+            //if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
             _isBusy = false;
             return;
         }

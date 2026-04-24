@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9f9c239e92ef27947a54aa155e47d1b8
+guid: 8ee14343de7bf8c49ba966d85d0819b2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5973923098020200185
-    second: MichellesWebsite_0
+      213: 1919133894203413869
+    second: AdPhoto3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,12 +100,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MichellesWebsite_0
+      name: AdPhoto3_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 921
+        width: 1024
         height: 1954
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9febefc0863a7e250800000000000000
-      internalID: 5973923098020200185
+      spriteID: d651868db1222aa10800000000000000
+      internalID: 1919133894203413869
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      MichellesWebsite_0: 5973923098020200185
+      AdPhoto3_0: 1919133894203413869
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

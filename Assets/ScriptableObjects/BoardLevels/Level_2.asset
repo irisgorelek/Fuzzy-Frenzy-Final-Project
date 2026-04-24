@@ -15,7 +15,7 @@ MonoBehaviour:
   levelIndex: 2
   weidth: 5
   height: 7
-  maxMoves: 8
+  maxMoves: 10
   animals:
   - {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
   - {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}

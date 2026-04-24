@@ -4,8 +4,8 @@ using UnityEngine;
 public class RewardsConfig : ScriptableObject
 {
     [Header("Stars by moves ratio (movesUsed/maxMoves)")]
-    [Range(0.1f, 1f)] public float threeStarThreshold = 0.4f;
-    [Range(0.1f, 1f)] public float twoStarThreshold = 0.8f;
+    [Range(0.1f, 1f)] public float threeStarThreshold = 0.6f;
+    [Range(0.1f, 1f)] public float twoStarThreshold = 0.9f;
 
     [Header("Base coins by stars")]
     public int coins1Star = 100;

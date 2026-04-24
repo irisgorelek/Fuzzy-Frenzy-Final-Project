@@ -46,6 +46,8 @@ public class AudioManager : MonoBehaviour
 
         ApplyMusicMute();
         ApplySfxMute();
+
+        PlayTitle(); // Play the title music
     }
 
     public void SetMusicOn(bool on)

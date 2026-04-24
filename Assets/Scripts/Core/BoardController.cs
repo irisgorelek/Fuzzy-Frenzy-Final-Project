@@ -718,7 +718,7 @@ public class BoardController : MonoBehaviour
                 if (step.animal == null || step.lines == null || step.lines.Count == 0)
                     continue;
 
-                bool useRightSide = UnityEngine.Random.Range(0, 2) == 1;
+                bool useRightSide = step.side == SpeechSide.Right;
                 var matchingCells = _board.FindCellsWithAnimal(step.animal);
 
                 if (matchingCells.Count > 0)

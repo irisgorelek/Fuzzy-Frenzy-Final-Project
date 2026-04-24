@@ -16,6 +16,7 @@ MonoBehaviour:
   - levelIndex: 1
     steps:
     - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+      side: 0
       lines:
       - 'Yo. Hear me out! '
       - More matches in less moves, equals a BETTER Score.
@@ -23,23 +24,28 @@ MonoBehaviour:
   - levelIndex: 5
     steps:
     - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+      side: 0
       lines:
       - 'Get me sheep, I''ll get you a gift. '
     - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+      side: 1
       lines:
       - 'Bhaa, please don''t. '
   - levelIndex: 10
     steps:
     - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+      side: 0
       lines:
       - Yo, hear me out one last time.
       - I hope you went shopping, because you'll need it.
     - animal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
+      side: 1
       lines:
       - 'Try finding me again. Time for CHAOS! '
   - levelIndex: 3
     steps:
     - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
+      side: 0
       lines:
       - Are you pkaa'afraid using boosters or somthing?
       - Blast an area or switch us freely to increase matches!

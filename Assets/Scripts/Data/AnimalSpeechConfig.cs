@@ -2,6 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum SpeechSide
+{
+    Left,
+    Right
+}
+
 [CreateAssetMenu(fileName = "AnimalSpeechConfig", menuName = "Scriptable Objects/AnimalSpeechConfig")]
 public class AnimalSpeechConfig : ScriptableObject
 {
@@ -78,6 +84,7 @@ public struct TutorialLevelEntry
 public struct TutorialSpeechStep
 {
     public Animal animal;
+    public SpeechSide side;
     [TextArea(2, 5)] public List<string> lines;
 }
 

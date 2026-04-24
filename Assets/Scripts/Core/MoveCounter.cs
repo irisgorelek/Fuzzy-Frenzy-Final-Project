@@ -9,9 +9,13 @@ public class MoveCounter : MonoBehaviour
     public Action OnMovesOver;
     public event Action<int> OnMovesChanged;
 
+    private int _movesUsed;
+    public int MovesUsed => _movesUsed;
+
     public void InitializeMoves(int maxMoves)
     {
         _movesLeft = maxMoves;
+        _movesUsed = 0;
         OnMovesChanged?.Invoke(_movesLeft);
     }
 
@@ -21,6 +25,7 @@ public class MoveCounter : MonoBehaviour
             return;
 
         _movesLeft--;
+        _movesUsed++;
         OnMovesChanged?.Invoke(_movesLeft);
 
         if (_movesLeft == 0)

@@ -509,7 +509,7 @@ public class BoardController : MonoBehaviour
 
         _levelCompletedChannelSO?.RaiseEvent(_cfg.levelIndex);
 
-        int movesUsed = _cfg.maxMoves - _moveCounter.MovesLeft;
+        int movesUsed = _moveCounter.MovesUsed;
         int stars = _rewards.GetStars(_cfg.maxMoves, movesUsed);
         int coins = _rewards.GetCoins(stars, _cfg.levelIndex);
         int finalScore = _board.CurrentPoints;

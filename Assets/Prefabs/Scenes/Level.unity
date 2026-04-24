@@ -20709,8 +20709,8 @@ MonoBehaviour:
     root: {fileID: 1716324680}
     bubbleRect: {fileID: 1107971779}
     bubbleImage: {fileID: 1107971780}
-    leftSprite: {fileID: 21300000, guid: fb7b37d05f3b35846abc70e6231b2560, type: 3}
-    rightSprite: {fileID: 21300000, guid: a747c22eaf1a48c4eb59289cf9f5ec84, type: 3}
+    leftSprite: {fileID: 21300000, guid: cdb898ece7ceb744bae210ec2250b0e0, type: 3}
+    rightSprite: {fileID: 21300000, guid: fb7b37d05f3b35846abc70e6231b2560, type: 3}
     speechText: {fileID: 200570785}
     continueButton: {fileID: 981571650}
     speakerImage: {fileID: 0}

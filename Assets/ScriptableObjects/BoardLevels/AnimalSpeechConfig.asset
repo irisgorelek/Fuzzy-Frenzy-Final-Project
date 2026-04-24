@@ -37,6 +37,12 @@ MonoBehaviour:
     - animal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
       lines:
       - 'Try finding me again. Time for CHAOS! '
+  - levelIndex: 3
+    steps:
+    - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
+      lines:
+      - Are you pkaa'afraid using boosters or somthing?
+      - Blast an area or switch us freely to increase matches!
   normalEntries:
   - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
     lines:

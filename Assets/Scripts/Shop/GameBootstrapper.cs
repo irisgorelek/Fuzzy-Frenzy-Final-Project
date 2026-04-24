@@ -26,5 +26,8 @@ public class GameBootstrapper : MonoBehaviour
         Economy.InitializeLivesIfNeeded();
         Shop = new ShopService(Economy);
         Leaderboard = new LeaderboardManager();
+
+        QualitySettings.vSyncCount = 0;   // ignored on most mobile platforms, but harmless
+        Application.targetFrameRate = 60;
     }
 }

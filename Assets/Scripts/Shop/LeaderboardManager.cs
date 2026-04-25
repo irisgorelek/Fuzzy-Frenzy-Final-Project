@@ -37,15 +37,14 @@ public class LeaderboardManager
     /// <summary>
     /// Submits a new score to the leaderboard.
     /// </summary>
-    public async Task AddScore(string playerName, int score)
+    public async Task AddScore(string playerId, string playerName, int score)
     {
         if (!_isReady) return;
 
         var entry = new LeaderboardData(playerName, score);
-        string key = _db.Child("leaderboard").Push().Key;
         string json = JsonUtility.ToJson(entry);
 
-        await _db.Child("leaderboard").Child(key).SetRawJsonValueAsync(json);
+        await _db.Child("leaderboard").Child(playerId).SetRawJsonValueAsync(json);
         Debug.Log($"Score submitted: {playerName} - {score}");
     }
 

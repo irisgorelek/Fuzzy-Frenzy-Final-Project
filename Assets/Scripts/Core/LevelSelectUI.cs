@@ -6,10 +6,12 @@ public class LevelSelectUI : MonoBehaviour
     [SerializeField] private LevelsData allLevels;
     [SerializeField] private Transform content;
     [SerializeField] private LevelButtonUI levelButtonPrefab;
+    [SerializeField] private GameObject _outOfLivesPanel;
     private GameBootstrapper _bootstrapper;
 
     private void Start()
     {
+        _outOfLivesPanel.SetActive(false);
         _bootstrapper = GameBootstrapper.Instance;
         LoadLevelButtons();
     }
@@ -36,6 +38,19 @@ public class LevelSelectUI : MonoBehaviour
 
     private void SelectLevel(BoardConfig config)
     {
+        if (_bootstrapper.Economy.State.currentLives <=0)
+        {
+            var tween = _outOfLivesPanel.GetComponent<UIPopupTween>();
+            if (tween == null)
+            {
+                Debug.LogError($"No UIPopupTween found on {_outOfLivesPanel.name}");
+                return;
+            }
+
+            tween.Show();
+            return;
+        }
+
         _bootstrapper.SelectedLevel = config;
         SceneManager.LoadScene("Level");
     }

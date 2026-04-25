@@ -35,6 +35,8 @@ public class AvatarEditWindow : MonoBehaviour
 
     private int _activeTabIndex = -1;
     private GameBootstrapper bootstrapper;
+    private string _tempAccessoryId = "";
+    private string _savedAccessoryId = "";
 
     public event Action<AvatarCategoryType, AvatarItemSO> OnItemSelected;
 
@@ -71,16 +73,20 @@ public class AvatarEditWindow : MonoBehaviour
 
         var category = catalog.Categories[_activeTabIndex];
         var unlocked = bootstrapper.Economy.State.unlockedAvatarItems;
+        int selectedIndex = _tempSelections.GetValueOrDefault(category.CategoryType, 0);
 
         for (int i = 0; i < _items.Count && i < category.Items.Count; i++)
         {
             var item = category.Items[i];
             bool isColorCategory = category.CategoryType == AvatarCategoryType.HairColor
                                 || category.CategoryType == AvatarCategoryType.EyeColor;
-            bool isLocked = !item.IsFree && !unlocked.Contains(item.ItemId);
+            bool isLocked = (item.IsPurchasable || item.IsAccessory) && !unlocked.Contains(item.ItemId);
             _items[i].Setup(item, isColorCategory, isLocked);
-            int selectedIndex = _tempSelections.GetValueOrDefault(category.CategoryType, 0);
-            _items[i].SetSelected(i == selectedIndex);
+
+            bool isSelected = item.IsAccessory
+                ? item.ItemId == _tempAccessoryId
+                : i == selectedIndex;
+            _items[i].SetSelected(isSelected);
         }
     }
 
@@ -90,6 +96,8 @@ public class AvatarEditWindow : MonoBehaviour
         {
             foreach (var kvp in bootstrapper.Economy.State.avatarSelections)
                 _savedSelections[kvp.Key] = kvp.Value;
+
+            _savedAccessoryId = bootstrapper.Economy.State.equippedAccessoryId ?? "";
         }
 
         // Fill defaults for any category not yet saved
@@ -102,6 +110,8 @@ public class AvatarEditWindow : MonoBehaviour
         // Copy saved into temp
         foreach (var kvp in _savedSelections)
             _tempSelections[kvp.Key] = kvp.Value;
+
+        _tempAccessoryId = _savedAccessoryId;
     }
 
     private void BuildTabs()
@@ -154,9 +164,13 @@ public class AvatarEditWindow : MonoBehaviour
 
             bool isColorCategory = category.CategoryType == AvatarCategoryType.HairColor
                                 || category.CategoryType == AvatarCategoryType.EyeColor;
-            bool isLocked = !item.IsFree && !unlocked.Contains(item.ItemId);
+            bool isLocked = (item.IsPurchasable || item.IsAccessory) && !unlocked.Contains(item.ItemId);
             itemBtn.Setup(item, isColorCategory, isLocked);
-            itemBtn.SetSelected(i == selectedIndex);
+
+            bool isSelected = item.IsAccessory
+                ? item.ItemId == _tempAccessoryId
+                : i == selectedIndex;
+            itemBtn.SetSelected(isSelected);
 
             int itemIndex = i;
             itemBtn.Button.onClick.AddListener(() => OnItemClicked(category, itemIndex));
@@ -168,16 +182,44 @@ public class AvatarEditWindow : MonoBehaviour
     {
         if (_items[index].Locked) return;
 
-        _tempSelections[category.CategoryType] = index;
+        var clickedItem = category.Items[index];
 
-        for (int i = 0; i < _items.Count; i++)
-            _items[i].SetSelected(i == index);
+        if (clickedItem.IsAccessory)
+        {
+            bool wasEquipped = _tempAccessoryId == clickedItem.ItemId;
+            _tempAccessoryId = wasEquipped ? "" : clickedItem.ItemId;
 
-        var selectedItem = category.Items[index];
-        OnItemSelected?.Invoke(category.CategoryType, selectedItem);
+            for (int i = 0; i < _items.Count; i++)
+            {
+                var item = category.Items[i];
+                if (item.IsAccessory)
+                    _items[i].SetSelected(item.ItemId == _tempAccessoryId);
+            }
 
-        if (avatarDisplay != null)
-            avatarDisplay.ApplyItem(category.CategoryType, selectedItem);
+            if (avatarDisplay != null)
+            {
+                if (wasEquipped)
+                    avatarDisplay.SetAccessory(null);
+                else
+                    avatarDisplay.SetAccessory(clickedItem);
+            }
+        }
+        else
+        {
+            _tempSelections[category.CategoryType] = index;
+
+            for (int i = 0; i < _items.Count; i++)
+            {
+                var item = category.Items[i];
+                if (!item.IsAccessory)
+                    _items[i].SetSelected(i == index);
+            }
+
+            if (avatarDisplay != null)
+                avatarDisplay.ApplyItem(category.CategoryType, clickedItem);
+        }
+
+        OnItemSelected?.Invoke(category.CategoryType, clickedItem);
 
         if (AudioManager.instance != null)
             AudioManager.instance.PlaySFXPitchAdjusted(20);
@@ -185,13 +227,13 @@ public class AvatarEditWindow : MonoBehaviour
 
     public void Confirm()
     {
-        // Commit temp to saved
         _savedSelections.Clear();
         foreach (var kvp in _tempSelections)
             _savedSelections[kvp.Key] = kvp.Value;
+        _savedAccessoryId = _tempAccessoryId;
 
-        // Persist
         bootstrapper.Economy.State.avatarSelections = new Dictionary<AvatarCategoryType, int>(_savedSelections);
+        bootstrapper.Economy.State.equippedAccessoryId = _savedAccessoryId;
         bootstrapper.Economy.Save();
 
         avatarChangedChannel?.RaiseEvent();
@@ -199,15 +241,13 @@ public class AvatarEditWindow : MonoBehaviour
 
     public void Cancel()
     {
-        // Revert temp to saved
         _tempSelections.Clear();
         foreach (var kvp in _savedSelections)
             _tempSelections[kvp.Key] = kvp.Value;
+        _tempAccessoryId = _savedAccessoryId;
 
-        // Revert display
         ApplyAllToDisplay();
 
-        // Refresh current tab to show reverted selection
         if (_activeTabIndex >= 0)
             PopulateItems(catalog.Categories[_activeTabIndex]);
     }
@@ -221,5 +261,20 @@ public class AvatarEditWindow : MonoBehaviour
             int index = _tempSelections.GetValueOrDefault(category.CategoryType, category.DefaultIndex);
             avatarDisplay.ApplyItem(category.CategoryType, category.Items[index]);
         }
+
+        AvatarItemSO accessory = FindAccessoryById(_tempAccessoryId);
+        avatarDisplay.SetAccessory(accessory);
+    }
+
+    private AvatarItemSO FindAccessoryById(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return null;
+
+        foreach (var category in catalog.Categories)
+            foreach (var item in category.Items)
+                if (item.IsAccessory && item.ItemId == id)
+                    return item;
+
+        return null;
     }
 }

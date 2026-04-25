@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: Shoes
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
-  itemId: 15
+  itemId: 19
   displayName: Shoes
   icon: {fileID: 8370570951270631882, guid: 979bdbf4bede3794c8b1c0c495c4217e, type: 3}
   avatarSprite: {fileID: 21300000, guid: 99bc1ba87f7793e41a475858ff310c77, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
-  price: 0
+  isPurchasable: 0
+  isAccessory: 0

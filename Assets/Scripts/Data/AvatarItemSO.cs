@@ -9,6 +9,7 @@ public class AvatarItemSO : ScriptableObject
     [SerializeField] private Sprite avatarSprite;
     [SerializeField] private Color color = Color.white;
     [SerializeField] private bool isPurchasable;
+    [SerializeField] private bool isAccessory;
 
     public string ItemId => itemId;
     public string DisplayName => displayName;
@@ -17,4 +18,5 @@ public class AvatarItemSO : ScriptableObject
     public Color Color => color;
     public bool IsPurchasable => isPurchasable;
     public bool IsFree => !isPurchasable;
+    public bool IsAccessory => isAccessory;
 }

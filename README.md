@@ -46,7 +46,14 @@ Dynamic interactions that trigger during matching and board resolution:
 - **Wolf + Sheep** adjacency can trigger an “eat” event:
   - Sheep is removed
   - **Bones** are spawned as a **breakable obstacle**
-    
+
+## 🛠️ Built With
+
+- **Engine:** Unity
+- **Language:** C#
+- **Backend:** Firebase (leaderboard)
+- **Platform:** Mobile
+
 ---
 
 ## 📸 Media

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenuButtons : MonoBehaviour
@@ -36,5 +37,11 @@ public class MainMenuButtons : MonoBehaviour
     public void PlayButtonSound(int sound = 3)
     {
         AudioManager.instance.PlaySFXPitchAdjusted(sound, 0.5f);
+    }
+
+    public void GoToMenu()
+    {
+        GameBootstrapper.Instance.Economy.TrySpendLifeForLevelStart();
+        SceneManager.LoadScene("MainMenu+Shop");
     }
 }

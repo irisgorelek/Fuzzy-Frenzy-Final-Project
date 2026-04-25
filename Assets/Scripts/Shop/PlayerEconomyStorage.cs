@@ -45,6 +45,7 @@ public static class PlayerEconomyStorage
     private class SaveData
     {
         public string playerId;
+        public string playerName;
         public int coins;
         public int extraMoveCount;
         public List<BoosterEntry> boosters = new List<BoosterEntry>();
@@ -68,6 +69,7 @@ public static class PlayerEconomyStorage
         var data = new SaveData
         {
             playerId = state.playerId,
+            playerName = state.playerName,
             coins = state.coins,
             extraMoveCount = state.extraMoveCount,
             maxLives = state.maxLives,
@@ -121,6 +123,8 @@ public static class PlayerEconomyStorage
             var data = JsonUtility.FromJson<SaveData>(json);
             if (!string.IsNullOrEmpty(data.playerId))
                 state.playerId = data.playerId;
+            if (!string.IsNullOrEmpty(data.playerName))
+                state.playerName = data.playerName;
 
             state.coins = data.coins;
             // maxLives: if missing in old save, default to 3

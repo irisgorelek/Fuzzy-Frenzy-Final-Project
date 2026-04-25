@@ -626,13 +626,21 @@ public class BoardController : MonoBehaviour
         _isBusy = true;
         _view.SwapsEnabled = false;
 
-        await _view.ShowShuffleMessage();
+        await _view.ShowShuffleMessage(0.35f);
 
-        bool playable = _board.ShuffleUntilPlayable(_hintFinder);
-        if (!playable)
-            Debug.LogWarning("Failed to find a playable shuffle.");
+        int safety = 0;
+        bool playable = false;
 
-        await _view.AnimateShuffle(_board);
+        do
+        {
+            _board.ShuffleSwappablePieces();
+            safety++;
+
+            playable = !_board.HasAnyMatch() && _hintFinder.TryFindHint(_board, out _);
+        }
+        while (!playable && safety < 100);
+
+        await _view.AnimateShuffle(_board, 0.07f, 0.09f, 0.008f);
 
         _view.SwapsEnabled = true;
         _isBusy = false;

@@ -979,7 +979,7 @@ public class BoardView : MonoBehaviour
         return tcs.Task;
     }
 
-    public Task ShowShuffleMessage(float hold = 0.9f)
+    public Task ShowShuffleMessage(float hold = 1.2f)
     {
         if (_shufflePopUp == null)
             return Task.CompletedTask;
@@ -998,7 +998,7 @@ public class BoardView : MonoBehaviour
             cg = _shufflePopUp.gameObject.AddComponent<CanvasGroup>();
 
         rt.localScale = Vector3.one * 0.75f;
-        cg.alpha = 0f;
+        cg.alpha = 100f;
 
         DOTween.Sequence()
             .Append(rt.DOScale(1f, 0.18f).SetEase(Ease.OutBack))

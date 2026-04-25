@@ -81610,7 +81610,7 @@ PrefabInstance:
     - target: {fileID: 1650985475521923327, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _shufflePopUp
       value: 
-      objectReference: {fileID: 74334188}
+      objectReference: {fileID: 74334192}
     - target: {fileID: 1650985475521923327, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _timerPowerUp
       value: 

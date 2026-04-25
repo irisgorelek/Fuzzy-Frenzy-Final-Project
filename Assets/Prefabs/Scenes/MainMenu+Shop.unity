@@ -414,8 +414,8 @@ MonoBehaviour:
   buyButton: {fileID: 1292481366}
   priceText: {fileID: 1367003883}
   ownedText: {fileID: 0}
-  purchasedDimmer: {fileID: 0}
-  priceRow: {fileID: 0}
+  purchasedDimmer: {fileID: 540889302}
+  priceRow: {fileID: 1292481363}
 --- !u!114 &56363772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5429,6 +5429,16 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4413458595377122481, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
   m_PrefabInstance: {fileID: 4625739440514961876}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &501948196 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5049207751701492607, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &501948197 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2031307221717219489, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &504521917
 GameObject:
   m_ObjectHideFlags: 0
@@ -5841,8 +5851,8 @@ MonoBehaviour:
   buyButton: {fileID: 651477739}
   priceText: {fileID: 1091314471}
   ownedText: {fileID: 0}
-  purchasedDimmer: {fileID: 0}
-  priceRow: {fileID: 0}
+  purchasedDimmer: {fileID: 1220038096}
+  priceRow: {fileID: 651477736}
 --- !u!114 &535600346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10006,8 +10016,8 @@ MonoBehaviour:
   buyButton: {fileID: 1463141829}
   priceText: {fileID: 63939308}
   ownedText: {fileID: 0}
-  purchasedDimmer: {fileID: 0}
-  priceRow: {fileID: 0}
+  purchasedDimmer: {fileID: 382056499}
+  priceRow: {fileID: 1463141826}
 --- !u!114 &1031639385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16166,8 +16176,8 @@ MonoBehaviour:
   buyButton: {fileID: 8190610622902658358}
   priceText: {fileID: 5918736001869771190}
   ownedText: {fileID: 0}
-  purchasedDimmer: {fileID: 0}
-  priceRow: {fileID: 0}
+  purchasedDimmer: {fileID: 1661893426}
+  priceRow: {fileID: 7437298252270156523}
 --- !u!114 &1617563691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16184,8 +16194,8 @@ MonoBehaviour:
   buyButton: {fileID: 4985284910335923160}
   priceText: {fileID: 7396667374349584216}
   ownedText: {fileID: 0}
-  purchasedDimmer: {fileID: 0}
-  priceRow: {fileID: 0}
+  purchasedDimmer: {fileID: 431268257}
+  priceRow: {fileID: 6031227661045812229}
 --- !u!1001 &1629980166
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18895,8 +18905,8 @@ MonoBehaviour:
   buyButton: {fileID: 389012011}
   priceText: {fileID: 523230786}
   ownedText: {fileID: 0}
-  purchasedDimmer: {fileID: 0}
-  priceRow: {fileID: 0}
+  purchasedDimmer: {fileID: 1052221807}
+  priceRow: {fileID: 389012008}
 --- !u!114 &1950275907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22235,6 +22245,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -446.0876
       objectReference: {fileID: 0}
+    - target: {fileID: 3107441785830985765, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 6148667276057263411}
+    - target: {fileID: 3107441785830985765, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 6148667276057263412}
+    - target: {fileID: 3134736140501729155, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 6148667276057263413}
+    - target: {fileID: 3134736140501729155, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 6148667276057263414}
     - target: {fileID: 3395869658617854495, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -22367,6 +22393,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1648844920}
+    - target: {fileID: 5436796511103740958, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 6148667276057263409}
+    - target: {fileID: 5436796511103740958, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 6148667276057263410}
     - target: {fileID: 5483279021726289161, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -22463,6 +22497,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -171.285
       objectReference: {fileID: 0}
+    - target: {fileID: 6639005623844172649, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 501948196}
+    - target: {fileID: 6639005623844172649, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 501948197}
     - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -22552,6 +22594,36 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+--- !u!1 &6148667276057263409 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6031227660511697945, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6148667276057263410 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2390371736315071941, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6148667276057263411 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7437298253883255543, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6148667276057263412 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7133779782358494984, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6148667276057263413 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8257294337797752209, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6148667276057263414 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2602167048449362642, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6173314182238718638
 MonoBehaviour:
   m_ObjectHideFlags: 0

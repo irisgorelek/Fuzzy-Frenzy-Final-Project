@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 953c74891f3de8543b62a618dc45cc53, type: 3}
+  m_Name: PurpleHairShopItem
+  m_EditorClassIdentifier: ShopAssemblyDef::ShopItemDefinition
+  itemId: 
+  displayName: Purple Hair
+  description: 
+  icon: {fileID: 21300000, guid: 683c3c69530d08d42af1e431c734d537, type: 3}
+  currency: 0
+  price: 400
+  itemType: 3
+  boosterEffect: 0
+  boosterAmountGranted: 1
+  livesAmountGranted: 1
+  extraMovesGranted: 3
+  avatarItem: {fileID: 11400000, guid: 8f20d295e91d3be4992aa7bd5f13f593, type: 2}

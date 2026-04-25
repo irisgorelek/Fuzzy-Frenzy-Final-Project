@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
-  m_Name: PurpleHair
+  m_Name: YellowEye
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
-  itemId: 9
+  itemId: 13
   displayName: 
-  icon: {fileID: -7149404795290240005, guid: 5a6f61ce4e430964c9bb623aaad255db, type: 3}
+  icon: {fileID: -5549662663155613565, guid: 7da8061e9c21ee046a827e394e5f7c62, type: 3}
   avatarSprite: {fileID: 0}
-  color: {r: 0.7686275, g: 0.46274513, b: 0.6862745, a: 1}
+  color: {r: 0.9960785, g: 0.85098046, b: 0.30980393, a: 1}
   isPurchasable: 1

@@ -535,7 +535,10 @@ public class BoardController : MonoBehaviour
             // Submit cumulative best to leaderboard
             var leaderboard = _locator.Bootstrapper.Leaderboard;
             if (leaderboard != null && leaderboard.IsReady)
-                _ = leaderboard.AddScore(state.playerId, PlayerPrefs.GetString("PlayerName", "Player"), state.totalPointsEarned);
+            {
+                string displayName = string.IsNullOrEmpty(state.playerName) ? "Player" : state.playerName;
+                _ = leaderboard.AddScore(state.playerId, displayName, state.totalPointsEarned);
+            }
         }
 
         if (_levelClearedPopupUI != null)

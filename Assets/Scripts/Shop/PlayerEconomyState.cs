@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerEconomyState
 {
     public string playerId = System.Guid.NewGuid().ToString();
+    public string playerName = "";
     public int coins = 0;
     public int extraMoveCount = 0;
     public int maxLives = 3;

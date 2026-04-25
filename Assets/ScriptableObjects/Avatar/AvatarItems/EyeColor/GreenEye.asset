@@ -16,5 +16,5 @@ MonoBehaviour:
   displayName: 
   icon: {fileID: -5549662663155613565, guid: 7da8061e9c21ee046a827e394e5f7c62, type: 3}
   avatarSprite: {fileID: 0}
-  color: {r: 0.09411766, g: 0.35686275, b: 0.09019608, a: 1}
+  color: {r: 0.70980394, g: 0.7725491, b: 0.4901961, a: 1}
   isPurchasable: 1

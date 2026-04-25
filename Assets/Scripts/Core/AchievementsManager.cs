@@ -121,6 +121,9 @@ public class AchievementsManager : MonoBehaviour
         if (achievement.CoinReward > 0)
             S.AddCoins(achievement.CoinReward);
 
+        if (achievement.AvatarItemReward != null)
+            S.unlockedAvatarItems.Add(achievement.AvatarItemReward.ItemId);
+
         _economy.Save();
         _achievementUnlockedChannel?.RaiseEvent(achievement);
         Debug.Log($"Achievement unlocked: {achievement.Title}");

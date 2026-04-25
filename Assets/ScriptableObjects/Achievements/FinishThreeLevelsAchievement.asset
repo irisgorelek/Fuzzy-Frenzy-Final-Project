@@ -15,9 +15,10 @@ MonoBehaviour:
   _id: complete_3_levels
   _title: Rising Star
   _description: Complete three different levels.
-  _icon: {fileID: 0}
+  _icon: {fileID: 1167487366462741038, guid: 7847894e61822994590ff2277df0bc29, type: 3}
   _category: 0
   _goal: 3
   _animalId: 
   _powerUpName: 
   _coinReward: 250
+  _avatarItemReward: {fileID: 0}

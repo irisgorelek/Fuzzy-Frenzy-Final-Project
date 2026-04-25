@@ -61,6 +61,7 @@ public static class PlayerEconomyStorage
         public List<AvatarSelectionEntry> avatarSelections = new();
         public List<LevelStarEntry> levelStars = new();
         public List<string> unlockedAvatarItems = new();
+        public string equippedAccessoryId;
         public List<LevelScoreEntry> levelBestScores = new();
     }
 
@@ -98,6 +99,7 @@ public static class PlayerEconomyStorage
             data.levelStars.Add(new LevelStarEntry { levelIndex = kvp.Key, stars = kvp.Value });
 
         data.unlockedAvatarItems = new List<string>(state.unlockedAvatarItems);
+        data.equippedAccessoryId = state.equippedAccessoryId;
 
         foreach (var kvp in state.levelBestScores)
             data.levelBestScores.Add(new LevelScoreEntry { levelIndex = kvp.Key, score = kvp.Value });
@@ -180,6 +182,9 @@ public static class PlayerEconomyStorage
 
             if (data.unlockedAvatarItems != null)
                 state.unlockedAvatarItems = new HashSet<string>(data.unlockedAvatarItems);
+
+            if (!string.IsNullOrEmpty(data.equippedAccessoryId))
+                state.equippedAccessoryId = data.equippedAccessoryId;
 
             state.levelBestScores.Clear();
             if (data.levelBestScores != null)

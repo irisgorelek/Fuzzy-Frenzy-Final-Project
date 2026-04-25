@@ -441,7 +441,7 @@ GameObject:
   - component: {fileID: 6722209403590455565}
   - component: {fileID: 5744330817775447913}
   m_Layer: 5
-  m_Name: coin icon
+  m_Name: reward icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -496,7 +496,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 1167487366462741038, guid: 7847894e61822994590ff2277df0bc29, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -848,7 +848,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: -8064666427847735806, guid: 11cdbf4c1adf53343a23dc8a0f391187, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -874,6 +874,7 @@ MonoBehaviour:
   coinRewardText: {fileID: 4680056244441142733}
   fillImage: {fileID: 5580113709235822475}
   completedStamp: {fileID: 6445665523537294222}
+  rewardIcon: {fileID: 5744330817775447913}
 --- !u!1 &6445665523537294222
 GameObject:
   m_ObjectHideFlags: 0

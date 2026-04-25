@@ -15,9 +15,10 @@ MonoBehaviour:
   _id: discover_all_animals
   _title: The Collector
   _description: Destroy at least one of every animal.
-  _icon: {fileID: 0}
+  _icon: {fileID: 1167487366462741038, guid: 7847894e61822994590ff2277df0bc29, type: 3}
   _category: 1
   _goal: 0
   _animalId: 
   _powerUpName: 
   _coinReward: 350
+  _avatarItemReward: {fileID: 0}

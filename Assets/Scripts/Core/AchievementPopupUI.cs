@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AchievementPopupUI : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class AchievementPopupUI : MonoBehaviour
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text coinRewardText;
+    [SerializeField] private Image rewardImage;
     [SerializeField] private float autoHideDelay = 3f;
     [SerializeField] private AchievementEventChannelSO achievementUnlockedChannel;
 
@@ -24,7 +26,10 @@ public class AchievementPopupUI : MonoBehaviour
     {
         titleText.text = achievement.Title;
         descriptionText.text = achievement.Description;
-        coinRewardText.text = achievement.CoinReward.ToString();
+        coinRewardText.text = achievement.CoinReward > 0 ? achievement.CoinReward.ToString() : "";
+
+        if (rewardImage != null && achievement.Icon != null)
+            rewardImage.sprite = achievement.Icon;
 
         if (popupTween != null)
             popupTween.Show();

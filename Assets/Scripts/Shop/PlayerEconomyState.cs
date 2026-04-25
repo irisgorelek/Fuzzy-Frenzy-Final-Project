@@ -24,6 +24,7 @@ public class PlayerEconomyState
     // Avatar selections (index per category)
     public Dictionary<AvatarCategoryType, int> avatarSelections = new();
     public HashSet<string> unlockedAvatarItems = new();
+    public string equippedAccessoryId = "";
 
     // When was regen last accounted for
     public long lastLifeTimestampUtcSeconds = 0;

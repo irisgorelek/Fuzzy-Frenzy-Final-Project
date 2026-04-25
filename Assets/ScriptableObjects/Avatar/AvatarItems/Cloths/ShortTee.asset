@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 683675853bdb95a4299d9058974d1dcc, type: 3}
   m_Name: ShortTee
   m_EditorClassIdentifier: Assembly-CSharp::AvatarItemSO
-  itemId: 16
+  itemId: 20
   displayName: Short And Tee
   icon: {fileID: 21300000, guid: afa3c9ff36585f241a502e3dde4bc68c, type: 3}
   avatarSprite: {fileID: 21300000, guid: e52985e905f917c42a8f2951c16ada99, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
   isPurchasable: 1
+  isAccessory: 0

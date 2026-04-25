@@ -15,9 +15,10 @@ MonoBehaviour:
   _id: destroy_50_animals
   _title: Barnyard Breaker
   _description: Destroy 300 animals.
-  _icon: {fileID: 0}
+  _icon: {fileID: 1167487366462741038, guid: 7847894e61822994590ff2277df0bc29, type: 3}
   _category: 1
   _goal: 300
   _animalId: 
   _powerUpName: 
   _coinReward: 350
+  _avatarItemReward: {fileID: 0}

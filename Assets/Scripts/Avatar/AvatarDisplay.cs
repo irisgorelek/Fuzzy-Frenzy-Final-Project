@@ -8,13 +8,17 @@ public class AvatarDisplay : MonoBehaviour
     [SerializeField] private Image hairImage;
     [SerializeField] private Image clothesImage;
     [SerializeField] private Image eyeColorImage;
+    [SerializeField] private Image accessoryImage;
 
     public void ApplyItem(AvatarCategoryType categoryType, AvatarItemSO item)
     {
         switch (categoryType)
         {
             case AvatarCategoryType.Hair:
-                hairImage.sprite = item.AvatarSprite;
+                if (item.IsAccessory)
+                    SetAccessory(item);
+                else
+                    hairImage.sprite = item.AvatarSprite;
                 break;
 
             case AvatarCategoryType.HairColor:
@@ -28,6 +32,22 @@ public class AvatarDisplay : MonoBehaviour
             case AvatarCategoryType.Clothes:
                 clothesImage.sprite = item.AvatarSprite;
                 break;
+        }
+    }
+
+    public void SetAccessory(AvatarItemSO item)
+    {
+        if (accessoryImage == null) return;
+
+        if (item != null)
+        {
+            accessoryImage.sprite = item.AvatarSprite;
+            accessoryImage.enabled = true;
+        }
+        else
+        {
+            accessoryImage.sprite = null;
+            accessoryImage.enabled = false;
         }
     }
 }

@@ -15,9 +15,10 @@ MonoBehaviour:
   _id: first_level
   _title: Getting Started
   _description: Complete your very first level.
-  _icon: {fileID: 0}
+  _icon: {fileID: 1167487366462741038, guid: 7847894e61822994590ff2277df0bc29, type: 3}
   _category: 0
   _goal: 1
   _animalId: 
   _powerUpName: 
   _coinReward: 100
+  _avatarItemReward: {fileID: 0}

@@ -626,7 +626,7 @@ public class BoardController : MonoBehaviour
         _isBusy = true;
         _view.SwapsEnabled = false;
 
-        await _view.ShowShuffleMessage("No more moves!");
+        await _view.ShowShuffleMessage();
 
         bool playable = _board.ShuffleUntilPlayable(_hintFinder);
         if (!playable)

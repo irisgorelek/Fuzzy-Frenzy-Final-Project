@@ -52,8 +52,8 @@ public class BoardView : MonoBehaviour
     [SerializeField] private int _sparklesPerMatch = 4; // For the PC 4 looks great
 
     [Header("ShuffleBoard")]
-    [SerializeField] private TextMeshProUGUI _shuffleMessage;
-    [SerializeField] private GameObject _shufflePopUp;
+    //[SerializeField] private TextMeshProUGUI _shuffleMessage;
+    [SerializeField] private Image _shufflePopUp;
 
     [Header("Bomb FX")]
     [SerializeField] private Sprite _bombRingSprite;
@@ -979,21 +979,23 @@ public class BoardView : MonoBehaviour
         return tcs.Task;
     }
 
-    public Task ShowShuffleMessage(string text = "No more moves!", float hold = 0.9f)
+    public Task ShowShuffleMessage(float hold = 0.9f)
     {
-        if (_shuffleMessage == null)
+        if (_shufflePopUp == null)
             return Task.CompletedTask;
 
         var tcs = new TaskCompletionSource<bool>();
 
-        _shuffleMessage.DOKill();
-        _shuffleMessage.text = text;
-        _shufflePopUp.SetActive(true);
+        _shufflePopUp.DOKill();
+        _shufflePopUp.rectTransform.DOKill();
 
-        var rt = _shuffleMessage.rectTransform;
-        var cg = _shuffleMessage.GetComponent<CanvasGroup>();
+        _shufflePopUp.gameObject.SetActive(true);
+
+        var rt = _shufflePopUp.rectTransform;
+
+        var cg = _shufflePopUp.GetComponent<CanvasGroup>();
         if (cg == null)
-            cg = _shuffleMessage.gameObject.AddComponent<CanvasGroup>();
+            cg = _shufflePopUp.gameObject.AddComponent<CanvasGroup>();
 
         rt.localScale = Vector3.one * 0.75f;
         cg.alpha = 0f;

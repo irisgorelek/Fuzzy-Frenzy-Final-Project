@@ -1,8 +1,15 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LeaderboardUI : MonoBehaviour
 {
     [SerializeField] private Transform content;
+
+    [Header("Name Input")]
+    [SerializeField] private GameObject nameInputPanel;
+    [SerializeField] private TMP_InputField nameInputField;
+    [SerializeField] private Button nameConfirmButton;
 
     [Header("Rank Prefabs")]
     [SerializeField] private RankCardData goldPrefab;
@@ -11,11 +18,45 @@ public class LeaderboardUI : MonoBehaviour
     [SerializeField] private RankCardData beigePrefab;
 
     private LeaderboardManager _leaderboard;
+    private EconomyContext _economy;
 
     private void Start()
     {
-        _leaderboard = GameBootstrapper.Instance.Leaderboard;
+        var bootstrapper = GameBootstrapper.Instance;
+        _leaderboard = bootstrapper.Leaderboard;
+        _economy = bootstrapper.Economy;
 
+        nameConfirmButton.onClick.AddListener(OnConfirmName);
+    }
+
+    private void OnEnable()
+    {
+        if (_economy == null) return;
+
+        if (!_economy.HasPlayerName)
+        {
+            nameInputPanel.SetActive(true);
+            nameInputField.text = "";
+        }
+        else
+        {
+            nameInputPanel.SetActive(false);
+            LoadIfReady();
+        }
+    }
+
+    private void OnConfirmName()
+    {
+        string trimmed = nameInputField.text.Trim();
+        if (string.IsNullOrEmpty(trimmed)) return;
+
+        _economy.SetPlayerName(trimmed);
+        nameInputPanel.SetActive(false);
+        LoadIfReady();
+    }
+
+    private void LoadIfReady()
+    {
         if (_leaderboard.IsReady)
             LoadLeaderboard();
         else
@@ -49,5 +90,6 @@ public class LeaderboardUI : MonoBehaviour
     {
         if (_leaderboard != null)
             _leaderboard.OnReady -= LoadLeaderboard;
+        nameConfirmButton.onClick.RemoveListener(OnConfirmName);
     }
 }

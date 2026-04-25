@@ -221,6 +221,14 @@ public class EconomyContext
         return true;
     }
 
+    public bool HasPlayerName => !string.IsNullOrEmpty(State.playerName);
+
+    public void SetPlayerName(string name)
+    {
+        State.playerName = name;
+        Save();
+    }
+
     public bool IsAvatarItemUnlocked(string itemId)
     {
         return State.unlockedAvatarItems.Contains(itemId);

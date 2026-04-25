@@ -10,6 +10,8 @@ public class ShopItemEntryUI : MonoBehaviour
     [SerializeField] private Button buyButton;
     [SerializeField] private TextMeshProUGUI priceText;
     [SerializeField] private TextMeshProUGUI ownedText;
+    [SerializeField] private GameObject purchasedDimmer;
+    [SerializeField] private GameObject priceRow;
 
     private GameBootstrapper bootstrapper;
 
@@ -64,6 +66,14 @@ public class ShopItemEntryUI : MonoBehaviour
 
         if (buyButton != null)
             buyButton.interactable = bootstrapper.Shop.CanBuy(itemDefinition, out _);
+
+        bool owned = itemDefinition.ItemType == ShopItemType.AvatarItem && GetOwnedCount() > 0;
+
+        if (purchasedDimmer != null)
+            purchasedDimmer.SetActive(owned);
+
+        if (priceRow != null)
+            priceRow.SetActive(!owned);
     }
 
     private int GetOwnedCount()

@@ -414,6 +414,8 @@ MonoBehaviour:
   buyButton: {fileID: 1292481366}
   priceText: {fileID: 1367003883}
   ownedText: {fileID: 0}
+  purchasedDimmer: {fileID: 540889302}
+  priceRow: {fileID: 1292481363}
 --- !u!114 &56363772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1329,7 +1331,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.41400003, y: 0.23681964}
   m_AnchorMax: {x: 0.9825792, y: 0.404}
-  m_AnchoredPosition: {x: 3.5, y: 21.005371}
+  m_AnchoredPosition: {x: 3.5, y: 21.005615}
   m_SizeDelta: {x: -0.89642334, y: -4.6629944}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &118288716
@@ -1962,17 +1964,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6873703291598736100, guid: d6e97c57dc000794a8fb69f8581292b2, type: 3}
   m_PrefabInstance: {fileID: 198217120}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &209015922 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5918736000257450410, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &209265516
 GameObject:
   m_ObjectHideFlags: 0
@@ -2291,6 +2282,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1818158655}
+  - {fileID: 1052221808}
   m_Father: {fileID: 1950275905}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -2661,6 +2653,8 @@ MonoBehaviour:
   buyButton: {fileID: 1199857341}
   priceText: {fileID: 1212608243}
   ownedText: {fileID: 1827790211}
+  purchasedDimmer: {fileID: 0}
+  priceRow: {fileID: 0}
 --- !u!1 &308554340
 GameObject:
   m_ObjectHideFlags: 0
@@ -3829,6 +3823,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 379076556}
   m_CullTransparentMesh: 1
+--- !u!1 &382056499
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 382056500}
+  - component: {fileID: 382056502}
+  - component: {fileID: 382056501}
+  m_Layer: 5
+  m_Name: B Dimmer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &382056500
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382056499}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0100024, y: 1.0100024, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1249585805}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -28, y: 11}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: -8.47, y: 0.5}
+--- !u!114 &382056501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382056499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 8616666726383839913, guid: d1e15e15fc120ea448252e1095c52c44, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &382056502
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382056499}
+  m_CullTransparentMesh: 1
 --- !u!1 &389012008
 GameObject:
   m_ObjectHideFlags: 0
@@ -4665,17 +4734,83 @@ MonoBehaviour:
   buyButton: {fileID: 345237086}
   priceText: {fileID: 144374616}
   ownedText: {fileID: 1970054507}
---- !u!114 &429849246 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
+  purchasedDimmer: {fileID: 0}
+  priceRow: {fileID: 0}
+--- !u!1 &431268257
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 431268258}
+  - component: {fileID: 431268260}
+  - component: {fileID: 431268259}
+  m_Layer: 5
+  m_Name: B Dimmer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &431268258
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431268257}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0100024, y: 1.0100024, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5483279020113190165}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -28, y: 10}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: -8.47, y: 0.5}
+--- !u!114 &431268259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431268257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 8616666726383839913, guid: d1e15e15fc120ea448252e1095c52c44, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &431268260
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431268257}
+  m_CullTransparentMesh: 1
 --- !u!1 &440609554
 GameObject:
   m_ObjectHideFlags: 0
@@ -5160,27 +5295,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 489268085}
   m_CullTransparentMesh: 1
---- !u!1 &493743203 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &493743209
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 493743203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
-  itemDefinition: {fileID: 11400000, guid: 52baaa6ae15412b45bfcf0b4b28976fe, type: 2}
-  buyButton: {fileID: 429849246}
-  priceText: {fileID: 209015922}
-  ownedText: {fileID: 0}
 --- !u!1 &493787149
 GameObject:
   m_ObjectHideFlags: 0
@@ -5314,6 +5428,16 @@ Transform:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4413458595377122481, guid: 523318aea2369b045bbb5e8d690967c1, type: 3}
   m_PrefabInstance: {fileID: 4625739440514961876}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &501948196 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5049207751701492607, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &501948197 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2031307221717219489, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &504521917
 GameObject:
@@ -5727,6 +5851,8 @@ MonoBehaviour:
   buyButton: {fileID: 651477739}
   priceText: {fileID: 1091314471}
   ownedText: {fileID: 0}
+  purchasedDimmer: {fileID: 1220038096}
+  priceRow: {fileID: 651477736}
 --- !u!114 &535600346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5834,6 +5960,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 535600343}
+  m_CullTransparentMesh: 1
+--- !u!1 &540889302
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 540889303}
+  - component: {fileID: 540889305}
+  - component: {fileID: 540889304}
+  m_Layer: 5
+  m_Name: B Dimmer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &540889303
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 540889302}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0100024, y: 1.0100024, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2027223612}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -28, y: 9}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: -8.47, y: 0.5}
+--- !u!114 &540889304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 540889302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 8616666726383839913, guid: d1e15e15fc120ea448252e1095c52c44, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &540889305
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 540889302}
   m_CullTransparentMesh: 1
 --- !u!1001 &542282470
 PrefabInstance:
@@ -9681,17 +9882,6 @@ MonoBehaviour:
   hairImage: {fileID: 68792646}
   clothesImage: {fileID: 973782099}
   eyeColorImage: {fileID: 1478332080}
---- !u!114 &1016189583 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1028653838
 GameObject:
   m_ObjectHideFlags: 0
@@ -9826,6 +10016,8 @@ MonoBehaviour:
   buyButton: {fileID: 1463141829}
   priceText: {fileID: 63939308}
   ownedText: {fileID: 0}
+  purchasedDimmer: {fileID: 382056499}
+  priceRow: {fileID: 1463141826}
 --- !u!114 &1031639385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9933,6 +10125,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1031639382}
+  m_CullTransparentMesh: 1
+--- !u!1 &1052221807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1052221808}
+  - component: {fileID: 1052221810}
+  - component: {fileID: 1052221809}
+  m_Layer: 5
+  m_Name: B Dimmer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1052221808
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052221807}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0100024, y: 1.0100024, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 232978476}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -28, y: 11}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: -8.47, y: 0.5}
+--- !u!114 &1052221809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052221807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 8616666726383839913, guid: d1e15e15fc120ea448252e1095c52c44, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1052221810
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052221807}
   m_CullTransparentMesh: 1
 --- !u!1 &1053038870 stripped
 GameObject:
@@ -10385,8 +10652,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1086349088}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.39682496}
-  m_AnchorMax: {x: 1, y: 0.99427307}
+  m_AnchorMin: {x: 0, y: 0.44570455}
+  m_AnchorMax: {x: 1, y: 0.99473715}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -10783,17 +11050,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
---- !u!114 &1142365112 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8288707856147003426, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1142900974
 GameObject:
   m_ObjectHideFlags: 0
@@ -11480,6 +11736,81 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6929809826426491304, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
   m_PrefabInstance: {fileID: 8595134982853529129}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1220038096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1220038097}
+  - component: {fileID: 1220038099}
+  - component: {fileID: 1220038098}
+  m_Layer: 5
+  m_Name: B Dimmer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1220038097
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220038096}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0100024, y: 1.0100024, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1826610615}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -28, y: 9.7}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: -8.47, y: 0.5}
+--- !u!114 &1220038098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220038096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 8616666726383839913, guid: d1e15e15fc120ea448252e1095c52c44, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1220038099
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220038096}
+  m_CullTransparentMesh: 1
 --- !u!1 &1236256920
 GameObject:
   m_ObjectHideFlags: 0
@@ -11699,27 +12030,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1238233578}
   m_CullTransparentMesh: 1
---- !u!1 &1243078217 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4677656208485554037, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1243078223
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1243078217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
-  itemDefinition: {fileID: 11400000, guid: f6f527892dc9c2641b2ecce8cd632b25, type: 2}
-  buyButton: {fileID: 1751788915}
-  priceText: {fileID: 1142365112}
-  ownedText: {fileID: 0}
 --- !u!1 &1249585804
 GameObject:
   m_ObjectHideFlags: 0
@@ -11751,6 +12061,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 878515744}
+  - {fileID: 382056500}
   m_Father: {fileID: 1031639383}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -14665,8 +14976,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1086496634}
   m_HandleRect: {fileID: 1086496633}
   m_Direction: 2
-  m_Value: 0.98577344
-  m_Size: 0.5974481
+  m_Value: 0.98832995
+  m_Size: 0.5490326
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -15865,6 +16176,8 @@ MonoBehaviour:
   buyButton: {fileID: 8190610622902658358}
   priceText: {fileID: 5918736001869771190}
   ownedText: {fileID: 0}
+  purchasedDimmer: {fileID: 1661893426}
+  priceRow: {fileID: 7437298252270156523}
 --- !u!114 &1617563691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15881,6 +16194,8 @@ MonoBehaviour:
   buyButton: {fileID: 4985284910335923160}
   priceText: {fileID: 7396667374349584216}
   ownedText: {fileID: 0}
+  purchasedDimmer: {fileID: 431268257}
+  priceRow: {fileID: 6031227661045812229}
 --- !u!1001 &1629980166
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16414,6 +16729,81 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 10
   m_TargetDisplay: 0
+--- !u!1 &1661893426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1661893427}
+  - component: {fileID: 1661893429}
+  - component: {fileID: 1661893428}
+  m_Layer: 5
+  m_Name: B Dimmer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1661893427
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661893426}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0100024, y: 1.0100024, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8691151194965781499}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -28, y: 10}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: -8.47, y: 0.5}
+--- !u!114 &1661893428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661893426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 8616666726383839913, guid: d1e15e15fc120ea448252e1095c52c44, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1661893429
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661893426}
+  m_CullTransparentMesh: 1
 --- !u!1 &1675388967
 GameObject:
   m_ObjectHideFlags: 0
@@ -17024,17 +17414,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1751788915 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1769170513
 GameObject:
   m_ObjectHideFlags: 0
@@ -17694,6 +18073,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1290455558}
+  - {fileID: 1220038097}
   m_Father: {fileID: 535600344}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -17883,6 +18263,8 @@ MonoBehaviour:
   buyButton: {fileID: 555606128}
   priceText: {fileID: 1478035886}
   ownedText: {fileID: 2138098408}
+  purchasedDimmer: {fileID: 0}
+  priceRow: {fileID: 0}
 --- !u!1 &1883128947
 GameObject:
   m_ObjectHideFlags: 0
@@ -18336,17 +18718,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1925713939}
   m_CullTransparentMesh: 1
---- !u!114 &1932487640 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5152902064882765516, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1947180987
 GameObject:
   m_ObjectHideFlags: 0
@@ -18534,6 +18905,8 @@ MonoBehaviour:
   buyButton: {fileID: 389012011}
   priceText: {fileID: 523230786}
   ownedText: {fileID: 0}
+  purchasedDimmer: {fileID: 1052221807}
+  priceRow: {fileID: 389012008}
 --- !u!114 &1950275907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18756,27 +19129,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2030948093105650950, guid: cf59a23d83767044687d37d85fcf9ddc, type: 3}
   m_PrefabInstance: {fileID: 1955427320}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1956605239 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8390189924891615643, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-  m_PrefabInstance: {fileID: 6148667276057263408}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1956605245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1956605239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
-  itemDefinition: {fileID: 11400000, guid: bfe3e8bb0453cce47b393cbae21bb815, type: 2}
-  buyButton: {fileID: 1016189583}
-  priceText: {fileID: 1932487640}
-  ownedText: {fileID: 0}
 --- !u!114 &1970054507 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 468801748936383624, guid: d6e97c57dc000794a8fb69f8581292b2, type: 3}
@@ -18819,6 +19171,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2134807216}
+  - {fileID: 540889303}
   m_Father: {fileID: 56363770}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -21403,6 +21756,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8368849385415229503}
+  - {fileID: 431268258}
   m_Father: {fileID: 3669170867326356100}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -21727,14 +22081,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1124542483}
     m_Modifications:
-    - target: {fileID: 261196810727364849, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 3455479494163008996, guid: 71627f4733a269e4180da5bc11918777, type: 3}
-    - target: {fileID: 310035388123662232, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 402417418788635762, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -21799,10 +22145,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -446.0876
       objectReference: {fileID: 0}
-    - target: {fileID: 1041451270193026528, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_text
-      value: Hair
-      objectReference: {fileID: 0}
     - target: {fileID: 1159134597202607121, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_Name
       value: hair (panel)
@@ -21839,10 +22181,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -160.17696
       objectReference: {fileID: 0}
-    - target: {fileID: 1602911161483868055, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 5203929170796031948, guid: d7031c9aa3a2f62459dc42753398f105, type: 3}
     - target: {fileID: 2082975227517456171, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -21859,10 +22197,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -446.0876
       objectReference: {fileID: 0}
-    - target: {fileID: 2502596166321324409, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 406217261ca5e3a419629700f54bd22c, type: 3}
     - target: {fileID: 2643991673236577786, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -21911,6 +22245,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -446.0876
       objectReference: {fileID: 0}
+    - target: {fileID: 3107441785830985765, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 6148667276057263411}
+    - target: {fileID: 3107441785830985765, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 6148667276057263412}
+    - target: {fileID: 3134736140501729155, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 6148667276057263413}
+    - target: {fileID: 3134736140501729155, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 6148667276057263414}
     - target: {fileID: 3395869658617854495, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -22039,42 +22389,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -446.0876
       objectReference: {fileID: 0}
-    - target: {fileID: 4677656208485554037, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_Name
-      value: Wavy Hair
-      objectReference: {fileID: 0}
-    - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1648844920}
-    - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayButtonSound
-      objectReference: {fileID: 0}
-    - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenuButtons, FunzzyFrenzy.core
-      objectReference: {fileID: 0}
-    - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
+    - target: {fileID: 5436796511103740958, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 6148667276057263409}
+    - target: {fileID: 5436796511103740958, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 6148667276057263410}
     - target: {fileID: 5483279021726289161, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -22108,37 +22434,9 @@ PrefabInstance:
       value: -57.3376
       objectReference: {fileID: 0}
     - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1648844920}
-    - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayButtonSound
-      objectReference: {fileID: 0}
-    - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenuButtons, FunzzyFrenzy.core
-      objectReference: {fileID: 0}
-    - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 5804594694617148578, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 5895728623162284349, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -22167,10 +22465,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -125.65313
       objectReference: {fileID: 0}
-    - target: {fileID: 6146012306283247635, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_Name
-      value: Braids Hair
-      objectReference: {fileID: 0}
     - target: {fileID: 6378786350576320236, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -22203,46 +22497,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -171.285
       objectReference: {fileID: 0}
-    - target: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_Name
-      value: Pigtails Hair
-      objectReference: {fileID: 0}
-    - target: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
+    - target: {fileID: 6639005623844172649, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: priceRow
+      value: 
+      objectReference: {fileID: 501948196}
+    - target: {fileID: 6639005623844172649, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+      propertyPath: purchasedDimmer
+      value: 
+      objectReference: {fileID: 501948197}
     - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1648844920}
-    - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayButtonSound
-      objectReference: {fileID: 0}
-    - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenuButtons, FunzzyFrenzy.core
-      objectReference: {fileID: 0}
-    - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 7209065496255322700, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 7783256596047546370, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -22288,41 +22554,9 @@ PrefabInstance:
       value: -758.1594
       objectReference: {fileID: 0}
     - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1648844920}
-    - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayButtonSound
-      objectReference: {fileID: 0}
-    - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenuButtons, FunzzyFrenzy.core
-      objectReference: {fileID: 0}
-    - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 8190610623442023722, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 8390189924891615643, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      propertyPath: m_Name
-      value: Ponytail Hair
-      objectReference: {fileID: 0}
     - target: {fileID: 8691151194431667175, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -22358,63 +22592,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6146012306283247635, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6148667276057263412}
-    - targetCorrespondingSourceObject: {fileID: 7047758897467510525, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 493743209}
-    - targetCorrespondingSourceObject: {fileID: 8390189924891615643, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1956605245}
-    - targetCorrespondingSourceObject: {fileID: 4677656208485554037, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1243078223}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
---- !u!114 &6148667276057263409 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7396667374885017412, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+--- !u!1 &6148667276057263409 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6031227660511697945, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
   m_PrefabInstance: {fileID: 6148667276057263408}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &6148667276057263410 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4985284908728058820, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+--- !u!1 &6148667276057263410 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2390371736315071941, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
   m_PrefabInstance: {fileID: 6148667276057263408}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &6148667276057263411 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 6146012306283247635, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7437298253883255543, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
   m_PrefabInstance: {fileID: 6148667276057263408}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6148667276057263412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!1 &6148667276057263412 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7133779782358494984, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6148667276057263411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c872831dde3a841b740d92ef15c76c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ShopAssemblyDef::ShopItemEntryUI
-  itemDefinition: {fileID: 11400000, guid: ccd352b54bfc67944903f849a486bcda, type: 2}
-  buyButton: {fileID: 6148667276057263410}
-  priceText: {fileID: 6148667276057263409}
-  ownedText: {fileID: 0}
+--- !u!1 &6148667276057263413 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8257294337797752209, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6148667276057263414 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2602167048449362642, guid: 4f09f59600650f2469a2f5eec5ab9e0c, type: 3}
+  m_PrefabInstance: {fileID: 6148667276057263408}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6173314182238718638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23546,6 +23755,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4657160635207694033}
+  - {fileID: 1661893427}
   m_Father: {fileID: 463358079696927850}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}

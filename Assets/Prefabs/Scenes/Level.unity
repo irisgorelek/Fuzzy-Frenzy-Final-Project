@@ -6664,7 +6664,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 545453539}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -6704,6 +6704,7 @@ MonoBehaviour:
   titleText: {fileID: 987824589}
   descriptionText: {fileID: 913108381}
   coinRewardText: {fileID: 1708874286}
+  rewardImage: {fileID: 1059323174}
   autoHideDelay: 3
   achievementUnlockedChannel: {fileID: 11400000, guid: d329a97d23716ab498e71cf7e80703a0, type: 2}
 --- !u!1 &619394800
@@ -6826,7 +6827,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.99975586, y: -0.64254}
+  m_AnchoredPosition: {x: 0.99975586, y: -0.64253235}
   m_SizeDelta: {x: 1.9995117, y: -46}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &620829872

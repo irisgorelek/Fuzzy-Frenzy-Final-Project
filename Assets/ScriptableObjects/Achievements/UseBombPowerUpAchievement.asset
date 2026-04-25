@@ -15,9 +15,10 @@ MonoBehaviour:
   _id: use_bomb_once
   _title: Boom!
   _description: Use the Bomb power-up once.
-  _icon: {fileID: 0}
+  _icon: {fileID: 1167487366462741038, guid: 7847894e61822994590ff2277df0bc29, type: 3}
   _category: 2
   _goal: 1
   _animalId: 
   _powerUpName: bomb
   _coinReward: 150
+  _avatarItemReward: {fileID: 0}

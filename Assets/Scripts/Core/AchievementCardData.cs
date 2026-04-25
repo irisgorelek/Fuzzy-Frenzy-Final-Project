@@ -10,6 +10,7 @@ public class AchievementCardData : MonoBehaviour
     [SerializeField] private TMP_Text coinRewardText;
     [SerializeField] private Image fillImage;
     [SerializeField] private GameObject completedStamp;
+    [SerializeField] private Image rewardIcon;
 
     public void SetData(AchievementSO achievement, int current, int goal)
     {
@@ -19,8 +20,11 @@ public class AchievementCardData : MonoBehaviour
         progressNumberText.text = $"{current}/{goal}";
         fillImage.fillAmount = goal > 0 ? (float)current / goal : 0f;
 
+        if (rewardIcon != null && achievement.Icon != null)
+            rewardIcon.sprite = achievement.Icon;
+
         if (coinRewardText != null)
-            coinRewardText.text = achievement.CoinReward.ToString();
+            coinRewardText.text = achievement.CoinReward > 0 ? achievement.CoinReward.ToString() : "";
 
         bool isCompleted = current >= goal;
         completedStamp.SetActive(isCompleted);

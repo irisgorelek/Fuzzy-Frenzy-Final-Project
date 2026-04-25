@@ -21,6 +21,7 @@ public class AchievementSO : ScriptableObject
     [SerializeField] private string _animalId;
     [SerializeField] private string _powerUpName;
     [SerializeField] private int _coinReward;
+    [SerializeField] private AvatarItemSO _avatarItemReward;
 
     public string Id => _id;
     public string Title => _title;
@@ -31,4 +32,5 @@ public class AchievementSO : ScriptableObject
     public string AnimalId => _animalId;
     public string PowerUpName => _powerUpName;
     public int CoinReward => _coinReward;
+    public AvatarItemSO AvatarItemReward => _avatarItemReward;
 }

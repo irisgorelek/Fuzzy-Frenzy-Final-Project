@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: finish_all_levels
   _title: Game Conqueror
   _description: Complete every level in the game.
-  _icon: {fileID: -2207995531008618820, guid: e2ccccb54a6aebf46aa91aaaff6b914d, type: 3}
+  _icon: {fileID: 21300000, guid: e2ccccb54a6aebf46aa91aaaff6b914d, type: 3}
   _category: 0
   _goal: 0
   _animalId: 

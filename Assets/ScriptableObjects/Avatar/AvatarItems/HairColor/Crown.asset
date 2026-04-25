@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: FuzzyFrenzy.Data::AvatarItemSO
   itemId: 9
   displayName: 
-  icon: {fileID: -2207995531008618820, guid: e2ccccb54a6aebf46aa91aaaff6b914d, type: 3}
-  avatarSprite: {fileID: -2207995531008618820, guid: e2ccccb54a6aebf46aa91aaaff6b914d, type: 3}
+  icon: {fileID: 21300000, guid: e2ccccb54a6aebf46aa91aaaff6b914d, type: 3}
+  avatarSprite: {fileID: 21300000, guid: e2ccccb54a6aebf46aa91aaaff6b914d, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
   isPurchasable: 0
   isAccessory: 1

@@ -28,7 +28,8 @@ public class AvatarLoader : MonoBehaviour
 
     private void Refresh()
     {
-        var selections = bootstrapper.Economy.State.avatarSelections;
+        var state = bootstrapper.Economy.State;
+        var selections = state.avatarSelections;
 
         foreach (var category in catalog.Categories)
         {
@@ -38,5 +39,19 @@ public class AvatarLoader : MonoBehaviour
 
             avatarDisplay.ApplyItem(category.CategoryType, category.Items[index]);
         }
+
+        avatarDisplay.SetAccessory(FindAccessoryById(state.equippedAccessoryId));
+    }
+
+    private AvatarItemSO FindAccessoryById(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return null;
+
+        foreach (var category in catalog.Categories)
+            foreach (var item in category.Items)
+                if (item.IsAccessory && item.ItemId == id)
+                    return item;
+
+        return null;
     }
 }

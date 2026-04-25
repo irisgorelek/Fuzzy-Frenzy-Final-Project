@@ -519,11 +519,23 @@ public class BoardController : MonoBehaviour
         {
             _locator.Bootstrapper.Economy.AddCoins(coins);
 
-            // Save best star count per level (only update if new score is higher)
             var state = _locator.Bootstrapper.Economy.State;
+
+            // Save best star count per level
             state.levelStars.TryGetValue(level, out int bestStars);
             if (stars > bestStars)
                 state.levelStars[level] = stars;
+
+            // Save best score per level and recalculate total (match the displayed score formula)
+            int displayScore = finalScore * 10;
+            int shownScore = Mathf.RoundToInt(displayScore * (stars / 3f));
+            state.TrySetLevelBestScore(level, shownScore);
+            _locator.Bootstrapper.Economy.Save();
+
+            // Submit cumulative best to leaderboard
+            var leaderboard = _locator.Bootstrapper.Leaderboard;
+            if (leaderboard != null && leaderboard.IsReady)
+                _ = leaderboard.AddScore(state.playerId, PlayerPrefs.GetString("PlayerName", "Player"), state.totalPointsEarned);
         }
 
         if (_levelClearedPopupUI != null)

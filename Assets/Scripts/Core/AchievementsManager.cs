@@ -94,8 +94,6 @@ public class AchievementsManager : MonoBehaviour
 
     private void OnAddedScore(int amount)
     {
-        S.totalPointsEarned += amount;
-        _economy.Save();
         CheckForScoreAchievements();
     }
 

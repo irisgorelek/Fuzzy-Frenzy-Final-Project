@@ -35,8 +35,16 @@ public static class PlayerEconomyStorage
     }
 
     [Serializable]
+    private class LevelScoreEntry
+    {
+        public int levelIndex;
+        public int score;
+    }
+
+    [Serializable]
     private class SaveData
     {
+        public string playerId;
         public int coins;
         public int extraMoveCount;
         public List<BoosterEntry> boosters = new List<BoosterEntry>();
@@ -52,12 +60,14 @@ public static class PlayerEconomyStorage
         public List<AvatarSelectionEntry> avatarSelections = new();
         public List<LevelStarEntry> levelStars = new();
         public List<string> unlockedAvatarItems = new();
+        public List<LevelScoreEntry> levelBestScores = new();
     }
 
     public static void Save(PlayerEconomyState state)
     {
         var data = new SaveData
         {
+            playerId = state.playerId,
             coins = state.coins,
             extraMoveCount = state.extraMoveCount,
             maxLives = state.maxLives,
@@ -87,6 +97,9 @@ public static class PlayerEconomyStorage
 
         data.unlockedAvatarItems = new List<string>(state.unlockedAvatarItems);
 
+        foreach (var kvp in state.levelBestScores)
+            data.levelBestScores.Add(new LevelScoreEntry { levelIndex = kvp.Key, score = kvp.Value });
+
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(Key, json);
         PlayerPrefs.Save();
@@ -106,6 +119,9 @@ public static class PlayerEconomyStorage
         try
         {
             var data = JsonUtility.FromJson<SaveData>(json);
+            if (!string.IsNullOrEmpty(data.playerId))
+                state.playerId = data.playerId;
+
             state.coins = data.coins;
             // maxLives: if missing in old save, default to 3
             state.maxLives = (data.maxLives <= 0) ? 3 : data.maxLives;
@@ -160,6 +176,13 @@ public static class PlayerEconomyStorage
 
             if (data.unlockedAvatarItems != null)
                 state.unlockedAvatarItems = new HashSet<string>(data.unlockedAvatarItems);
+
+            state.levelBestScores.Clear();
+            if (data.levelBestScores != null)
+            {
+                foreach (var entry in data.levelBestScores)
+                    state.levelBestScores[entry.levelIndex] = entry.score;
+            }
         }
         catch
         {

@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable]
 public class PlayerEconomyState
 {
+    public string playerId = System.Guid.NewGuid().ToString();
     public int coins = 0;
     public int extraMoveCount = 0;
     public int maxLives = 3;
@@ -27,6 +28,7 @@ public class PlayerEconomyState
     public long lastLifeTimestampUtcSeconds = 0;
 
     // Booster counts by effect type
+    public Dictionary<int, int> levelBestScores = new();
     public Dictionary<BoosterEffectType, int> boosters = new Dictionary<BoosterEffectType, int>();      // current boosters
 
     public int GetBoosterCount(BoosterEffectType type)              // return current boosters
@@ -58,5 +60,23 @@ public class PlayerEconomyState
     {
         if (amount <= 0) return;
         extraMoveCount += amount;
+    }
+
+    public bool TrySetLevelBestScore(int levelIndex, int score)
+    {
+        levelBestScores.TryGetValue(levelIndex, out int currentBest);
+        if (score <= currentBest) return false;
+
+        levelBestScores[levelIndex] = score;
+        RecalculateTotalPoints();
+        return true;
+    }
+
+    public void RecalculateTotalPoints()
+    {
+        int total = 0;
+        foreach (var kvp in levelBestScores)
+            total += kvp.Value;
+        totalPointsEarned = total;
     }
 }

@@ -32,12 +32,30 @@ public class LevelEndButtons : MonoBehaviour
 
     private void GoToMenu()
     {
-        SceneManager.LoadScene("MainMenu+Shop");
+        //SceneManager.LoadScene("MainMenu+Shop");
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade("MainMenu+Shop");
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
+            SceneManager.LoadScene("MainMenu+Shop");
+        }
     }
 
     private void RedoLevel()
     {
         SceneManager.LoadScene("Level");
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade("Level");
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
+            SceneManager.LoadScene("Level");
+        }
     }
 
     private void GoToNextLevel()
@@ -45,6 +63,15 @@ public class LevelEndButtons : MonoBehaviour
         var current = _bootstrapper.SelectedLevel;
         int currentIndex = allLevels.Levels.IndexOf(current);
         _bootstrapper.SelectedLevel = allLevels.Levels[currentIndex + 1];
-        SceneManager.LoadScene("Level");
+        //SceneManager.LoadScene("Level");
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade("Level");
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
+            SceneManager.LoadScene("Level");
+        }
     }
 }

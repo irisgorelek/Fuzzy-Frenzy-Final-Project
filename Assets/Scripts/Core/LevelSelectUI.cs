@@ -52,6 +52,15 @@ public class LevelSelectUI : MonoBehaviour
         }
 
         _bootstrapper.SelectedLevel = config;
-        SceneManager.LoadScene("Level");
+        //SceneManager.LoadScene("Level");
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade("Level");
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
+            SceneManager.LoadScene("Level");
+        }
     }
 }

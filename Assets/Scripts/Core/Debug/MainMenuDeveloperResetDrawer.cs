@@ -131,7 +131,16 @@ public class MainMenuDeveloperResetDrawer : MonoBehaviour, IBeginDragHandler, ID
         GameBootstrapper.Instance.Economy.Wipe();
 
         if (_reloadSceneAfterWipe && !string.IsNullOrEmpty(_sceneToReload))
+            //SceneManager.LoadScene(_sceneToReload);
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade(_sceneToReload);
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
             SceneManager.LoadScene(_sceneToReload);
+        }
     }
 
     public void OpenDrawer()

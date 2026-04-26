@@ -48,7 +48,7 @@ public class LevelSelectUI : MonoBehaviour
             }
 
             tween.Show();
-            return;
+            //return;
         }
 
         _bootstrapper.SelectedLevel = config;

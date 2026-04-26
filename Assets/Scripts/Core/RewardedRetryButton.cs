@@ -95,8 +95,8 @@ public class RewardedRetryButton : MonoBehaviour
             _bootstrapper.Economy.AddLives(1);
         }
 
-        if (adCanvasRoot != null)
-            adCanvasRoot.SetActive(false);
+        //if (adCanvasRoot != null)
+        //    adCanvasRoot.SetActive(false);
 
         _bootstrapper.Economy.InitializeLivesIfNeeded();
         SceneManager.LoadScene("Level");

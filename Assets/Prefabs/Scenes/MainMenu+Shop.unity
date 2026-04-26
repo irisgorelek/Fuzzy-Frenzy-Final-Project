@@ -23165,6 +23165,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1883128947}
   m_CullTransparentMesh: 1
+--- !u!82 &1883214797 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 3101213099954292600, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+  m_PrefabInstance: {fileID: 8595134982853529129}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1888420836
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24285,6 +24290,11 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2030948093105650950, guid: cf59a23d83767044687d37d85fcf9ddc, type: 3}
   m_PrefabInstance: {fileID: 1955427320}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &1961958960 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 2672734091663385860, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+  m_PrefabInstance: {fileID: 8595134982853529129}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1965260204
 GameObject:
@@ -29125,6 +29135,14 @@ PrefabInstance:
       propertyPath: _sfx.Array.size
       value: 27
       objectReference: {fileID: 0}
+    - target: {fileID: 1933459087064051970, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+      propertyPath: '_bg.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1883214797}
+    - target: {fileID: 1933459087064051970, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
+      propertyPath: '_bg.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1961958960}
     - target: {fileID: 1933459087064051970, guid: adbf163343ebd6947b13e9d9588e1f9f, type: 3}
       propertyPath: '_sfx.Array.data[17]'
       value: 

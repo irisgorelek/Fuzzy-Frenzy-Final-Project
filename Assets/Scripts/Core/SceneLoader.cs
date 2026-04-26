@@ -20,6 +20,15 @@ public class SceneLoader : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        SceneManager.LoadScene("MainMenu+Shop");
+        //SceneManager.LoadScene("MainMenu+Shop");
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade("MainMenu+Shop");
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
+            SceneManager.LoadScene("MainMenu+Shop");
+        }
     }
 }

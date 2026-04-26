@@ -99,6 +99,15 @@ public class RewardedRetryButton : MonoBehaviour
         //    adCanvasRoot.SetActive(false);
 
         _bootstrapper.Economy.InitializeLivesIfNeeded();
-        SceneManager.LoadScene("Level");
+        //SceneManager.LoadScene("Level");
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade("Level");
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
+            SceneManager.LoadScene("Level");
+        }
     }
 }

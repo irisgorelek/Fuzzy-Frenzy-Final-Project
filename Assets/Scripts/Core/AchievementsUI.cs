@@ -16,7 +16,6 @@ public class AchievementsUI : MonoBehaviour
         _state = GameBootstrapper.Instance.Economy.State;
         LoadAchievements();
     }
-
     private void LoadAchievements()
     {
         foreach (Transform child in content)

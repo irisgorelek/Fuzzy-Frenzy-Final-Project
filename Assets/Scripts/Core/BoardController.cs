@@ -13,6 +13,7 @@ public class BoardController : MonoBehaviour
     [Header("On Screen Pop Ups")]
     [SerializeField] private LevelClearedPopupUI _levelClearedPopupUI;
     //[SerializeField] private GameObject _levelLostPopup;
+    [SerializeField] private GameObject _levelClearedDimmer;
     [SerializeField] private LevelLostPopupUI _levelLostPopupUI;
     //[SerializeField] private int framesBetweenSteps = 5;
     [SerializeField] private LevelVFXToggle _levelVFXToggle;
@@ -539,6 +540,11 @@ public class BoardController : MonoBehaviour
                 string displayName = string.IsNullOrEmpty(state.playerName) ? "Player" : state.playerName;
                 _ = leaderboard.AddScore(state.playerId, displayName, state.totalPointsEarned);
             }
+        }
+
+        if (_levelClearedDimmer != null)
+        {
+            _levelClearedDimmer.SetActive(true);
         }
 
         if (_levelClearedPopupUI != null)

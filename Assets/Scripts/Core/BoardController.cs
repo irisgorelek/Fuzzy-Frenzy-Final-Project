@@ -1,7 +1,8 @@
-using UnityEngine;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BoardController : MonoBehaviour
 {
@@ -510,11 +511,13 @@ public class BoardController : MonoBehaviour
         int finalScore = _board.CurrentPoints;
         int level = _cfg.levelIndex;
 
+        var state = GameBootstrapper.Instance.Economy.State;            // reminder: add above instead
+
         if (_locator != null && _locator.Bootstrapper != null)
         {
             _locator.Bootstrapper.Economy.AddCoins(coins);
 
-            var state = _locator.Bootstrapper.Economy.State;
+            //var state = _locator.Bootstrapper.Economy.State;
 
             // Save best star count per level
             state.levelStars.TryGetValue(level, out int bestStars);
@@ -534,6 +537,18 @@ public class BoardController : MonoBehaviour
                 string displayName = string.IsNullOrEmpty(state.playerName) ? "Player" : state.playerName;
                 _ = leaderboard.AddScore(state.playerId, displayName, state.totalPointsEarned);
             }
+        }
+
+        // Load Ending Trailer once at level 10
+        //var state = GameBootstrapper.Instance.Economy.State;
+        Debug.Log($"ending Trailer Seen state: {state.endingTrailerSeen}");
+        if (_cfg.levelIndex == 10 && !state.endingTrailerSeen)
+        {
+            state.endingTrailerSeen = true;
+            GameBootstrapper.Instance.Economy.Save();
+
+            Debug.Log("loading Scene: \"EndingTrailer\"");
+            SceneManager.LoadScene("EndingTrailer");
         }
 
         if (_levelClearedDimmer != null)

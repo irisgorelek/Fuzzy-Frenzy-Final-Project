@@ -86,6 +86,14 @@ public class EndingTrailerController : MonoBehaviour
             yield return outro.WaitForCompletion();
         }
 
-        SceneManager.LoadScene(nextSceneName);
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.LoadSceneWithFade("Level");
+        }
+        else
+        {
+            Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
+            SceneManager.LoadScene("Level");
+        }
     }
 }

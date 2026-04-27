@@ -63,6 +63,7 @@ public static class PlayerEconomyStorage
         public List<string> unlockedAvatarItems = new();
         public string equippedAccessoryId;
         public List<LevelScoreEntry> levelBestScores = new();
+        public bool endingTrailerSeen;
     }
 
     public static void Save(PlayerEconomyState state)
@@ -75,7 +76,8 @@ public static class PlayerEconomyStorage
             extraMoveCount = state.extraMoveCount,
             maxLives = state.maxLives,
             currentLives = state.currentLives,
-            lastLifeTimestampUtcSeconds = state.lastLifeTimestampUtcSeconds
+            lastLifeTimestampUtcSeconds = state.lastLifeTimestampUtcSeconds,
+            endingTrailerSeen = state.endingTrailerSeen
         };
 
         foreach (var kvp in state.boosters)
@@ -141,6 +143,7 @@ public static class PlayerEconomyStorage
             state.currentLives = looksLikeOldSave ? state.maxLives : Mathf.Clamp(data.currentLives, 0, state.maxLives);
             state.lastLifeTimestampUtcSeconds = data.lastLifeTimestampUtcSeconds;
             state.extraMoveCount = data.extraMoveCount;
+            state.endingTrailerSeen = data.endingTrailerSeen;
 
             state.boosters.Clear();
             if (data.boosters != null)

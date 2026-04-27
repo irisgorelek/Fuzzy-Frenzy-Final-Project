@@ -25,6 +25,9 @@ public class PlayerEconomyState
     public Dictionary<AvatarCategoryType, int> avatarSelections = new();
     public HashSet<string> unlockedAvatarItems = new();
     public string equippedAccessoryId = "";
+    
+    // Completed level 10
+    public bool endingTrailerSeen = false;
 
     // When was regen last accounted for
     public long lastLifeTimestampUtcSeconds = 0;

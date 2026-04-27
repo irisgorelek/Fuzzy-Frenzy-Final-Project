@@ -12,8 +12,9 @@ public class BoardController : MonoBehaviour
 
     [Header("On Screen Pop Ups")]
     [SerializeField] private LevelClearedPopupUI _levelClearedPopupUI;
-    [SerializeField] private GameObject _levelClearedDimmer;
+    //[SerializeField] private GameObject _levelLostPopup;
     [SerializeField] private LevelLostPopupUI _levelLostPopupUI;
+    //[SerializeField] private int framesBetweenSteps = 5;
     [SerializeField] private LevelVFXToggle _levelVFXToggle;
 
     [Header("Rewards Configs")]
@@ -67,6 +68,9 @@ public class BoardController : MonoBehaviour
 
     private void Awake()
     {
+        //_levelClearedPopup.gameObject.SetActive(false);
+        //_levelLostPopup.gameObject.SetActive(false);
+
         var bootstrapper = GameBootstrapper.Instance;
         if (bootstrapper != null && bootstrapper.SelectedLevel != null)
             _cfg = bootstrapper.SelectedLevel;
@@ -354,6 +358,7 @@ public class BoardController : MonoBehaviour
             if (_levelLostPopupUI != null)
                 _levelLostPopupUI.Show();
 
+            //if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
             _isBusy = false;
             return;
         }
@@ -534,11 +539,6 @@ public class BoardController : MonoBehaviour
                 string displayName = string.IsNullOrEmpty(state.playerName) ? "Player" : state.playerName;
                 _ = leaderboard.AddScore(state.playerId, displayName, state.totalPointsEarned);
             }
-        }
-
-        if (_levelClearedDimmer != null)
-        {
-            _levelClearedDimmer.SetActive(true);
         }
 
         if (_levelClearedPopupUI != null)

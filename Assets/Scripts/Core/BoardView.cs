@@ -1015,7 +1015,7 @@ public class BoardView : MonoBehaviour
         return tcs.Task;
     }
 
-    public Task AnimateShuffle(Board board, float outDuration = 0.15f, float inDuration = 0.2f, float stagger = 0.002f)
+    public Task AnimateShuffle(Board board, float outDuration = 0.08f, float inDuration = 0.1f, float stagger = 0.002f)
     {
         if (board == null || _cells.Count == 0)
             return Task.CompletedTask;

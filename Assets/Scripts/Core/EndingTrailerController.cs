@@ -10,9 +10,14 @@ public class EndingTrailerController : MonoBehaviour
     public class TrailerSlide
     {
         public Sprite image;
-        public float panDuration = 2.5f;
-        public float holdDuration = 0.5f;
-        public float panDistance = 180f;
+
+        [Header("Timing")]
+        public float slideInDuration = 1.2f;
+        public float holdDuration = 0.6f;
+        public float slideOutDuration = 1.2f;
+
+        [Header("Movement")]
+        public float panDistance = 120f;
     }
 
     [Header("Slides")]
@@ -51,24 +56,34 @@ public class EndingTrailerController : MonoBehaviour
             TrailerSlide slide = slides[i];
 
             trailerImage.sprite = slide.image;
-
-            _imageRect.anchoredPosition = new Vector2(-slide.panDistance, 0f);
             trailerImage.color = Color.white;
+
+            // Start slightly left, but still mostly centered
+            _imageRect.anchoredPosition = new Vector2(-slide.panDistance, 0f);
 
             fadeOverlay.color = new Color(0f, 0f, 0f, 1f);
 
-            Sequence seq = DOTween.Sequence();
+            // Fade in while moving to center
+            Sequence intro = DOTween.Sequence();
 
-            seq.Join(fadeOverlay.DOFade(0f, fadeDuration));
-            seq.Join(_imageRect.DOAnchorPosX(slide.panDistance, slide.panDuration)
+            intro.Join(fadeOverlay.DOFade(0f, fadeDuration));
+            intro.Join(_imageRect.DOAnchorPosX(0f, slide.slideInDuration)
                 .SetEase(Ease.InOutSine));
 
-            yield return seq.WaitForCompletion();
+            yield return intro.WaitForCompletion();
 
+            // Hold centered
             if (slide.holdDuration > 0f)
                 yield return new WaitForSeconds(slide.holdDuration);
 
-            yield return fadeOverlay.DOFade(1f, fadeDuration).WaitForCompletion();
+            // Move slightly right while fading out
+            Sequence outro = DOTween.Sequence();
+
+            outro.Join(_imageRect.DOAnchorPosX(slide.panDistance, slide.slideOutDuration)
+                .SetEase(Ease.InOutSine));
+            outro.Join(fadeOverlay.DOFade(1f, fadeDuration));
+
+            yield return outro.WaitForCompletion();
         }
 
         SceneManager.LoadScene(nextSceneName);

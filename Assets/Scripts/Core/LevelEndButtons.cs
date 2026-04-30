@@ -8,6 +8,7 @@ public class LevelEndButtons : MonoBehaviour
     [SerializeField] private Button nextLevelButton;
     [SerializeField] private Button redoButton;
     [SerializeField] private LevelsData allLevels;
+    [SerializeField] private GameObject _noLivesWindow;
 
     private GameBootstrapper _bootstrapper;
 
@@ -46,6 +47,16 @@ public class LevelEndButtons : MonoBehaviour
 
     private void RedoLevel()
     {
+        if (_bootstrapper.Economy.State.currentLives <= 0)
+        {
+            if (_noLivesWindow != null)
+            {
+                _noLivesWindow.SetActive(true);
+            }
+
+            return;
+        }
+
         SceneManager.LoadScene("Level");
         if (SceneTransitionManager.Instance != null)
         {
@@ -60,6 +71,16 @@ public class LevelEndButtons : MonoBehaviour
 
     private void GoToNextLevel()
     {
+        if (_bootstrapper.Economy.State.currentLives <= 0)
+        {
+            if (_noLivesWindow != null)
+            {
+                _noLivesWindow.SetActive(true);
+            }
+
+            return;
+        }
+
         var current = _bootstrapper.SelectedLevel;
         int currentIndex = allLevels.Levels.IndexOf(current);
         _bootstrapper.SelectedLevel = allLevels.Levels[currentIndex + 1];

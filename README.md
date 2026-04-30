@@ -58,16 +58,16 @@ Dynamic interactions that trigger during matching and board resolution:
 
 ## 📸 Media
 
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/62890016-959d-42de-85b2-1b67b306f884" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/b2cbe8e6-0d0f-482a-9427-e692aec68b8e" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/8f16b192-f261-4514-ba54-c9013629e486" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/62890016-959d-42de-85b2-1b67b306f884" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/b2cbe8e6-0d0f-482a-9427-e692aec68b8e" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/8f16b192-f261-4514-ba54-c9013629e486" />
 <img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/d4c47ffc-4cb9-47a2-9d58-745d3552d4e7" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/553dfaaf-8fe9-4dd4-be32-b09920ab0392" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/15f910c5-4f53-42a7-92af-83fecc0e5f17" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/1d53cfbe-3b2f-4505-a54f-92b1d0fe885a" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/3c8fe587-bb37-42d6-b5e4-e9cd0b096885" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/177e9881-83e3-439c-bc93-5cd7803676e7" />
-<img width="449" height="1000" alt="image" src="https://github.com/user-attachments/assets/400c0188-5190-40e4-aec5-a3d5a5012f5f" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/553dfaaf-8fe9-4dd4-be32-b09920ab0392" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/15f910c5-4f53-42a7-92af-83fecc0e5f17" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/1d53cfbe-3b2f-4505-a54f-92b1d0fe885a" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/3c8fe587-bb37-42d6-b5e4-e9cd0b096885" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/177e9881-83e3-439c-bc93-5cd7803676e7" />
+<img width="250" height="541" alt="image" src="https://github.com/user-attachments/assets/400c0188-5190-40e4-aec5-a3d5a5012f5f" />
 
 
 

@@ -9,6 +9,7 @@ public class LevelEndButtons : MonoBehaviour
     [SerializeField] private Button redoButton;
     [SerializeField] private LevelsData allLevels;
     [SerializeField] private GameObject _noLivesWindow;
+    [SerializeField] private Button _noLivesWindowXButton;
 
     private GameBootstrapper _bootstrapper;
 
@@ -18,6 +19,9 @@ public class LevelEndButtons : MonoBehaviour
 
         menuButton.onClick.AddListener(GoToMenu);
         redoButton.onClick.AddListener(RedoLevel);
+
+        if (_noLivesWindowXButton != null)
+            _noLivesWindowXButton.onClick.AddListener(CloseWindow);
 
         if (nextLevelButton != null)
         {
@@ -94,5 +98,15 @@ public class LevelEndButtons : MonoBehaviour
             Debug.LogWarning("SceneTransitionManager missing, loading scene directly.");
             SceneManager.LoadScene("Level");
         }
+    }
+
+    private void CloseWindow()
+    {
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFXPitchAdjusted(9);
+        }
+
+        _noLivesWindow.SetActive(false);
     }
 }

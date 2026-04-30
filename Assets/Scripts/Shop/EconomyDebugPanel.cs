@@ -42,5 +42,13 @@ public class EconomyDebugPanel : MonoBehaviour
             Debug.Log($"REGEN CHECK: Lives={GameBootstrapper.Instance.Economy.State.currentLives}/{GameBootstrapper.Instance.Economy.State.maxLives}");
         }
 
+        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            GameBootstrapper.Instance.Economy.AddLives(1);
+            Debug.Log($"REGEN CHECK: Lives={GameBootstrapper.Instance.Economy.State.currentLives}");
+        }
+
+
+
     }
 }

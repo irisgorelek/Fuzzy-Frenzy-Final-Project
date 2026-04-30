@@ -311,6 +311,19 @@ public class BoardController : MonoBehaviour
             _view.AssignSprites(_board);
 
             await ResolveCascadesAsync();
+
+            if (_isLevelOver)
+            {
+                _isBusy = false;
+                return;
+            }
+
+            if (TryHandleLevelFailed())
+            {
+                _isBusy = false;
+                return;
+            }
+
             await TryShowTriggeredBubbleAsync();
 
             _isBusy = false;
@@ -339,7 +352,6 @@ public class BoardController : MonoBehaviour
         _view.AssignSprites(_board); // Sync view to model after swap
         
         await ResolveCascadesAsync();
-        await TryShowTriggeredBubbleAsync();
 
         if (_isLevelOver)
         {
@@ -347,22 +359,13 @@ public class BoardController : MonoBehaviour
             return;
         }
 
-        if (_moveCounter.MovesLeft <= 0)
+        if (TryHandleLevelFailed())
         {
-            _isLevelOver = true;
-            
-            if (_levelVFXToggle != null)
-                _levelVFXToggle.SetCurrentVFXActive(false);
-
-            _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
-
-            if (_levelLostPopupUI != null)
-                _levelLostPopupUI.Show();
-
-            //if (_levelLostPopup != null) _levelLostPopup.SetActive(true);
             _isBusy = false;
             return;
         }
+
+        await TryShowTriggeredBubbleAsync();
 
         _isBusy = false;
 
@@ -441,8 +444,20 @@ public class BoardController : MonoBehaviour
 
         await ResolveCascadesAsync();
 
+        if (!_isLevelOver)
+        {
+            if (TryHandleLevelFailed())
+            {
+                _isBusy = false;
+                _timerBombResolving = false;
+                return;
+            }
+
+            await TryShowTriggeredBubbleAsync();
+        }
+
         _isBusy = false;
-        _view.SwapsEnabled = true;
+        _view.SwapsEnabled = !_isLevelOver;
         _timerBombResolving = false;
     }
 
@@ -492,9 +507,8 @@ public class BoardController : MonoBehaviour
 
         TryHandleLevelComplete();
 
-        await EnsurePlayableBoardAsync();
-
-        await TryShowTriggeredBubbleAsync();
+        if (!_isLevelOver)
+            await EnsurePlayableBoardAsync();
     }
 
     //private async Task<bool> TryHandleLevelCompleteAsync()
@@ -987,5 +1001,28 @@ public class BoardController : MonoBehaviour
 
             await _view.AnimateMatchPopFx(waveCells, 0.09f);
         }
+    }
+
+    private bool TryHandleLevelFailed()
+    {
+        if (_isLevelOver) return true;
+        if (AreAllGoalsComplete()) return false;
+        if (_moveCounter.MovesLeft > 0) return false;
+
+        _isLevelOver = true;
+        _view.SwapsEnabled = false;
+
+        if (_levelVFXToggle != null)
+            _levelVFXToggle.SetCurrentVFXActive(false);
+
+        if (_locator != null && _locator.Bootstrapper != null)
+            _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
+
+        if (_levelLostPopupUI != null)
+            _levelLostPopupUI.Show();
+        else
+            Debug.LogError("LevelLostPopupUI is not assigned on BoardController.");
+
+        return true;
     }
 }

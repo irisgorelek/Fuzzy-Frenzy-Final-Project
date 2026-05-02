@@ -48,7 +48,7 @@ MonoBehaviour:
       side: 0
       lines:
       - Are you pkaa'afraid using boosters or somthing?
-      - Go back to Main Menu and open the shop. I'll grant you a free one now.
+      - Go back to Main Menu and open the shop. Try to use a booster now.
       - Blast an area or switch us freely to increase matches!
   normalEntries:
   - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}

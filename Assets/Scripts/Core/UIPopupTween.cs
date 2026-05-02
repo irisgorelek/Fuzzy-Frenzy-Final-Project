@@ -71,4 +71,9 @@ public class UIPopupTween : MonoBehaviour
         if (rect == null) rect = GetComponent<RectTransform>();
         if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
     }
+
+    private void OnDisable()
+    {
+        _tween?.Kill();
+    }
 }

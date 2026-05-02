@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
@@ -26,6 +27,9 @@ public class SpeechBubblePresenter : MonoBehaviour
         public UIPopupTween popupTween;
         public UISlideInTween slideTween;
     }
+
+    public System.Action<int> OnLineShown;
+    public System.Action OnSpeechFinished;
 
     [Header("Canvas Space")]
     [SerializeField] private RectTransform _screenBoundsRect;
@@ -66,12 +70,14 @@ public class SpeechBubblePresenter : MonoBehaviour
 
         for (int i = 0; i < lines.Count; i++)
         {
+            OnLineShown?.Invoke(i);
             string line = string.IsNullOrWhiteSpace(lines[i]) ? "..." : lines[i];
             _tutorial.speechText.text = line;
             _clickTcs = new TaskCompletionSource<bool>();
             await _clickTcs.Task;
         }
 
+        OnSpeechFinished?.Invoke();
         PlayHide(_tutorial, toRight: useRightSide, deactivateAfterHide: true);
     }
 

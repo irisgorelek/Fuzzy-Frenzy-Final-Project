@@ -253,4 +253,18 @@ public class EconomyContext
         OnChanged?.Invoke();
         return true;
     }
+
+    public bool TryClaimOneTimeBoosterReward(OneTimeRewardId rewardId, BoosterEffectType type, int amount = 1)
+    {
+        if (State.claimedRewards.Contains(rewardId))
+            return false;
+
+        State.claimedRewards.Add(rewardId);
+        State.AddBooster(type, amount);
+
+        Save();
+        OnChanged?.Invoke();
+
+        return true;
+    }
 }

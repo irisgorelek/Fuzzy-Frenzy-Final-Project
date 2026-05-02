@@ -33,6 +33,9 @@ public class PlayerEconomyState
     public Dictionary<int, int> levelBestScores = new();
     public Dictionary<BoosterEffectType, int> boosters = new Dictionary<BoosterEffectType, int>();      // current boosters
 
+    // One time rewards
+    public HashSet<OneTimeRewardId> claimedRewards = new();
+
     public int GetBoosterCount(BoosterEffectType type)              // return current boosters
     {
         return boosters.TryGetValue(type, out int count) ? count : 0;

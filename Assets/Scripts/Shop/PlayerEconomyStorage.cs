@@ -63,6 +63,7 @@ public static class PlayerEconomyStorage
         public List<string> unlockedAvatarItems = new();
         public string equippedAccessoryId;
         public List<LevelScoreEntry> levelBestScores = new();
+        public List<int> claimedRewards = new();
     }
 
     public static void Save(PlayerEconomyState state)
@@ -88,6 +89,10 @@ public static class PlayerEconomyStorage
         data.discoveredAnimals = new List<string>(state.discoveredAnimals);
         data.totalDestroyedAnimals = state.totalDestroyedAnimals;
         data.totalPointsEarned = state.totalPointsEarned;
+        data.claimedRewards = new List<int>();
+        
+        foreach (var r in state.claimedRewards)
+            data.claimedRewards.Add((int)r);
 
         foreach (var kvp in state.destroyedAnimals)
             data.destroyedAnimals.Add(new DestroyedAnimalEntry { animalId = kvp.Key, count = kvp.Value });
@@ -191,6 +196,13 @@ public static class PlayerEconomyStorage
             {
                 foreach (var entry in data.levelBestScores)
                     state.levelBestScores[entry.levelIndex] = entry.score;
+            }
+
+            state.claimedRewards.Clear();
+            if (data.claimedRewards != null)
+            {
+                foreach (var r in data.claimedRewards)
+                    state.claimedRewards.Add((OneTimeRewardId)r);
             }
         }
         catch

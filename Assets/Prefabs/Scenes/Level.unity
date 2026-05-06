@@ -6903,6 +6903,7 @@ Transform:
   m_Children:
   - {fileID: 1684133698}
   - {fileID: 763581300}
+  - {fileID: 1889570935}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &531662906 stripped
@@ -38511,6 +38512,59 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 155.36719}
   m_Pivot: {x: 0.5, y: 1}
+--- !u!1 &1889570934
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1889570935}
+  - component: {fileID: 1889570936}
+  m_Layer: 5
+  m_Name: AnimalDianlogueController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1889570935
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889570934}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 0.0076235156, y: 0.0076235156, z: 0.0076235156}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 519948547}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -720.06274, y: -1031.9286}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1889570936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889570934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3892ba2a04f606c408294af61a00fac4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::AnimalDialogueController
+  _speechConfig: {fileID: 11400000, guid: 968cb4c6569488345adaa588f5395a45, type: 2}
+  _speechBubblePresenter: {fileID: 1566517730}
+  _normalBubbleDelaySeconds: 2.5
+  _normalBubbleVisibleSeconds: 3
+  _speechCellHighlightDuration: 0.48
 --- !u!1 &1891842580
 GameObject:
   m_ObjectHideFlags: 0
@@ -84105,6 +84159,10 @@ PrefabInstance:
       propertyPath: _levelCompletedChannelSO
       value: 
       objectReference: {fileID: 11400000, guid: b4b5f4c95a2d7c24d9425c8fdc68f566, type: 2}
+    - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
+      propertyPath: _animalDialogueController
+      value: 
+      objectReference: {fileID: 1889570936}
     - target: {fileID: 8084925364488194996, guid: 6b6cc8c477d757f43a5052ce5ed1de9f, type: 3}
       propertyPath: _levelScoreEventChannelSO
       value: 

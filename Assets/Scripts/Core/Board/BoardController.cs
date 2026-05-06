@@ -35,6 +35,7 @@ public class BoardController : MonoBehaviour
     [SerializeField] private float _normalBubbleVisibleSeconds = 3f;
     [SerializeField] private float _triggeredBubbleVisibleSeconds = 3f;
     [SerializeField] private float _speechCellHighlightDuration = 0.48f;
+    [SerializeField] private AnimalDialogueController _animalDialogueController;
 
     public BoardConfig Config => _cfg;
 
@@ -741,7 +742,13 @@ public class BoardController : MonoBehaviour
             return;
         }
 
-        await ShowRandomNormalBubbleAsync();
+        //await ShowRandomNormalBubbleAsync();
+        await _animalDialogueController.ShowRandomNormalBubbleAsync(
+            _board.GetAllCells(),
+            cell => _board.GetAnimalFromCell(cell),
+            cell => _view.GetCellWorldPosition(cell),
+            (cell, duration) => _view.AnimateBlockedTap(cell, duration)
+            );
     }
 
     private async Task ShowTutorialLevelAsync(TutorialLevelEntry tutorialLevel)
@@ -795,42 +802,42 @@ public class BoardController : MonoBehaviour
         }
     }
 
-    private async Task ShowRandomNormalBubbleAsync()
-    {
-        float delay = Mathf.Max(0f, _normalBubbleDelaySeconds);
-        if (delay > 0f)
-            await Task.Delay(Mathf.RoundToInt(delay * 1000f));
+    //private async Task ShowRandomNormalBubbleAsync()
+    //{
+    //    float delay = Mathf.Max(0f, _normalBubbleDelaySeconds);
+    //    if (delay > 0f)
+    //        await Task.Delay(Mathf.RoundToInt(delay * 1000f));
 
-        if (_isLevelOver || _speechConfig == null || _speechBubblePresenter == null)
-            return;
+    //    if (_isLevelOver || _speechConfig == null || _speechBubblePresenter == null)
+    //        return;
 
-        var allCells = new List<Vector2Int>();
-        for (int x = 0; x < _board.Width; x++)
-            for (int y = 0; y < _board.Height; y++)
-                allCells.Add(new Vector2Int(x, y));
+    //    var allCells = new List<Vector2Int>();
+    //    for (int x = 0; x < _board.Width; x++)
+    //        for (int y = 0; y < _board.Height; y++)
+    //            allCells.Add(new Vector2Int(x, y));
 
-        for (int i = allCells.Count - 1; i > 0; i--)
-        {
-            int j = UnityEngine.Random.Range(0, i + 1);
-            (allCells[i], allCells[j]) = (allCells[j], allCells[i]);
-        }
+    //    for (int i = allCells.Count - 1; i > 0; i--)
+    //    {
+    //        int j = UnityEngine.Random.Range(0, i + 1);
+    //        (allCells[i], allCells[j]) = (allCells[j], allCells[i]);
+    //    }
 
-        for (int i = 0; i < allCells.Count; i++)
-        {
-            var coord = allCells[i];
-            var animal = _board.GetAnimalFromCell(coord);
-            if (_speechConfig.TryGetRandomNormalLines(animal, out var options))
-            {
-                int randomIndex = UnityEngine.Random.Range(0, options.Count);
-                var lines = new List<string> { options[randomIndex] };
-                bool useRightSide = coord.x >= (_board.Width * 0.5f);
-                await _view.AnimateBlockedTap(coord, _speechCellHighlightDuration);
-                await PlayAnimalSpeakSfx(animal); // Animal Sound
-                await _speechBubblePresenter.ShowNormalAsync(lines, _view.GetCellWorldPosition(coord), useRightSide, _normalBubbleVisibleSeconds);
-                return;
-            }
-        }
-    }
+    //    for (int i = 0; i < allCells.Count; i++)
+    //    {
+    //        var coord = allCells[i];
+    //        var animal = _board.GetAnimalFromCell(coord);
+    //        if (_speechConfig.TryGetRandomNormalLines(animal, out var options))
+    //        {
+    //            int randomIndex = UnityEngine.Random.Range(0, options.Count);
+    //            var lines = new List<string> { options[randomIndex] };
+    //            bool useRightSide = coord.x >= (_board.Width * 0.5f);
+    //            await _view.AnimateBlockedTap(coord, _speechCellHighlightDuration);
+    //            await PlayAnimalSpeakSfx(animal); // Animal Sound
+    //            await _speechBubblePresenter.ShowNormalAsync(lines, _view.GetCellWorldPosition(coord), useRightSide, _normalBubbleVisibleSeconds);
+    //            return;
+    //        }
+    //    }
+    //}
 
     private async Task TryShowTriggeredBubbleAsync()
     {

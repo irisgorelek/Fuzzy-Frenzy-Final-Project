@@ -1062,4 +1062,20 @@ public class Board
         else if (_goalType == PointsOrMatches.matches)
             _matchedAnimals = Mathf.Max(_matchedAnimals, _goalAmount);
     }
+
+    // Helper methode
+    public List<Vector2Int> GetAllCells()
+    {
+        var cells = new List<Vector2Int>();
+
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                cells.Add(new Vector2Int(x, y));
+            }
+        }
+
+        return cells;
+    }
 }

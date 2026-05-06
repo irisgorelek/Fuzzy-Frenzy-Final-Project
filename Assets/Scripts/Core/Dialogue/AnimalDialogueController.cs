@@ -22,7 +22,8 @@ public class AnimalDialogueController : MonoBehaviour
         IReadOnlyList<Vector2Int> speakerCells,
         Func<Vector2Int, Animal> getAnimalAtCell,
         Func<Vector2Int, Vector3> getWorldPosition,
-        Func<Vector2Int, float, Task> animateHighlight)
+        Func<Vector2Int, float, Task> animateHighlight,
+        int boardWidth)
     {
         if (_bubbleActive || _speechConfig == null || _speechBubblePresenter == null)
             return;
@@ -36,6 +37,9 @@ public class AnimalDialogueController : MonoBehaviour
 
         foreach (var cell in speakerCells)
         {
+            if (IsMiddleColumn(cell, boardWidth))
+                continue;
+
             Animal animal = getAnimalAtCell(cell);
             if (animal == null)
                 continue;
@@ -51,6 +55,7 @@ public class AnimalDialogueController : MonoBehaviour
 
         var chosen = validSpeakers[UnityEngine.Random.Range(0, validSpeakers.Count)];
         string line = chosen.lines[UnityEngine.Random.Range(0, chosen.lines.Count)];
+        bool useRightSide = chosen.cell.x >= boardWidth / 2f;
 
         _bubbleActive = true;
 
@@ -64,7 +69,7 @@ public class AnimalDialogueController : MonoBehaviour
             await _speechBubblePresenter.ShowNormalAsync(
                 new List<string> { line },
                 worldPosition,
-                UnityEngine.Random.value > 0.5f,
+                useRightSide,
                 _normalBubbleVisibleSeconds
             );
         }
@@ -72,5 +77,10 @@ public class AnimalDialogueController : MonoBehaviour
         {
             _bubbleActive = false;
         }
+    }
+
+    private bool IsMiddleColumn(Vector2Int cell, int boardWidth)
+    {
+        return boardWidth % 2 == 1 && cell.x == boardWidth / 2;
     }
 }

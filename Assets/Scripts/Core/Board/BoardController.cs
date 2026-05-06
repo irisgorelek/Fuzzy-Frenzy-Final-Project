@@ -747,8 +747,9 @@ public class BoardController : MonoBehaviour
             _board.GetAllCells(),
             cell => _board.GetAnimalFromCell(cell),
             cell => _view.GetCellWorldPosition(cell),
-            (cell, duration) => _view.AnimateBlockedTap(cell, duration)
-            );
+            (cell, duration) => _view.AnimateBlockedTap(cell, duration),
+            _cfg.weidth
+        );
     }
 
     private async Task ShowTutorialLevelAsync(TutorialLevelEntry tutorialLevel)

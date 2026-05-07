@@ -1063,7 +1063,7 @@ public class Board
             _matchedAnimals = Mathf.Max(_matchedAnimals, _goalAmount);
     }
 
-    // Helper methode
+    // Helper method
     public List<Vector2Int> GetAllCells()
     {
         var cells = new List<Vector2Int>();

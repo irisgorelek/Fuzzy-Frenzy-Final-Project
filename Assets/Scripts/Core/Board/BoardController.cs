@@ -29,10 +29,10 @@ public class BoardController : MonoBehaviour
     [Header("Speech Bubble Configs")]
     [SerializeField] private AnimalSpeechConfig _speechConfig;
     [SerializeField] private SpeechBubblePresenter _speechBubblePresenter;
-    [SerializeField] private float _normalBubbleDelaySeconds = 2.5f;
-    [SerializeField] private float _normalBubbleVisibleSeconds = 3f;
-    [SerializeField] private float _triggeredBubbleVisibleSeconds = 3f;
-    [SerializeField] private float _speechCellHighlightDuration = 0.48f;
+    //[SerializeField] private float _normalBubbleDelaySeconds = 2.5f;
+    //[SerializeField] private float _normalBubbleVisibleSeconds = 3f;
+    //[SerializeField] private float _triggeredBubbleVisibleSeconds = 3f;
+    //[SerializeField] private float _speechCellHighlightDuration = 0.48f;
     [SerializeField] private AnimalDialogueController _animalDialogueController;
 
     public BoardConfig Config => _cfg;
@@ -322,15 +322,7 @@ public class BoardController : MonoBehaviour
                 return;
             }
 
-            await _animalDialogueController.TryShowTriggeredBubbleAsync(
-                _cfg.levelIndex,
-                _board.GetAllCells(),
-                cell => _board.GetAnimalFromCell(cell),
-                animal => _board.FindCellsWithAnimal(animal),
-                cell => _view.GetCellWorldPosition(cell),
-                (cell, duration) => _view.AnimateBlockedTap(cell, duration),
-                animal => PlayAnimalSpeakSfx(animal)
-            );
+            await TryShowTriggeredDialogueAsync();
 
             _isBusy = false;
             return;
@@ -354,7 +346,6 @@ public class BoardController : MonoBehaviour
         _moveCounter.UseMove();
         TryRollBlackSheep(); // Roll the black sheep spawn
 
-        _animalDialogueController.HideNormalBubbleIfActive();
         // The swap was valid. Resolve cascades with pacing
         _view.AssignSprites(_board); // Sync view to model after swap
         
@@ -372,15 +363,7 @@ public class BoardController : MonoBehaviour
             return;
         }
 
-        await _animalDialogueController.TryShowTriggeredBubbleAsync(
-            _cfg.levelIndex,
-            _board.GetAllCells(),
-            cell => _board.GetAnimalFromCell(cell),
-            animal => _board.FindCellsWithAnimal(animal),
-            cell => _view.GetCellWorldPosition(cell),
-            (cell, duration) => _view.AnimateBlockedTap(cell, duration),
-            animal => PlayAnimalSpeakSfx(animal)
-        );
+        await TryShowTriggeredDialogueAsync();
 
         _isBusy = false;
 
@@ -415,15 +398,8 @@ public class BoardController : MonoBehaviour
 
         await _view.AnimateGravity(fallMoves, spawns, _board, 0.1f);
         await ResolveCascadesAsync();
-        await _animalDialogueController.TryShowTriggeredBubbleAsync(
-            _cfg.levelIndex,
-            _board.GetAllCells(),
-            cell => _board.GetAnimalFromCell(cell),
-            animal => _board.FindCellsWithAnimal(animal),
-            cell => _view.GetCellWorldPosition(cell),
-            (cell, duration) => _view.AnimateBlockedTap(cell, duration),
-            animal => PlayAnimalSpeakSfx(animal)
-        );
+
+        await TryShowTriggeredDialogueAsync();
     }
 
     public void StartTimerBomb(float durationSeconds)
@@ -466,15 +442,6 @@ public class BoardController : MonoBehaviour
             AudioManager.instance.PlayBG((int)_cfg.songNumber);
 
         await ResolveCascadesAsync();
-        await _animalDialogueController.TryShowTriggeredBubbleAsync(
-            _cfg.levelIndex,
-            _board.GetAllCells(),
-            cell => _board.GetAnimalFromCell(cell),
-            animal => _board.FindCellsWithAnimal(animal),
-            cell => _view.GetCellWorldPosition(cell),
-            (cell, duration) => _view.AnimateBlockedTap(cell, duration),
-            animal => PlayAnimalSpeakSfx(animal)
-        );
 
         if (!_isLevelOver)
         {
@@ -485,16 +452,8 @@ public class BoardController : MonoBehaviour
                 return;
             }
         }
-
-        await _animalDialogueController.TryShowTriggeredBubbleAsync(
-            _cfg.levelIndex,
-            _board.GetAllCells(),
-            cell => _board.GetAnimalFromCell(cell),
-            animal => _board.FindCellsWithAnimal(animal),
-            cell => _view.GetCellWorldPosition(cell),
-            (cell, duration) => _view.AnimateBlockedTap(cell, duration),
-            animal => PlayAnimalSpeakSfx(animal)
-        );
+        
+        await TryShowTriggeredDialogueAsync();
 
         _isBusy = false;
         _view.SwapsEnabled = !_isLevelOver;
@@ -777,15 +736,7 @@ public class BoardController : MonoBehaviour
 
         if (_speechConfig.TryGetTutorialLevel(_cfg.levelIndex, out var tutorialLevel))
         {
-            await _animalDialogueController.HandleLevelStartBubblesAsync(
-                _cfg.levelIndex,
-                _board.GetAllCells(),
-                cell => _board.GetAnimalFromCell(cell),
-                cell => _view.GetCellWorldPosition(cell),
-                (cell, duration) => _view.AnimateBlockedTap(cell, duration),
-                _cfg.weidth
-                );
-            return;
+            await TryShowTriggeredDialogueAsync();
         }
 
         await _animalDialogueController.ShowRandomNormalBubbleAsync(
@@ -793,6 +744,17 @@ public class BoardController : MonoBehaviour
             cell => _board.GetAnimalFromCell(cell),
             cell => _view.GetCellWorldPosition(cell),
             (cell, duration) => _view.AnimateBlockedTap(cell, duration),
+            _cfg.weidth
+        );
+    }
+
+    private async Task TryShowTriggeredDialogueAsync()
+    {
+        var context = new BoardDialogueContext(_board, _view, PlayAnimalSpeakSfx);
+
+        await _animalDialogueController.TryShowTriggeredBubbleAsync(
+            _cfg.levelIndex,
+            context,
             _cfg.weidth
         );
     }

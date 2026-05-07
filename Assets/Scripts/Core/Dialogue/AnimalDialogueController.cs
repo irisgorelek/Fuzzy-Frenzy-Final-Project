@@ -21,14 +21,10 @@ public class AnimalDialogueController : MonoBehaviour
     private bool _tutorialActive;
     private bool _triggeredBubbleActive;
     private readonly HashSet<int> _triggeredEntryIndicesShown = new();
-    private Vector2Int? _normalSpeakerCell;
 
     public async Task HandleLevelStartBubblesAsync(
     int levelIndex,
-    IReadOnlyList<Vector2Int> speakerCells,
-    Func<Vector2Int, Animal> getAnimalAtCell,
-    Func<Vector2Int, Vector3> getWorldPosition,
-    Func<Vector2Int, float, Task> animateHighlight,
+    IBoardDialogueContext context,
     int boardWidth)
     {
         if (_speechConfig == null)
@@ -41,10 +37,10 @@ public class AnimalDialogueController : MonoBehaviour
         }
 
         await ShowRandomNormalBubbleAsync(
-            speakerCells,
-            getAnimalAtCell,
-            getWorldPosition,
-            animateHighlight,
+            context.GetAllCells(),
+            cell => context.GetAnimalAtCell(cell),
+            cell => context.GetWorldPosition(cell),
+            (cell, duration) => context.AnimateHighlight(cell, duration),
             boardWidth
         );
     }
@@ -56,11 +52,20 @@ public class AnimalDialogueController : MonoBehaviour
         Func<Vector2Int, float, Task> animateHighlight,
         int boardWidth)
     {
+        //Debug.Log("NEW ShowRandomNormalBubbleAsync CALLED - returning immediately");
+        //return;
+
         if (_normalBubbleActive || _tutorialActive || _triggeredBubbleActive || _speechBubblePresenter == null)
             return;
 
         if (speakerCells == null || speakerCells.Count == 0)
             return;
+
+        if (_tutorialActive || _triggeredBubbleActive)
+        {
+            _normalBubbleActive = false;
+            return;
+        }
 
         await Task.Delay(TimeSpan.FromSeconds(_normalBubbleDelaySeconds));
 
@@ -87,8 +92,6 @@ public class AnimalDialogueController : MonoBehaviour
         var chosen = validSpeakers[UnityEngine.Random.Range(0, validSpeakers.Count)];
         string line = chosen.lines[UnityEngine.Random.Range(0, chosen.lines.Count)];
         bool useRightSide = chosen.cell.x >= boardWidth / 2f;
-        _normalSpeakerCell = chosen.cell;
-        Debug.Log($"Normal speaker cell set to: {_normalSpeakerCell}");
 
         _normalBubbleActive = true;
 
@@ -109,7 +112,6 @@ public class AnimalDialogueController : MonoBehaviour
         finally
         {
             _normalBubbleActive = false;
-            _normalSpeakerCell = null;
         }
     }
 
@@ -154,14 +156,13 @@ public class AnimalDialogueController : MonoBehaviour
     }
 
     public async Task TryShowTriggeredBubbleAsync(
-        int levelIndex,
-        IReadOnlyList<Vector2Int> allBoardCells,
-        Func<Vector2Int, Animal> getAnimalAtCell,
-        Func<Animal, IReadOnlyList<Vector2Int>> findCellsWithAnimal,
-        Func<Vector2Int, Vector3> getWorldPosition,
-        Func<Vector2Int, float, Task> animateHighlight,
-        Func<Animal, Task> playAnimalSpeakSfx)
+    int levelIndex,
+    IBoardDialogueContext context,
+    int boardWidth)
     {
+        //Debug.Log("Triggered dialogue disabled for test");
+        //return;
+
         if (_tutorialActive || _triggeredBubbleActive || _speechConfig == null || _speechBubblePresenter == null)
             return;
 
@@ -178,7 +179,7 @@ public class AnimalDialogueController : MonoBehaviour
             if (e.triggerAnimal == null || e.lines == null || e.lines.Count == 0)
                 continue;
 
-            var triggerCells = findCellsWithAnimal(e.triggerAnimal);
+            var triggerCells = context.FindCellsWithAnimal(e.triggerAnimal);
             if (triggerCells.Count == 0)
                 continue;
 
@@ -188,7 +189,7 @@ public class AnimalDialogueController : MonoBehaviour
             Animal speakerAnimal;
             if (e.speakerAnimal != null)
             {
-                var speakerCells = findCellsWithAnimal(e.speakerAnimal);
+                var speakerCells = context.FindCellsWithAnimal(e.speakerAnimal);
                 if (speakerCells.Count == 0)
                     continue;
 
@@ -199,9 +200,9 @@ public class AnimalDialogueController : MonoBehaviour
             {
                 var candidates = new List<Vector2Int>();
 
-                foreach (var cell in allBoardCells)
+                foreach (var cell in context.GetAllCells())
                 {
-                    if (getAnimalAtCell(cell) != null)
+                    if (context.GetAnimalAtCell(cell) != null)
                         candidates.Add(cell);
                 }
 
@@ -209,7 +210,7 @@ public class AnimalDialogueController : MonoBehaviour
                     continue;
 
                 speakerCell = candidates[UnityEngine.Random.Range(0, candidates.Count)];
-                speakerAnimal = getAnimalAtCell(speakerCell);
+                speakerAnimal = context.GetAnimalAtCell(speakerCell);
                 if (speakerAnimal == null)
                     continue;
             }
@@ -218,18 +219,18 @@ public class AnimalDialogueController : MonoBehaviour
             var lines = new List<string> { e.lines[randomLineIndex] };
 
             if (triggerCell == speakerCell)
-                await animateHighlight(triggerCell, _speechCellHighlightDuration);
+                await context.AnimateHighlight(triggerCell, _speechCellHighlightDuration);
             else
                 await Task.WhenAll(
-                    animateHighlight(triggerCell, _speechCellHighlightDuration),
-                    animateHighlight(speakerCell, _speechCellHighlightDuration));
+                    context.AnimateHighlight(triggerCell, _speechCellHighlightDuration),
+                    context.AnimateHighlight(speakerCell, _speechCellHighlightDuration));
 
             bool useRightSide = UnityEngine.Random.Range(0, 2) == 1;
 
             _triggeredBubbleActive = true;
             try
             {
-                await playAnimalSpeakSfx(speakerAnimal); // Animal Sound
+                await context.PlayAnimalSpeakSfx(speakerAnimal); // Animal Sound
                 await _speechBubblePresenter.ShowTriggeredAsync(speakerAnimal._sprite, lines, useRightSide, _triggeredBubbleVisibleSeconds);
                 _triggeredEntryIndicesShown.Add(i);
             }
@@ -239,15 +240,5 @@ public class AnimalDialogueController : MonoBehaviour
             }
             return;
         }
-    }
-
-    public void HideNormalBubbleIfActive()
-    {
-        if (!_normalBubbleActive)
-            return;
-
-        _speechBubblePresenter.HideImmediate();
-        _normalBubbleActive = false;
-        _normalSpeakerCell = null;
     }
 }

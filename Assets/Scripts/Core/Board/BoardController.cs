@@ -309,6 +309,7 @@ public class BoardController : MonoBehaviour
             _view.AssignSprites(_board);
 
             await ResolveCascadesAsync();
+            _animalDialogueController.HideNormalBubbleIfActive();
 
             if (_isLevelOver)
             {
@@ -350,6 +351,7 @@ public class BoardController : MonoBehaviour
         _view.AssignSprites(_board); // Sync view to model after swap
         
         await ResolveCascadesAsync();
+        _animalDialogueController.HideNormalBubbleIfActive();
 
         if (_isLevelOver)
         {
@@ -398,6 +400,8 @@ public class BoardController : MonoBehaviour
 
         await _view.AnimateGravity(fallMoves, spawns, _board, 0.1f);
         await ResolveCascadesAsync();
+
+        _animalDialogueController.HideNormalBubbleIfActive();
 
         await TryShowTriggeredDialogueAsync();
     }
@@ -452,7 +456,9 @@ public class BoardController : MonoBehaviour
                 return;
             }
         }
-        
+
+        _animalDialogueController.HideNormalBubbleIfActive();
+
         await TryShowTriggeredDialogueAsync();
 
         _isBusy = false;

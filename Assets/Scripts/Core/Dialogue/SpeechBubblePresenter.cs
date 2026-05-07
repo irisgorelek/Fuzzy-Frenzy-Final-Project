@@ -275,4 +275,9 @@ public class SpeechBubblePresenter : MonoBehaviour
         if (mode != null && mode.continueButton != null)
             mode.continueButton.onClick.RemoveListener(HandleButtonClicked);
     }
+
+    public void HideNormalImmediate()
+    {
+        HideModeImmediate(_normal);
+    }
 }

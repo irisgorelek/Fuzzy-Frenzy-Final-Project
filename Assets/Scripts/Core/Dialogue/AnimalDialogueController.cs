@@ -241,4 +241,13 @@ public class AnimalDialogueController : MonoBehaviour
             return;
         }
     }
+
+    public void HideNormalBubbleIfActive()
+    {
+        if (!_normalBubbleActive || _speechBubblePresenter == null)
+            return;
+
+        _speechBubblePresenter.HideNormalImmediate();
+        _normalBubbleActive = false;
+    }
 }

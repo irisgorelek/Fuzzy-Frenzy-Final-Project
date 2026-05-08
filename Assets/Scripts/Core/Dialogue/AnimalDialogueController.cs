@@ -17,6 +17,9 @@ public class AnimalDialogueController : MonoBehaviour
     [SerializeField] private float _speechCellHighlightDuration = 0.48f;
     [SerializeField] private float _triggeredBubbleVisibleSeconds = 3f;
 
+    public event System.Action<DialogueMode> DialogueStarted;
+    public event System.Action<DialogueMode> DialogueFinished;
+
     private bool _normalBubbleActive;
     private bool _tutorialActive;
     private bool _triggeredBubbleActive;
@@ -94,6 +97,7 @@ public class AnimalDialogueController : MonoBehaviour
         bool useRightSide = chosen.cell.x >= boardWidth / 2f;
 
         _normalBubbleActive = true;
+        DialogueStarted?.Invoke(DialogueMode.Normal);
 
         try
         {
@@ -112,6 +116,7 @@ public class AnimalDialogueController : MonoBehaviour
         finally
         {
             _normalBubbleActive = false;
+            DialogueFinished?.Invoke(DialogueMode.Tutorial);
         }
     }
 
@@ -129,6 +134,7 @@ public class AnimalDialogueController : MonoBehaviour
             return;
 
         _tutorialActive = true;
+        DialogueStarted?.Invoke(DialogueMode.Normal);
 
         try
         {
@@ -152,6 +158,7 @@ public class AnimalDialogueController : MonoBehaviour
         finally
         {
             _tutorialActive = false;
+            DialogueFinished?.Invoke(DialogueMode.Tutorial);
         }
     }
 
@@ -228,6 +235,8 @@ public class AnimalDialogueController : MonoBehaviour
             bool useRightSide = UnityEngine.Random.Range(0, 2) == 1;
 
             _triggeredBubbleActive = true;
+            DialogueStarted?.Invoke(DialogueMode.Normal);
+
             try
             {
                 await context.PlayAnimalSpeakSfx(speakerAnimal); // Animal Sound
@@ -237,6 +246,7 @@ public class AnimalDialogueController : MonoBehaviour
             finally
             {
                 _triggeredBubbleActive = false;
+                DialogueFinished?.Invoke(DialogueMode.Tutorial);
             }
             return;
         }

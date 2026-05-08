@@ -68,9 +68,6 @@ public class BoardController : MonoBehaviour
 
     private void Awake()
     {
-        //_levelClearedPopup.gameObject.SetActive(false);
-        //_levelLostPopup.gameObject.SetActive(false);
-
         var bootstrapper = GameBootstrapper.Instance;
         if (bootstrapper != null && bootstrapper.SelectedLevel != null)
             _cfg = bootstrapper.SelectedLevel;
@@ -735,36 +732,6 @@ public class BoardController : MonoBehaviour
         return IsAnimal(piece, _cfg.blackSheep);
     }
 
-    private async Task TryStartLevelDialogueAsync()
-    {
-        if (_speechConfig == null || _speechBubblePresenter == null || _isLevelOver)
-            return;
-
-        if (_speechConfig.TryGetTutorialLevel(_cfg.levelIndex, out var tutorialLevel))
-        {
-            await TryShowTriggeredDialogueAsync();
-        }
-
-        await _animalDialogueController.ShowRandomNormalBubbleAsync(
-            _board.GetAllCells(),
-            cell => _board.GetAnimalFromCell(cell),
-            cell => _view.GetCellWorldPosition(cell),
-            (cell, duration) => _view.AnimateBlockedTap(cell, duration),
-            _cfg.weidth
-        );
-    }
-
-    private async Task TryShowTriggeredDialogueAsync()
-    {
-        var context = new BoardDialogueContext(_board, _view, PlayAnimalSpeakSfx);
-
-        await _animalDialogueController.TryShowTriggeredBubbleAsync(
-            _cfg.levelIndex,
-            context,
-            _cfg.weidth
-        );
-    }
-
     private async Task PlayAnimalSpeakSfx(Animal animal)
     {
         if (animal == null || animal._speakSfxId == 0) return;
@@ -873,5 +840,30 @@ public class BoardController : MonoBehaviour
             Debug.LogError("LevelLostPopupUI is not assigned on BoardController.");
 
         return true;
+    }
+
+    private async Task TryStartLevelDialogueAsync()
+    {
+        if (_isLevelOver)
+            return;
+
+        var context = new BoardDialogueContext(_board, _view, PlayAnimalSpeakSfx);
+
+        await _animalDialogueController.HandleLevelStartBubblesAsync(
+            _cfg.levelIndex,
+            context,
+            _cfg.weidth
+        );
+    }
+
+    private async Task TryShowTriggeredDialogueAsync()
+    {
+        var context = new BoardDialogueContext(_board, _view, PlayAnimalSpeakSfx);
+
+        await _animalDialogueController.TryShowTriggeredBubbleAsync(
+            _cfg.levelIndex,
+            context,
+            _cfg.weidth
+        );
     }
 }

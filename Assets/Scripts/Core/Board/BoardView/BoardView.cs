@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor;
 
 public class BoardView : MonoBehaviour
 {
@@ -58,8 +59,8 @@ public class BoardView : MonoBehaviour
 
     private readonly Dictionary<Vector2Int, CellView> _cells = new();
 
-    public int _width { get; set; }
-    public int _height { get; set; }
+    private int Width { get; set; }
+    private int Height { get; set; }
 
     private BoardViewGrid _grid;
     private BoardViewImagePool _imagePool;
@@ -72,7 +73,20 @@ public class BoardView : MonoBehaviour
     private BoardViewShuffleAnimator _shuffleAnimator;
     private BoardViewBombAnimator _bombAnimator;
 
-    private BoardViewGrid Grid => _grid ??= new BoardViewGrid(_cells, _defaultSprite);
+    private BoardViewGrid Grid => _grid ??= new BoardViewGrid(_cells, _defaultSprite); // Checks if the reference is null kinda. Basically means:
+    //private BoardViewGrid Grid
+    //{
+    //    get
+    //    {
+    //        if (_grid == null)
+    //        {
+    //            _grid = new BoardViewGrid(_cells, _defaultSprite);
+    //        }
+    //        return _grid;
+    //    }
+    //}
+
+
     private BoardViewImagePool ImagePool => _imagePool ??= new BoardViewImagePool(_swapOverlay != null ? _swapOverlay : transform as RectTransform);
     private BoardViewGoalRowsPresenter GoalRowsPresenter =>
         _goalRowsPresenter ??= new BoardViewGoalRowsPresenter(_goalRowsParent, _animalGoalRowPrefab, _primaryGoalRowPrefab);
@@ -82,26 +96,33 @@ public class BoardView : MonoBehaviour
     private BoardViewMatchFxAnimator MatchFxAnimator => _matchFxAnimator ??= new BoardViewMatchFxAnimator(Grid, ImagePool, _matchRingSprite, _sparkleSprite, _matchFxColor, _sparklesPerMatch);
     private BoardViewShuffleAnimator ShuffleAnimator => _shuffleAnimator ??= new BoardViewShuffleAnimator(Grid, _shufflePopUp);
     private BoardViewBombAnimator BombAnimator => _bombAnimator ??= new BoardViewBombAnimator(Grid, ImagePool, _bombRingSprite, _matchRingSprite, _bombRingColor);
-    private BoardViewInputHandler Input => _input ??= new BoardViewInputHandler(
-        Grid,
-        () => SwapsEnabled,
-        (a, b, dir, duration) => AnimateInvalidSwap(a, b, dir, duration),
-        (cell, duration) => AnimateBlockedTap(cell, duration)
-    );
+    private BoardViewInputHandler Input
+    {
+        get
+        {
+            _input ??= new BoardViewInputHandler( Grid, GetSwapsEnabled, AnimateInvalidSwap, AnimateBlockedTap );
+            return _input;
+        }
+    }
+
+    private bool GetSwapsEnabled()
+    {
+        return SwapsEnabled;
+    }
 
     public event Action<Vector2Int, Vector2Int> SwapRequested
     {
-        add => Input.SwapRequested += value;
-        remove => Input.SwapRequested -= value;
+        add => Input.SwapRequested += value; // When another script subscribes C# calls the add block (and the value is the method that someone is trying to subscribe or unsubscribe.)
+        remove => Input.SwapRequested -= value; // When another script unsubscribes C# calls the remove block
     }
 
     public event Action<Vector2Int> CellTapped
     {
-        add => Input.CellTapped += value;
-        remove => Input.CellTapped -= value;
+        add => Input.CellTapped += value; // When another script subscribes C# calls the add block
+        remove => Input.CellTapped -= value; // When another script unsubscribes C# calls the remove block
     }
 
-    public Func<Vector2Int, bool> CanStartSwap
+    public Func<Vector2Int, bool> CanStartSwap // Func<input type, return type>, basically means "...bool SomeFunction(Vector2Int position)"
     {
         get => Input.CanStartSwap;
         set => Input.CanStartSwap = value;
@@ -111,12 +132,12 @@ public class BoardView : MonoBehaviour
 
     public void Build(int width, int height)
     {
-        _width = width;
-        _height = height;
+        Width = width;
+        Height = height;
 
         Grid.Build(
-            width,
-            height,
+            Width,
+            Height,
             _boardParent,
             gridLayout,
             _cell,

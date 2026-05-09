@@ -136,7 +136,7 @@ public class Board
     public bool IsCellInBounds(Vector2Int cell) => _gridAccess.IsCellInBounds(cell);
 
     // Check if the cells are neighbours
-    internal bool AreCellsNeighbours(Vector2Int cell1, Vector2Int cell2) => _gridAccess.AreCellsNeighbours(cell1, cell2);
+    internal bool AreCellsNeighbours(Vector2Int cell1, Vector2Int cell2) => _gridAccess.AreCellsNeighbours(cell1, cell2); // internal means here that only the specific assembley can use this function 
 
     public bool SwapCellsRaw(Vector2Int cell1, Vector2Int cell2) => _swapService.SwapCellsRaw(cell1, cell2);
     public void ClearGridCell(Vector2Int cell) => _scoreState.ClearGridCell(cell);

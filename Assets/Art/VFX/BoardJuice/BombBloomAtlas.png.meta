@@ -1,0 +1,2340 @@
+fileFormatVersion: 2
+guid: a129ff33aa8eb8043b0d69eaefbc6a00
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5062823631634816556
+    second: BombBloomAtlas_0
+  - first:
+      213: 7240022130590809550
+    second: BombBloomAtlas_1
+  - first:
+      213: -7490449332468066302
+    second: BombBloomAtlas_2
+  - first:
+      213: -4142882691322205514
+    second: BombBloomAtlas_3
+  - first:
+      213: 2273775600715630968
+    second: BombBloomAtlas_4
+  - first:
+      213: 7081599543773496818
+    second: BombBloomAtlas_5
+  - first:
+      213: -2501137278800657300
+    second: BombBloomAtlas_6
+  - first:
+      213: 6987124086270767526
+    second: BombBloomAtlas_7
+  - first:
+      213: -8254605382672014466
+    second: BombBloomAtlas_8
+  - first:
+      213: 5111766773895214291
+    second: BombBloomAtlas_9
+  - first:
+      213: 4788685104685118692
+    second: BombBloomAtlas_10
+  - first:
+      213: -1599397785062079390
+    second: BombBloomAtlas_11
+  - first:
+      213: 7065737782271531390
+    second: BombBloomAtlas_12
+  - first:
+      213: -8815824601830952789
+    second: BombBloomAtlas_13
+  - first:
+      213: 2756885636906608207
+    second: BombBloomAtlas_14
+  - first:
+      213: -7521141899709529442
+    second: BombBloomAtlas_15
+  - first:
+      213: -4513654560979890708
+    second: BombBloomAtlas_16
+  - first:
+      213: -9012911310629569884
+    second: BombBloomAtlas_17
+  - first:
+      213: 5126119875400167641
+    second: BombBloomAtlas_18
+  - first:
+      213: -7196507219124546924
+    second: BombBloomAtlas_19
+  - first:
+      213: 4520986272932121921
+    second: BombBloomAtlas_20
+  - first:
+      213: -2760105905546893517
+    second: BombBloomAtlas_21
+  - first:
+      213: 5028221900449364034
+    second: BombBloomAtlas_22
+  - first:
+      213: 5700237012376204437
+    second: BombBloomAtlas_23
+  - first:
+      213: 2851969472837986488
+    second: BombBloomAtlas_24
+  - first:
+      213: -8305146627796752436
+    second: BombBloomAtlas_25
+  - first:
+      213: 1315959885999943817
+    second: BombBloomAtlas_26
+  - first:
+      213: 4112315051278795
+    second: BombBloomAtlas_27
+  - first:
+      213: 7844400187654646230
+    second: BombBloomAtlas_28
+  - first:
+      213: -5768178991847903433
+    second: BombBloomAtlas_29
+  - first:
+      213: 117773175206601634
+    second: BombBloomAtlas_30
+  - first:
+      213: -2945268085377403300
+    second: BombBloomAtlas_31
+  - first:
+      213: -1917274505645969157
+    second: BombBloomAtlas_32
+  - first:
+      213: -2709453356008399760
+    second: BombBloomAtlas_33
+  - first:
+      213: 6448717600271804165
+    second: BombBloomAtlas_34
+  - first:
+      213: 8254055026501638766
+    second: BombBloomAtlas_35
+  - first:
+      213: -7134865460092342271
+    second: BombBloomAtlas_36
+  - first:
+      213: -2170419991690135948
+    second: BombBloomAtlas_37
+  - first:
+      213: 2062874764460400326
+    second: BombBloomAtlas_38
+  - first:
+      213: -3704497416941493901
+    second: BombBloomAtlas_39
+  - first:
+      213: -8268847214610976535
+    second: BombBloomAtlas_40
+  - first:
+      213: 7015370568301460222
+    second: BombBloomAtlas_41
+  - first:
+      213: 8548476993816644004
+    second: BombBloomAtlas_42
+  - first:
+      213: 4235606892920616446
+    second: BombBloomAtlas_43
+  - first:
+      213: 6068347843285637606
+    second: BombBloomAtlas_44
+  - first:
+      213: 7913467677500495984
+    second: BombBloomAtlas_45
+  - first:
+      213: 5366220644519978056
+    second: BombBloomAtlas_46
+  - first:
+      213: -865915421834401164
+    second: BombBloomAtlas_47
+  - first:
+      213: -4943305593351449022
+    second: BombBloomAtlas_48
+  - first:
+      213: -348415628294257310
+    second: BombBloomAtlas_49
+  - first:
+      213: -2952835155632773554
+    second: BombBloomAtlas_50
+  - first:
+      213: -7588152474901912650
+    second: BombBloomAtlas_51
+  - first:
+      213: -7607637388846309358
+    second: BombBloomAtlas_52
+  - first:
+      213: -3035981879728915638
+    second: BombBloomAtlas_53
+  - first:
+      213: 2655415060963680819
+    second: BombBloomAtlas_54
+  - first:
+      213: 4470611782882167130
+    second: BombBloomAtlas_55
+  - first:
+      213: 8416384170925370785
+    second: BombBloomAtlas_56
+  - first:
+      213: 6694518228022558947
+    second: BombBloomAtlas_57
+  - first:
+      213: -5835035707410972467
+    second: BombBloomAtlas_58
+  - first:
+      213: -7512734372832330776
+    second: BombBloomAtlas_59
+  - first:
+      213: -7036036978310757011
+    second: BombBloomAtlas_60
+  - first:
+      213: 4310445570958239547
+    second: BombBloomAtlas_61
+  - first:
+      213: -5623292043195231387
+    second: BombBloomAtlas_62
+  - first:
+      213: 2229371390004513750
+    second: BombBloomAtlas_63
+  - first:
+      213: -4170332202069050623
+    second: BombBloomAtlas_64
+  - first:
+      213: -4160817867286120549
+    second: BombBloomAtlas_65
+  - first:
+      213: -1066157613313683244
+    second: BombBloomAtlas_66
+  - first:
+      213: -2143700111502777792
+    second: BombBloomAtlas_67
+  - first:
+      213: 7983883948459794658
+    second: BombBloomAtlas_68
+  - first:
+      213: -1474321643869685583
+    second: BombBloomAtlas_69
+  - first:
+      213: -8661805010402158137
+    second: BombBloomAtlas_70
+  - first:
+      213: 6344185335935774332
+    second: BombBloomAtlas_71
+  - first:
+      213: 6789497397529129267
+    second: BombBloomAtlas_72
+  - first:
+      213: -425688119004351545
+    second: BombBloomAtlas_73
+  - first:
+      213: 5800597598202894708
+    second: BombBloomAtlas_74
+  - first:
+      213: -2386805663703224671
+    second: BombBloomAtlas_75
+  - first:
+      213: 2894678605879978296
+    second: BombBloomAtlas_76
+  - first:
+      213: -392279819184564069
+    second: BombBloomAtlas_77
+  - first:
+      213: -2918834532566427975
+    second: BombBloomAtlas_78
+  - first:
+      213: -6601209446958309198
+    second: BombBloomAtlas_79
+  - first:
+      213: 3912192984718722108
+    second: BombBloomAtlas_80
+  - first:
+      213: -9132306770492170857
+    second: BombBloomAtlas_81
+  - first:
+      213: -8224903898835767257
+    second: BombBloomAtlas_82
+  - first:
+      213: 3295163712787080556
+    second: BombBloomAtlas_83
+  - first:
+      213: 1912843900390492244
+    second: BombBloomAtlas_84
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BombBloomAtlas_0
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 883
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2edb0cd443c24640800000000000000
+      internalID: 5062823631634816556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_1
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 865
+        width: 59
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecdf4dbb4c9b97460800000000000000
+      internalID: 7240022130590809550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_2
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 826
+        width: 142
+        height: 142
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 208dd2aa4049c0890800000000000000
+      internalID: -7490449332468066302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_3
+      rect:
+        serializedVersion: 2
+        x: 790
+        y: 788
+        width: 215
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ba20a564268186c0800000000000000
+      internalID: -4142882691322205514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_4
+      rect:
+        serializedVersion: 2
+        x: 1036
+        y: 779
+        width: 235
+        height: 235
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8790b93acd21e8f10800000000000000
+      internalID: 2273775600715630968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_5
+      rect:
+        serializedVersion: 2
+        x: 1299
+        y: 785
+        width: 222
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f50030e345e64260800000000000000
+      internalID: 7081599543773496818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_6
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 556
+        width: 168
+        height: 169
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c64899285ec2a4dd0800000000000000
+      internalID: -2501137278800657300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_7
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 559
+        width: 159
+        height: 156
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a1bebb465047f060800000000000000
+      internalID: 6987124086270767526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_8
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 549
+        width: 179
+        height: 176
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e73aec4a320c17d80800000000000000
+      internalID: -8254605382672014466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_9
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 539
+        width: 196
+        height: 194
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d43bac2cc4a0f640800000000000000
+      internalID: 5111766773895214291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_10
+      rect:
+        serializedVersion: 2
+        x: 1047
+        y: 532
+        width: 210
+        height: 207
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e4f5fd2bb3d47240800000000000000
+      internalID: 4788685104685118692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_11
+      rect:
+        serializedVersion: 2
+        x: 1299
+        y: 566
+        width: 218
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26404de303ccdc9e0800000000000000
+      internalID: -1599397785062079390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_12
+      rect:
+        serializedVersion: 2
+        x: 1303
+        y: 529
+        width: 149
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e79d95cb31b8e0260800000000000000
+      internalID: 7065737782271531390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_13
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 310
+        width: 219
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba077bd9b36e7a580800000000000000
+      internalID: -8815824601830952789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_14
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 360
+        width: 218
+        height: 127
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f46e13251ec624620800000000000000
+      internalID: 2756885636906608207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_15
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 391
+        width: 94
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e92c18a7a498f9790800000000000000
+      internalID: -7521141899709529442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_16
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 432
+        width: 58
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cedc8f557174c51c0800000000000000
+      internalID: -4513654560979890708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_17
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 362
+        width: 73
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4aaf2d95ae4bbe280800000000000000
+      internalID: -9012911310629569884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_18
+      rect:
+        serializedVersion: 2
+        x: 790
+        y: 394
+        width: 89
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d0fb490ed2a32740800000000000000
+      internalID: 5126119875400167641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_19
+      rect:
+        serializedVersion: 2
+        x: 884
+        y: 435
+        width: 52
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4921c8c10ded02c90800000000000000
+      internalID: -7196507219124546924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_20
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 415
+        width: 53
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14d4980ef05cdbe30800000000000000
+      internalID: 4520986272932121921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_21
+      rect:
+        serializedVersion: 2
+        x: 1085
+        y: 427
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3376b657d4222b9d0800000000000000
+      internalID: -2760105905546893517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_22
+      rect:
+        serializedVersion: 2
+        x: 1144
+        y: 439
+        width: 45
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 248bf148d25d7c540800000000000000
+      internalID: 5028221900449364034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_23
+      rect:
+        serializedVersion: 2
+        x: 1194
+        y: 419
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 594b7329c5f4b1f40800000000000000
+      internalID: 5700237012376204437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_24
+      rect:
+        serializedVersion: 2
+        x: 1345
+        y: 431
+        width: 38
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b824ca002b349720800000000000000
+      internalID: 2851969472837986488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_25
+      rect:
+        serializedVersion: 2
+        x: 1404
+        y: 443
+        width: 37
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc724a205213ebc80800000000000000
+      internalID: -8305146627796752436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_26
+      rect:
+        serializedVersion: 2
+        x: 1455
+        y: 423
+        width: 38
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 980b0b74b8a334210800000000000000
+      internalID: 1315959885999943817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_27
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 365
+        width: 53
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc106d5f02c9e0000800000000000000
+      internalID: 4112315051278795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_28
+      rect:
+        serializedVersion: 2
+        x: 1049
+        y: 397
+        width: 45
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d9a925c868ecdc60800000000000000
+      internalID: 7844400187654646230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_29
+      rect:
+        serializedVersion: 2
+        x: 1209
+        y: 369
+        width: 45
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73fe80e94cf43ffa0800000000000000
+      internalID: -5768178991847903433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_30
+      rect:
+        serializedVersion: 2
+        x: 1308
+        y: 401
+        width: 37
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a36240341a62a100800000000000000
+      internalID: 117773175206601634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_31
+      rect:
+        serializedVersion: 2
+        x: 1470
+        y: 373
+        width: 37
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c56f8c2f74e4027d0800000000000000
+      internalID: -2945268085377403300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_32
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 272
+        width: 150
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf03f0acef87465e0800000000000000
+      internalID: -1917274505645969157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_33
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 272
+        width: 148
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07c11ab2786166ad0800000000000000
+      internalID: -2709453356008399760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_34
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 311
+        width: 59
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 507a20d9d727e7950800000000000000
+      internalID: 6448717600271804165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_35
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 274
+        width: 144
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6a5823905b4c8270800000000000000
+      internalID: 8254055026501638766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_36
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 313
+        width: 56
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 100fdfa8aaddbfc90800000000000000
+      internalID: -7134865460092342271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_37
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 328
+        width: 54
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47637e5548e11e1e0800000000000000
+      internalID: -2170419991690135948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_38
+      rect:
+        serializedVersion: 2
+        x: 833
+        y: 296
+        width: 51
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ce97cf2badc0ac10800000000000000
+      internalID: 2062874764460400326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_39
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 315
+        width: 50
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 371a9dff93bf69cc0800000000000000
+      internalID: -3704497416941493901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_40
+      rect:
+        serializedVersion: 2
+        x: 1054
+        y: 332
+        width: 46
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e0722fb4472f3d80800000000000000
+      internalID: -8268847214610976535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_41
+      rect:
+        serializedVersion: 2
+        x: 1093
+        y: 298
+        width: 43
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efab653ec5a9b5160800000000000000
+      internalID: 7015370568301460222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_42
+      rect:
+        serializedVersion: 2
+        x: 1199
+        y: 318
+        width: 44
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a94a0bb88a42a670800000000000000
+      internalID: 8548476993816644004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_43
+      rect:
+        serializedVersion: 2
+        x: 1313
+        y: 335
+        width: 39
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef5bab42706e7ca30800000000000000
+      internalID: 4235606892920616446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_44
+      rect:
+        serializedVersion: 2
+        x: 1352
+        y: 301
+        width: 37
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e95c84463a173450800000000000000
+      internalID: 6068347843285637606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_45
+      rect:
+        serializedVersion: 2
+        x: 1460
+        y: 321
+        width: 36
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 078d3f2ece842dd60800000000000000
+      internalID: 7913467677500495984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_46
+      rect:
+        serializedVersion: 2
+        x: 879
+        y: 276
+        width: 54
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8442bf6ae35a87a40800000000000000
+      internalID: 5366220644519978056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_47
+      rect:
+        serializedVersion: 2
+        x: 1065
+        y: 38
+        width: 173
+        height: 285
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47a270cf286abf3f0800000000000000
+      internalID: -865915421834401164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_48
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 281
+        width: 39
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 246d51ce0c9d56bb0800000000000000
+      internalID: -4943305593351449022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_49
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 180
+        width: 30
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 265835105dd2a2bf0800000000000000
+      internalID: -348415628294257310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_50
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e46293c121c6507d0800000000000000
+      internalID: -2952835155632773554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_51
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 184
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b368ff178771b690800000000000000
+      internalID: -7588152474901912650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_52
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 196
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 210e5d11a1e3c6690800000000000000
+      internalID: -7607637388846309358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_53
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 200
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4b3c32d0960ed5d0800000000000000
+      internalID: -3035981879728915638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_54
+      rect:
+        serializedVersion: 2
+        x: 906
+        y: 203
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33266ffcdede9d420800000000000000
+      internalID: 2655415060963680819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_55
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 171
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a590e5feabdca0e30800000000000000
+      internalID: 4470611782882167130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_56
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 175
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ad2a31cfc00dc470800000000000000
+      internalID: 8416384170925370785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_57
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 188
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e089abfbd4b7ec50800000000000000
+      internalID: 6694518228022558947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_58
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 178
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc08c0080f9c50fa0800000000000000
+      internalID: -5835035707410972467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_59
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 192
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8eb367f54e76db790800000000000000
+      internalID: -7512734372832330776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_60
+      rect:
+        serializedVersion: 2
+        x: 961
+        y: 181
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d65464195a9fa5e90800000000000000
+      internalID: -7036036978310757011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_61
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 148
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b372f98b867c1db30800000000000000
+      internalID: 4310445570958239547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_62
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 152
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56351112ead06f1b0800000000000000
+      internalID: -5623292043195231387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_63
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 155
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6db43ada77150fe10800000000000000
+      internalID: 2229371390004513750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_64
+      rect:
+        serializedVersion: 2
+        x: 808
+        y: 157
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10b3d4425f00026c0800000000000000
+      internalID: -4170332202069050623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_65
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 121
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b97ff45d13ec146c0800000000000000
+      internalID: -4160817867286120549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_66
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 125
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d01cd7ac4f3431f0800000000000000
+      internalID: -1066157613313683244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_67
+      rect:
+        serializedVersion: 2
+        x: 716
+        y: 129
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04269ec3b1c0042e0800000000000000
+      internalID: -2143700111502777792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_68
+      rect:
+        serializedVersion: 2
+        x: 975
+        y: 132
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e0a3e396247cce60800000000000000
+      internalID: 7983883948459794658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_69
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 83
+        width: 30
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b83a74b6482a8be0800000000000000
+      internalID: -1474321643869685583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_70
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 69
+        width: 28
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c9d7493c361bc780800000000000000
+      internalID: -8661805010402158137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_71
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 87
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7ea1b933f21b0850800000000000000
+      internalID: 6344185335935774332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_72
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 90
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 331b92729e3293e50800000000000000
+      internalID: 6789497397529129267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_73
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 93
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c334a149e6a71af0800000000000000
+      internalID: -425688119004351545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_74
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 72
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4791edd58ccdf7050800000000000000
+      internalID: 5800597598202894708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_75
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 75
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ae241b05ec50eed0800000000000000
+      internalID: -2386805663703224671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_76
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 78
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 839266afad6fb2820800000000000000
+      internalID: 2894678605879978296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_77
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 48
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9813f435975e8af0800000000000000
+      internalID: -392279819184564069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_78
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 29
+        width: 30
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b61c3015773e77d0800000000000000
+      internalID: -2918834532566427975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_79
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 51
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b0e8129bfac364a0800000000000000
+      internalID: -6601209446958309198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_80
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 53
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c344feabac6ea4630800000000000000
+      internalID: 3912192984718722108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_81
+      rect:
+        serializedVersion: 2
+        x: 855
+        y: 55
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79d5be49067834180800000000000000
+      internalID: -9132306770492170857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_82
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 32
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7203b2e3b754bdd80800000000000000
+      internalID: -8224903898835767257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_83
+      rect:
+        serializedVersion: 2
+        x: 643
+        y: 34
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c656e6130f5cabd20800000000000000
+      internalID: 3295163712787080556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BombBloomAtlas_84
+      rect:
+        serializedVersion: 2
+        x: 902
+        y: 36
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4584c898469cb8a10800000000000000
+      internalID: 1912843900390492244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BombBloomAtlas_0: 5062823631634816556
+      BombBloomAtlas_1: 7240022130590809550
+      BombBloomAtlas_10: 4788685104685118692
+      BombBloomAtlas_11: -1599397785062079390
+      BombBloomAtlas_12: 7065737782271531390
+      BombBloomAtlas_13: -8815824601830952789
+      BombBloomAtlas_14: 2756885636906608207
+      BombBloomAtlas_15: -7521141899709529442
+      BombBloomAtlas_16: -4513654560979890708
+      BombBloomAtlas_17: -9012911310629569884
+      BombBloomAtlas_18: 5126119875400167641
+      BombBloomAtlas_19: -7196507219124546924
+      BombBloomAtlas_2: -7490449332468066302
+      BombBloomAtlas_20: 4520986272932121921
+      BombBloomAtlas_21: -2760105905546893517
+      BombBloomAtlas_22: 5028221900449364034
+      BombBloomAtlas_23: 5700237012376204437
+      BombBloomAtlas_24: 2851969472837986488
+      BombBloomAtlas_25: -8305146627796752436
+      BombBloomAtlas_26: 1315959885999943817
+      BombBloomAtlas_27: 4112315051278795
+      BombBloomAtlas_28: 7844400187654646230
+      BombBloomAtlas_29: -5768178991847903433
+      BombBloomAtlas_3: -4142882691322205514
+      BombBloomAtlas_30: 117773175206601634
+      BombBloomAtlas_31: -2945268085377403300
+      BombBloomAtlas_32: -1917274505645969157
+      BombBloomAtlas_33: -2709453356008399760
+      BombBloomAtlas_34: 6448717600271804165
+      BombBloomAtlas_35: 8254055026501638766
+      BombBloomAtlas_36: -7134865460092342271
+      BombBloomAtlas_37: -2170419991690135948
+      BombBloomAtlas_38: 2062874764460400326
+      BombBloomAtlas_39: -3704497416941493901
+      BombBloomAtlas_4: 2273775600715630968
+      BombBloomAtlas_40: -8268847214610976535
+      BombBloomAtlas_41: 7015370568301460222
+      BombBloomAtlas_42: 8548476993816644004
+      BombBloomAtlas_43: 4235606892920616446
+      BombBloomAtlas_44: 6068347843285637606
+      BombBloomAtlas_45: 7913467677500495984
+      BombBloomAtlas_46: 5366220644519978056
+      BombBloomAtlas_47: -865915421834401164
+      BombBloomAtlas_48: -4943305593351449022
+      BombBloomAtlas_49: -348415628294257310
+      BombBloomAtlas_5: 7081599543773496818
+      BombBloomAtlas_50: -2952835155632773554
+      BombBloomAtlas_51: -7588152474901912650
+      BombBloomAtlas_52: -7607637388846309358
+      BombBloomAtlas_53: -3035981879728915638
+      BombBloomAtlas_54: 2655415060963680819
+      BombBloomAtlas_55: 4470611782882167130
+      BombBloomAtlas_56: 8416384170925370785
+      BombBloomAtlas_57: 6694518228022558947
+      BombBloomAtlas_58: -5835035707410972467
+      BombBloomAtlas_59: -7512734372832330776
+      BombBloomAtlas_6: -2501137278800657300
+      BombBloomAtlas_60: -7036036978310757011
+      BombBloomAtlas_61: 4310445570958239547
+      BombBloomAtlas_62: -5623292043195231387
+      BombBloomAtlas_63: 2229371390004513750
+      BombBloomAtlas_64: -4170332202069050623
+      BombBloomAtlas_65: -4160817867286120549
+      BombBloomAtlas_66: -1066157613313683244
+      BombBloomAtlas_67: -2143700111502777792
+      BombBloomAtlas_68: 7983883948459794658
+      BombBloomAtlas_69: -1474321643869685583
+      BombBloomAtlas_7: 6987124086270767526
+      BombBloomAtlas_70: -8661805010402158137
+      BombBloomAtlas_71: 6344185335935774332
+      BombBloomAtlas_72: 6789497397529129267
+      BombBloomAtlas_73: -425688119004351545
+      BombBloomAtlas_74: 5800597598202894708
+      BombBloomAtlas_75: -2386805663703224671
+      BombBloomAtlas_76: 2894678605879978296
+      BombBloomAtlas_77: -392279819184564069
+      BombBloomAtlas_78: -2918834532566427975
+      BombBloomAtlas_79: -6601209446958309198
+      BombBloomAtlas_8: -8254605382672014466
+      BombBloomAtlas_80: 3912192984718722108
+      BombBloomAtlas_81: -9132306770492170857
+      BombBloomAtlas_82: -8224903898835767257
+      BombBloomAtlas_83: 3295163712787080556
+      BombBloomAtlas_84: 1912843900390492244
+      BombBloomAtlas_9: 5111766773895214291
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

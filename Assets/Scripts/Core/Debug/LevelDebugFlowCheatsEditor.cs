@@ -32,6 +32,14 @@ public class LevelDebugFlowCheatsEditor : Editor
         if (GUILayout.Button("Add 1 Extra Move"))
             cheats.AddOneExtraMove();
 
+        GUILayout.Space(10);
+
+        if (GUILayout.Button("Place Black Sheep In Center"))
+            cheats.AddBlackSheepToCenter();
+
+        if (GUILayout.Button("Place Bone Block In Center"))
+            cheats.AddBoneToCenter();
+
         GUI.enabled = true;
 
         if (!Application.isPlaying)

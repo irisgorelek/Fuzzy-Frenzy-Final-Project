@@ -14,6 +14,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("SFX Sources")]
     [SerializeField] private AudioSource[] _sfx;
+    [SerializeField] private AudioSource _boneBreak;
 
     [Header("Crossfade")]
     [SerializeField] private float _musicTargetVolume = 0.6f;
@@ -121,6 +122,7 @@ public class AudioManager : MonoBehaviour
 
         foreach (var s in _sfx)
             if (s) s.mute = muted;
+        if (_boneBreak) _boneBreak.mute = muted;
     }
     public void ChangeMusicVolume(float volume = 0.4f)
     {
@@ -138,6 +140,12 @@ public class AudioManager : MonoBehaviour
 
         _sfx[sfxToPlay].Stop();
         _sfx[sfxToPlay].Play();
+    }
+
+    public void PlayBoneBreak()
+    {
+        if (!SfxOn || _boneBreak == null || _boneBreak.clip == null) return;
+        _boneBreak.PlayOneShot(_boneBreak.clip);
     }
 
     public void PlaySFXPitchAdjusted(int sfxToPlay, float volume = 1f)

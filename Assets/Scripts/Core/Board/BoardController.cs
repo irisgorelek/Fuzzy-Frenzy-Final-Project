@@ -41,6 +41,10 @@ public class BoardController : MonoBehaviour
     public bool IsSpeechBubbleInputBlocked => _bubbleActive;
 
     private Board _board;
+    private Animal _debugBlackSheep;
+    private Animal _debugBoneBlock;
+    private Animal BlackSheep => _cfg.blackSheep != null ? _cfg.blackSheep : _debugBlackSheep;
+    private Animal BoneBlock => _cfg.boneBlock != null ? _cfg.boneBlock : _debugBoneBlock;
     private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
     private bool _isLevelOver = false;
     private readonly Queue<(Vector2Int wolf, Vector2Int sheep)> _pendingWolfEats = new(); // Shich wolf ate which sheep
@@ -171,6 +175,30 @@ public class BoardController : MonoBehaviour
         TryHandleLevelComplete();
     }
 
+    public void DebugPlaceAnimalAtCenter(Animal animal, Animal blackSheep, Animal boneBlock)
+    {
+        if (!Application.isPlaying || _board == null || _view == null ||
+            _isBusy || _isLevelOver || !_view.SwapsEnabled)
+        {
+            Debug.LogWarning("Wait until the board is ready and idle before placing a debug tile.", this);
+            return;
+        }
+
+        if (animal == null)
+        {
+            Debug.LogWarning("Assign the requested tile on LevelDebugFlowCheats.", this);
+            return;
+        }
+
+        _debugBlackSheep = blackSheep;
+        _debugBoneBlock = boneBlock;
+        _board.DebugSetSpecialAnimals(BlackSheep, BoneBlock);
+
+        var center = new Vector2Int(_board.Width / 2, _board.Height / 2);
+        _board.SetAnimalInCell(center, animal);
+        _view.AssignSprites(_board);
+    }
+
     public void DebugForceLose()
     {
         if (_isLevelOver)
@@ -191,10 +219,17 @@ public class BoardController : MonoBehaviour
             _levelLostPopupUI.Show();
     }
 
+    private void HandleBoneBlockBroken(Vector2Int cell)
+    {
+        _view.PlayBoneBreakFx(cell);
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayBoneBreak();
+    }
     public void InitializeGame()
     {
         // Technical
         _board = new Board(_cfg);
+        _board.OnBoneBlockBroken += HandleBoneBlockBroken;
         _triggeredEntryIndicesShown.Clear();
 
         _board.OnWolfAteSheep += (wolf, sheep) =>
@@ -296,7 +331,7 @@ public class BoardController : MonoBehaviour
 
             TryRollBlackSheep();
 
-            // Animate the blast first, using the same pop FX as normal matches
+            // Animate the blast with dark wool bursts along the line
             await AnimateBlackSheepBlastFromCenter(sheepPosAfterSwap, swipeVertical);
 
             // Then actually clear the model and show the result
@@ -471,7 +506,7 @@ public class BoardController : MonoBehaviour
         var matches = _board.FindMatches();
         while (matches.Count > 0)
         {
-            await _view.AnimateMatchPopFx(matches, 0.12f);
+            await _view.AnimateMatchPopFx(matches, BoardEffectsTiming.MatchPop);
 
             var fallMoves = new List<Board.FallMove>();
             var spawns = new List<Board.SpawnInfo>();
@@ -729,7 +764,7 @@ public class BoardController : MonoBehaviour
     }
     private bool IsAnySheep(Animal piece)
     {
-        return IsAnimal(piece, _cfg.blackSheep);
+        return IsAnimal(piece, BlackSheep);
     }
 
     private async Task PlayAnimalSpeakSfx(Animal animal)
@@ -745,6 +780,8 @@ public class BoardController : MonoBehaviour
 
     private async Task AnimateBlackSheepBlastFromCenter(Vector2Int center, bool swipedVertically)
     {
+        await _view.AnimateSheepAnger(center);
+        _view.PlayBlackSheepFx(center, swipedVertically, _cfg.weidth, _cfg.height);
         // vertical swipe => ROW blast (left + right)
         // horizontal swipe => COLUMN blast (up + down)
 
@@ -776,14 +813,14 @@ public class BoardController : MonoBehaviour
                 if (leftX >= 0)
                 {
                     var leftCell = new Vector2Int(leftX, y);
-                    if (_board.GetAnimalFromCell(leftCell) != _cfg.boneBlock)
+                    if (_board.GetAnimalFromCell(leftCell) != BoneBlock)
                         waveCells.Add(leftCell);
                 }
 
                 if (rightX < _cfg.weidth && rightX != leftX)
                 {
                     var rightCell = new Vector2Int(rightX, y);
-                    if (_board.GetAnimalFromCell(rightCell) != _cfg.boneBlock)
+                    if (_board.GetAnimalFromCell(rightCell) != BoneBlock)
                         waveCells.Add(rightCell);
                 }
             }
@@ -797,14 +834,14 @@ public class BoardController : MonoBehaviour
                 if (downY >= 0)
                 {
                     var downCell = new Vector2Int(x, downY);
-                    if (_board.GetAnimalFromCell(downCell) != _cfg.boneBlock)
+                    if (_board.GetAnimalFromCell(downCell) != BoneBlock)
                         waveCells.Add(downCell);
                 }
 
                 if (upY < _cfg.height && upY != downY)
                 {
                     var upCell = new Vector2Int(x, upY);
-                    if (_board.GetAnimalFromCell(upCell) != _cfg.boneBlock)
+                    if (_board.GetAnimalFromCell(upCell) != BoneBlock)
                         waveCells.Add(upCell);
                 }
             }
@@ -815,7 +852,7 @@ public class BoardController : MonoBehaviour
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f);
 
-            await _view.AnimateMatchPopFx(waveCells, 0.09f);
+            await _view.AnimateMatchPopFx(waveCells, BoardEffectsTiming.LineStep, BoardClearEffect.BlackSheep);
         }
     }
 

@@ -46,6 +46,7 @@ public class BoardView : MonoBehaviour
 
 
     [Header("Match FX")]
+    [SerializeField] private BoardMatchEffects _boardMatchEffects;
     [SerializeField] private Sprite _matchRingSprite;     // Thin white circle/ring sprite
     [SerializeField] private Sprite _sparkleSprite;       // Tiny star / diamond / soft dot
     [SerializeField] private Color _matchFxColor = new Color(1f, 1f, 1f, 0.95f);
@@ -812,14 +813,14 @@ public class BoardView : MonoBehaviour
 
         return tcs.Task;
     }
-    private Tween BuildMatchLikePop(RectTransform pieceRt, float duration = 0.12f)
+    private Tween BuildMatchLikePop(RectTransform pieceRt, float duration = BoardEffectsTiming.MatchPop)
     {
         pieceRt.DOKill();
         pieceRt.localScale = Vector3.one;
 
         Sequence pop = DOTween.Sequence();
         pop.Append(pieceRt.DOScale(1.12f, duration * 0.28f).SetEase(Ease.OutQuad));
-        pop.Append(pieceRt.DOScale(0.82f, duration * 0.42f).SetEase(Ease.InBack));
+        pop.Append(pieceRt.DOScale(0f, duration * 0.72f).SetEase(Ease.InBack));
 
         return pop;
     }
@@ -873,7 +874,7 @@ public class BoardView : MonoBehaviour
         return tcs.Task;
     }
 
-    public Task AnimateMatchPopFx(List<Vector2Int> matches, float duration = 0.12f)
+    public Task AnimateMatchPopFx(List<Vector2Int> matches, float duration = BoardEffectsTiming.MatchPop, BoardClearEffect effect = BoardClearEffect.Match)
     {
         if (matches == null || matches.Count == 0)
             return Task.CompletedTask;
@@ -896,13 +897,17 @@ public class BoardView : MonoBehaviour
             pieceRt.localScale = Vector3.one;
 
             // Main piece pop
-            master.Join(BuildMatchLikePop(pieceRt, duration));
+            master.Insert(0f, BuildMatchLikePop(pieceRt, duration));
+
+            bool particleMatch = _boardMatchEffects != null && _boardMatchEffects.HasClearEffect(effect);
+            if (particleMatch)
+                master.InsertCallback(duration * 0.55f, () => _boardMatchEffects.ClearCell(pieceRt, effect));
 
             Vector3 center = pieceRt.position;
             Vector2 size = pieceRt.rect.size;
 
             // White ring
-            if (_matchRingSprite != null)
+            if (!particleMatch && _matchRingSprite != null)
             {
                 Image ring = CreateFxImage(_matchRingSprite, _matchFxColor, center, size * 0.95f);
                 spawnedFx.Add(ring);
@@ -915,7 +920,7 @@ public class BoardView : MonoBehaviour
             }
 
             // Sparkles
-            if (_sparkleSprite != null)
+            if (!particleMatch && _sparkleSprite != null)
             {
                 float baseDist = Mathf.Min(size.x, size.y) * 0.28f;
 
@@ -1092,7 +1097,7 @@ public class BoardView : MonoBehaviour
         return tcs.Task;
     }
 
-    public Task AnimateBombImpact(List<Vector2Int> affected, float duration = 0.28f)
+    public Task AnimateBombImpact(List<Vector2Int> affected, float duration = BoardEffectsTiming.BombImpact)
     {
         if (affected == null || affected.Count == 0)
             return Task.CompletedTask;
@@ -1100,6 +1105,31 @@ public class BoardView : MonoBehaviour
         var tcs = new TaskCompletionSource<bool>();
         var spawnedFx = new List<Image>();
 
+        if (_boardMatchEffects != null && _boardMatchEffects.HasBomb)
+        {
+            // One centered particle explosion covers the footprint while all tiles pop together.
+            Sequence blast = DOTween.Sequence();
+            foreach (var coord in affected)
+            {
+                if (!_cells.TryGetValue(coord, out var cell)) continue;
+                var rt = cell.ImageRect;
+                rt.DOKill();
+                rt.localScale = Vector3.one;
+                var pop = DOTween.Sequence();
+                pop.Append(rt.DOScale(1.08f, duration * 0.2f).SetEase(Ease.OutQuad));
+                pop.AppendInterval(duration * 0.18f);
+                pop.Append(rt.DOScale(0f, duration * 0.62f).SetEase(Ease.InBack));
+                blast.Join(pop);
+            }
+            blast.OnComplete(() => tcs.TrySetResult(true));
+            blast.OnKill(() =>
+            {
+                foreach (var coord in affected)
+                    if (_cells.TryGetValue(coord, out var cell)) cell.ImageRect.localScale = Vector3.one;
+                tcs.TrySetResult(true);
+            });
+            return tcs.Task;
+        }
         Sprite ringSprite = _bombRingSprite != null ? _bombRingSprite : _matchRingSprite;
         if (ringSprite == null)
             return Task.CompletedTask;
@@ -1173,7 +1203,7 @@ public class BoardView : MonoBehaviour
         return tcs.Task;
     }
 
-    public Task AnimateBombWarning(Vector2Int coord, float totalDuration = 1.5f)
+    public Task AnimateBombWarning(Vector2Int coord, float totalDuration = 1f)
     {
         if (!_cells.TryGetValue(coord, out var cv))
             return Task.CompletedTask;
@@ -1193,7 +1223,7 @@ public class BoardView : MonoBehaviour
         rt.localScale = Vector3.one;
         img.color = originalColor;
 
-        int pulses = 6;
+        int pulses = 3;
         float halfStep = totalDuration / (pulses * 2f);
 
         Sequence seq = DOTween.Sequence();
@@ -1243,6 +1273,56 @@ public class BoardView : MonoBehaviour
         rt.localScale = Vector3.one;
 
         return img;
+    }
+
+    public void PlayBoneBreakFx(Vector2Int coord)
+    {
+        if (_boardMatchEffects != null && _cells.TryGetValue(coord, out var cell))
+            _boardMatchEffects.BoneBreak(cell.ImageRect);
+    }
+
+    public Task AnimateSheepAnger(Vector2Int coord)
+    {
+        if (_boardMatchEffects == null || !_cells.TryGetValue(coord, out var cell)) return Task.CompletedTask;
+        var bounds = new List<RectTransform>(_cells.Count);
+        foreach (var entry in _cells.Values) bounds.Add(entry.ImageRect);
+        if (!_boardMatchEffects.SheepAnger(cell.ImageRect, bounds)) return Task.CompletedTask;
+        var tcs = new TaskCompletionSource<bool>();
+        DOVirtual.DelayedCall(BoardEffectsTiming.SheepAnticipation, () => tcs.TrySetResult(true), false)
+            .OnKill(() => tcs.TrySetResult(true));
+        return tcs.Task;
+    }
+    public void PlayBlackSheepFx(Vector2Int coord, bool horizontal, int width, int height)
+    {
+        if (_boardMatchEffects == null || !_cells.TryGetValue(coord, out var cell)) return;
+        float step = 1f;
+        var neighborCoord = coord + (horizontal ? Vector2Int.right : Vector2Int.down);
+        if (!_cells.TryGetValue(neighborCoord, out var neighbor))
+            _cells.TryGetValue(coord - (horizontal ? Vector2Int.right : Vector2Int.down), out neighbor);
+        if (neighbor != null)
+        {
+            Vector3 delta = cell.ImageRect.InverseTransformVector(neighbor.ImageRect.position - cell.ImageRect.position);
+            step = delta.magnitude / Mathf.Max(1f, cell.ImageRect.rect.width);
+        }
+        _boardMatchEffects.BlackSheep(cell.ImageRect, horizontal,
+            (horizontal ? coord.x : height - 1 - coord.y) * step,
+            (horizontal ? width - 1 - coord.x : coord.y) * step);
+    }
+
+    public bool PlayBombBurstFx(Vector2Int coord)
+    {
+        if (_boardMatchEffects == null || !_boardMatchEffects.HasBomb || !_cells.TryGetValue(coord, out var cell))
+            return false;
+        float span = 3f;
+        if (!_cells.TryGetValue(coord + Vector2Int.right, out var neighbor))
+            _cells.TryGetValue(coord + Vector2Int.left, out neighbor);
+        if (neighbor != null)
+        {
+            var delta = cell.ImageRect.InverseTransformVector(neighbor.ImageRect.position - cell.ImageRect.position);
+            span = 1f + 2f * delta.magnitude / Mathf.Max(1f, cell.ImageRect.rect.width);
+        }
+        _boardMatchEffects.Bomb(cell.ImageRect, span);
+        return true;
     }
 
     public Vector3 GetCellWorldPosition(Vector2Int coord)

@@ -174,14 +174,15 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
                 }
             }
 
-            await _boardView.AnimateBombWarning(coord, 1.5f);
+            await _boardView.AnimateBombWarning(coord, 1f);
 
-            PlayVFX(coord, _bombExplosionPrefab);
+            if (!_boardView.PlayBombBurstFx(coord))
+                PlayVFX(coord, _bombExplosionPrefab);
 
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFXPitchAdjusted(1, 0.5f);
 
-            await _boardView.AnimateBombImpact(affected, 0.28f);
+            await _boardView.AnimateBombImpact(affected, BoardEffectsTiming.BombImpact);
 
             _board.TryRemoveCellsFromGrid(affected);
             _powerUpChannel.RaiseEvent("bomb");

@@ -34,8 +34,8 @@ public class Board
     // Special Pieces
     private readonly Animal _wolf;
     private readonly Animal _sheep;
-    private readonly Animal _boneBlock;
-    private readonly Animal _blackSheep;
+    private Animal _boneBlock;
+    private Animal _blackSheep;
     private bool _blackSheepArmed; // when true, spawn one black sheep during next refill
 
     private static readonly Vector2Int[] OrthogonalDirs =
@@ -59,6 +59,7 @@ public class Board
     public Action<string, int> OnAnimalsDestroyed;
     public Action<int> OnScoreAdded;
     public Action<Vector2Int, Vector2Int> OnWolfAteSheep;
+    public Action<Vector2Int> OnBoneBlockBroken;
 
     private readonly Queue<Animal> _debugForcedSpawns = new Queue<Animal>(); // For the shuffle test
 
@@ -636,6 +637,7 @@ public class Board
 
         foreach (var cell in toRemove) // HERE //
         {
+            OnBoneBlockBroken?.Invoke(cell);
             _grid[cell.x, cell.y] = null;
             OnAnimalsDestroyed?.Invoke(_boneBlock._id,1);
         }
@@ -1055,6 +1057,11 @@ public class Board
     }
 
     /// <summary>Debug / cheats only: satisfy the board's primary goal (points or matches).</summary>
+    public void DebugSetSpecialAnimals(Animal blackSheep, Animal boneBlock)
+    {
+        _blackSheep = blackSheep;
+        _boneBlock = boneBlock;
+    }
     public void DebugCheatFillPrimaryGoal()
     {
         if (_goalType == PointsOrMatches.points)

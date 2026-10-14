@@ -36,8 +36,8 @@ MonoBehaviour:
     - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
       side: 0
       lines:
-      - Yo, hear me out one last time.
-      - I hope you went shopping, because you'll need it.
+      - Yo, listen up one last time.
+      - Hope you stocked up, 'cause you'll need it!
     - animal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
       side: 1
       lines:

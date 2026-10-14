@@ -1,0 +1,268 @@
+fileFormatVersion: 2
+guid: 5370502aad8627f498007a4589201be6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3923533169145850631
+    second: Butterfly_Parts_0
+  - first:
+      213: -251395361510106283
+    second: Butterfly_Parts_1
+  - first:
+      213: 8897337707549116758
+    second: Butterfly_Parts_2
+  - first:
+      213: -6017856374409878282
+    second: Butterfly_Parts_3
+  - first:
+      213: -1285534711645165624
+    second: Butterfly_Parts_4
+  - first:
+      213: -376287930229202737
+    second: Butterfly_Parts_5
+  - first:
+      213: -7022076159775972868
+    second: Butterfly_Parts_6
+  - first:
+      213: 6914582760247704128
+    second: Butterfly_Parts_7
+  - first:
+      213: 245705111676482950
+    second: Butterfly_Parts_8
+  - first:
+      213: 7772070722003165538
+    second: Butterfly_Parts_9
+  - first:
+      213: -707066331874480136
+    second: Butterfly_Parts_10
+  - first:
+      213: -4239351357830967512
+    second: Butterfly_Parts_11
+  - first:
+      213: 1606237490595279032
+    second: Butterfly_Parts_12
+  - first:
+      213: -7574321697860909400
+    second: Butterfly_Parts_13
+  - first:
+      213: 5013659822613331727
+    second: Butterfly_Parts_14
+  - first:
+      213: 5368725822907301730
+    second: Butterfly_Wing_Left
+  - first:
+      213: -6472796240877071742
+    second: Butterfly_Wing_Right
+  - first:
+      213: -7708784641884060235
+    second: Butterfly_Body
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Butterfly_Wing_Left
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 193
+        width: 509
+        height: 674
+      alignment: 9
+      pivot: {x: 1, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26f3bd2f0bb818a40800000000000000
+      internalID: 5368725822907301730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Butterfly_Wing_Right
+      rect:
+        serializedVersion: 2
+        x: 699
+        y: 193
+        width: 510
+        height: 674
+      alignment: 9
+      pivot: {x: 0, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 282d90ffc120c26a0800000000000000
+      internalID: -6472796240877071742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Butterfly_Body
+      rect:
+        serializedVersion: 2
+        x: 1279
+        y: 210
+        width: 198
+        height: 585
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b5838a0635e40590800000000000000
+      internalID: -7708784641884060235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Butterfly_Body: -7708784641884060235
+      Butterfly_Parts_0: 3923533169145850631
+      Butterfly_Parts_1: -251395361510106283
+      Butterfly_Parts_10: -707066331874480136
+      Butterfly_Parts_11: -4239351357830967512
+      Butterfly_Parts_12: 1606237490595279032
+      Butterfly_Parts_13: -7574321697860909400
+      Butterfly_Parts_14: 5013659822613331727
+      Butterfly_Parts_2: 8897337707549116758
+      Butterfly_Parts_3: -6017856374409878282
+      Butterfly_Parts_4: -1285534711645165624
+      Butterfly_Parts_5: -376287930229202737
+      Butterfly_Parts_6: -7022076159775972868
+      Butterfly_Parts_7: 6914582760247704128
+      Butterfly_Parts_8: 245705111676482950
+      Butterfly_Parts_9: 7772070722003165538
+      Butterfly_Wing_Left: 5368725822907301730
+      Butterfly_Wing_Right: -6472796240877071742
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

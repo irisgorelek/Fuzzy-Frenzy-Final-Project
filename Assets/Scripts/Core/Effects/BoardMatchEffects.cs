@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public enum BoardClearEffect { Match, BlackSheep }
@@ -15,14 +16,19 @@ public sealed class BoardMatchEffects : MonoBehaviour
     [SerializeField, Range(0.5f, 1.5f)] private float _effectScale = 1f;
     private readonly Dictionary<BoardParticleEffect, Stack<BoardParticleEffect>> _pools = new();
     private readonly List<BoardParticleEffect> _instances = new();
+    private readonly List<Task> _linePlayback = new();
+    private bool _linePlaying;
     public bool HasMatch => isActiveAndEnabled && _match != null;
     public bool HasBomb => isActiveAndEnabled && _bomb != null;
     public bool HasClearEffect(BoardClearEffect effect) => isActiveAndEnabled &&
         (effect == BoardClearEffect.BlackSheep ? _blackSheep != null : _match != null);
 
     public void Match(RectTransform cell) => Spawn(_match, cell);
-    public void ClearCell(RectTransform cell, BoardClearEffect effect) =>
-        Spawn(effect == BoardClearEffect.BlackSheep ? _blackSheep : _match, cell);
+    public void ClearCell(RectTransform cell, BoardClearEffect effect, Color? animalTint = null)
+    {
+        Spawn(effect == BoardClearEffect.BlackSheep ? _blackSheep : _match, cell, 1,
+            effect == BoardClearEffect.Match ? animalTint : null);
+    }
     public void BoneBreak(RectTransform cell) => Spawn(_boneBreak, cell);
     public void Bomb(RectTransform cell, float tileSpan = 3.2f) => Spawn(_bomb, cell, tileSpan);
 
@@ -64,6 +70,8 @@ public sealed class BoardMatchEffects : MonoBehaviour
 
     public void BlackSheep(RectTransform cell, bool horizontal, float negativeDistance, float positiveDistance)
     {
+        _linePlayback.Clear();
+        _linePlaying = true;
         var fx = Spawn(_blackSheep, cell);
         if (fx == null) return;
         fx.transform.localRotation = Quaternion.Euler(0, 0, horizontal ? 0 : 90);
@@ -72,7 +80,13 @@ public sealed class BoardMatchEffects : MonoBehaviour
             BoardEffectsTiming.LineStep * _effectScale);
     }
 
-    private BoardParticleEffect Spawn(BoardParticleEffect prefab, RectTransform cell, float scale = 1f)
+    public Task WaitForBlackSheepParticles()
+    {
+        _linePlaying = false;
+        return Task.WhenAll(_linePlayback.ToArray());
+    }
+
+    private BoardParticleEffect Spawn(BoardParticleEffect prefab, RectTransform cell, float scale = 1f, Color? animalTint = null)
     {
         if (!isActiveAndEnabled || prefab == null || cell == null || _view == null) return null;
         if (!_pools.TryGetValue(prefab, out var pool)) _pools.Add(prefab, pool = new());
@@ -92,7 +106,8 @@ public sealed class BoardMatchEffects : MonoBehaviour
         fx.transform.localScale = Vector3.one * tileWidth * _effectScale * scale;
         fx.transform.SetAsLastSibling();
         fx.gameObject.SetActive(true);
-        fx.Play(effect => { effect.gameObject.SetActive(false); pool.Push(effect); });
+        fx.Play(effect => { effect.gameObject.SetActive(false); pool.Push(effect); }, animalTint);
+        if (prefab == _blackSheep || (_linePlaying && prefab == _boneBreak)) _linePlayback.Add(fx.Completion);
         return fx;
     }
 
@@ -101,5 +116,7 @@ public sealed class BoardMatchEffects : MonoBehaviour
         foreach (var instance in _instances) if (instance != null) Destroy(instance.gameObject);
         _instances.Clear();
         _pools.Clear();
+        _linePlayback.Clear();
+        _linePlaying = false;
     }
 }

@@ -24,6 +24,14 @@ public class BoardView : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private RectTransform _swapOverlay;
+    [Header("Tile landing")]
+    [SerializeField, Range(0, .2f)] private float _landingBounceHeight = .08f;
+    [SerializeField, Min(.02f)] private float _landingBounceSeconds = .14f;
+    [Header("New tile entry")]
+    [SerializeField, Min(.1f)] private float _spawnFallSeconds = .42f;
+    [SerializeField, Min(.01f)] private float _spawnFadeSeconds = .30f;
+    [SerializeField, Range(0, .15f)] private float _spawnStaggerSeconds = .055f;
+    [SerializeField, Range(.2f, 1.2f)] private float _spawnEntryHeight = .9f;
 
     [Header("Art")]
     [SerializeField] private Sprite _defaultSprite;  // For null animals
@@ -47,6 +55,7 @@ public class BoardView : MonoBehaviour
 
     [Header("Match FX")]
     [SerializeField] private BoardMatchEffects _boardMatchEffects;
+    [SerializeField] private BoardClearAnimation _clearAnimation;
     [SerializeField] private Sprite _matchRingSprite;     // Thin white circle/ring sprite
     [SerializeField] private Sprite _sparkleSprite;       // Tiny star / diamond / soft dot
     [SerializeField] private Color _matchFxColor = new Color(1f, 1f, 1f, 0.95f);
@@ -63,6 +72,7 @@ public class BoardView : MonoBehaviour
     private struct GoalRowSpec
     {
         public bool IsPrimary;
+        public bool AnimateCounter;
         public Sprite Icon;
         public string Text;
         public Color Color;
@@ -157,6 +167,7 @@ public class BoardView : MonoBehaviour
                 }
 
                 _cells[coord].SetSprite(animal._sprite, animal.color);
+                _cells[coord].SetImageEnabled(true);
             }
         }
     }
@@ -237,6 +248,7 @@ public class BoardView : MonoBehaviour
             IsPrimary = true,
             Icon = null,
             Text = $"Matches: \n{remaining}",
+            AnimateCounter = true,
             Color = Color.white,
             IsComplete = animals >= goal
         }
@@ -423,7 +435,7 @@ public class BoardView : MonoBehaviour
         aView.SetImageEnabled(false);
         bView.SetImageEnabled(false);
 
-        var tcs = new TaskCompletionSource<bool>(); // Create a future task that Iùll mark as finished later.
+        var tcs = new TaskCompletionSource<bool>(); // Create a future task that I¬ùll mark as finished later.
 
         Sequence seq = DOTween.Sequence(); // Create a sequence of animations
         seq.Join(tempA.rectTransform.DOMove(bView.ImageRect.position, duration).SetEase(Ease.InOutQuad));
@@ -611,6 +623,7 @@ public class BoardView : MonoBehaviour
             IsPrimary = true,
             Icon = null,
             Text = remainingMatches.ToString(),
+            AnimateCounter = true,
             Color = Color.white,
             IsComplete = matched >= matchGoal
         }
@@ -724,73 +737,44 @@ public class BoardView : MonoBehaviour
                 var temp = CreateTempImage(fromView);
                 temps.Add(temp);
 
-                seq.Join(temp.rectTransform
-                    .DOMove(toView.ImageRect.position, duration)
-                    .SetEase(Ease.InQuad));
+                seq.Insert(0, BuildTileDrop(temp.rectTransform, toView, duration));
             }
         }
 
         // Spawns
         if (hasSpawns)
         {
-            foreach (var s in spawns)
+            // Feed tiles through one entry below the header, deepest destination first.
+            var spawnOrder = new Dictionary<(int column, int blocker), int>();
+            var orderedSpawns = new List<Board.SpawnInfo>(spawns);
+            orderedSpawns.Sort((a, b) => b.cell.y.CompareTo(a.cell.y));
+            foreach (var s in orderedSpawns)
             {
                 if (!_cells.ContainsKey(s.cell) || s.animal == null) continue;
 
                 var targetView = _cells[s.cell];
-                var targetPos = targetView.ImageRect.position;
-
                 int entryY = (s.spawnFromY >= 0) ? (s.spawnFromY + 1) : 0;
 
                 // Create temp image
                 var temp = CreateTempImageFromSprite(s.animal._sprite, s.animal.color, targetView);
                 temps.Add(temp);
 
-                float cellH = targetView.ImageRect.rect.height;
-                float cellW = targetView.ImageRect.rect.width;
-                float upOffset = cellH * 1.2f;
-
-                if (s.spawnFromY < 0)
-                {
-                    // Normal: spawn from above board in same column
-                    var startView = _cells[new Vector2Int(s.cell.x, 0)];
-                    temp.rectTransform.position = startView.ImageRect.position + Vector3.up * upOffset;
-
-                    seq.Join(temp.rectTransform
-                        .DOMove(targetPos, duration)
-                        .SetEase(Ease.InQuad));
-                }
-                else
-                {
-                    // Better gravity feel for pieces coming from under a blocker:
-                    // start slightly ABOVE the entry cell and let them accelerate down.
-                    // No fade-in, because fade looks like "appearing", not falling.
-
-                    var entryCell = new Vector2Int(s.cell.x, entryY);
-                    var entryView = _cells[entryCell];
-
-                    float startAbove = cellH * 0.42f;
-
-                    temp.rectTransform.position = entryView.ImageRect.position + Vector3.up * startAbove;
-                    temp.rectTransform.localScale = new Vector3(0.94f, 1.08f, 1f);
-                    temp.color = Color.white;
-
-                    Sequence sseq = DOTween.Sequence();
-
-                    sseq.Append(
-                        temp.rectTransform
-                            .DOMove(targetPos, duration)
-                            .SetEase(Ease.InQuad)
-                    );
-
-                    sseq.Join(
-                        temp.rectTransform
-                            .DOScale(Vector3.one, duration * 0.35f)
-                            .SetEase(Ease.OutQuad)
-                    );
-
-                    seq.Join(sseq);
-                }
+                var entryView = _cells[new Vector2Int(s.cell.x, entryY)];
+                var key = (s.cell.x, s.spawnFromY);
+                spawnOrder.TryGetValue(key, out int order);
+                spawnOrder[key] = order + 1;
+                Vector3 step = GravityStep(s.cell, targetView);
+                // Blockers split columns into separate refill segments; never fly through a bone.
+                float entryOffset = s.spawnFromY < 0 ? _spawnEntryHeight : .42f;
+                temp.rectTransform.position = entryView.ImageRect.position + step * entryOffset;
+                var spawnColor = temp.color;
+                float targetAlpha = spawnColor.a;
+                spawnColor.a = 0;
+                temp.color = spawnColor;
+                float delay = order * _spawnStaggerSeconds;
+                float fallSeconds = Mathf.Max(duration, _spawnFallSeconds) + (s.cell.y - entryY) * .035f;
+                seq.Insert(delay, temp.DOFade(targetAlpha, Mathf.Min(_spawnFadeSeconds, fallSeconds)).SetEase(Ease.InOutSine));
+                seq.Insert(delay, BuildTileDrop(temp.rectTransform, targetView, fallSeconds));
             }
         }
 
@@ -812,6 +796,21 @@ public class BoardView : MonoBehaviour
         });
 
         return tcs.Task;
+    }
+
+    private Vector3 GravityStep(Vector2Int cell, CellView view)
+    {
+        if (_cells.TryGetValue(cell + Vector2Int.down, out var above))
+            return above.ImageRect.position - view.ImageRect.position;
+        if (_cells.TryGetValue(cell + Vector2Int.up, out var below))
+            return view.ImageRect.position - below.ImageRect.position;
+        return view.ImageRect.TransformVector(Vector3.up * view.ImageRect.rect.height);
+    }
+
+    private Sequence BuildTileDrop(RectTransform tile, CellView target, float duration)
+    {
+        var rebound = target.ImageRect.TransformVector(Vector3.up * target.ImageRect.rect.height * _landingBounceHeight);
+        return BoardTileDropAnimation.Create(tile, target.ImageRect.position, rebound, duration, _landingBounceSeconds);
     }
     private Tween BuildMatchLikePop(RectTransform pieceRt, float duration = BoardEffectsTiming.MatchPop)
     {
@@ -877,13 +876,27 @@ public class BoardView : MonoBehaviour
     public Task AnimateMatchPopFx(List<Vector2Int> matches, float duration = BoardEffectsTiming.MatchPop, BoardClearEffect effect = BoardClearEffect.Match)
     {
         if (matches == null || matches.Count == 0)
+        {
+            if (effect == BoardClearEffect.BlackSheep)
+            {
+                var step = new TaskCompletionSource<bool>();
+                DOVirtual.DelayedCall(duration, () => step.TrySetResult(true), false)
+                    .OnKill(() => step.TrySetResult(true));
+                return step.Task;
+            }
             return Task.CompletedTask;
+        }
+
+        // The sheep's travelling line uses the caller's LineStep timing and original pop.
+        if (effect == BoardClearEffect.Match && _clearAnimation != null && _clearAnimation.isActiveAndEnabled)
+            return _clearAnimation.Animate(matches, effect);
 
         var tcs = new TaskCompletionSource<bool>();
         var spawnedFx = new List<Image>();
         var touchedCells = new List<RectTransform>();
 
         Sequence master = DOTween.Sequence();
+        master.SetTarget(this);
 
         foreach (var cell in matches)
         {
@@ -961,7 +974,10 @@ public class BoardView : MonoBehaviour
         {
             foreach (var rt in touchedCells)
                 if (rt != null)
+                {
+                    if (effect == BoardClearEffect.BlackSheep) rt.GetComponent<Image>().enabled = false;
                     rt.localScale = Vector3.one;
+                }
 
             foreach (var fx in spawnedFx)
                 ReleaseFxImage(fx);
@@ -1277,8 +1293,9 @@ public class BoardView : MonoBehaviour
 
     public void PlayBoneBreakFx(Vector2Int coord)
     {
-        if (_boardMatchEffects != null && _cells.TryGetValue(coord, out var cell))
-            _boardMatchEffects.BoneBreak(cell.ImageRect);
+        if (!_cells.TryGetValue(coord, out var cell)) return;
+        if (_boardMatchEffects != null) _boardMatchEffects.BoneBreak(cell.ImageRect);
+        cell.SetImageEnabled(false);
     }
 
     public Task AnimateSheepAnger(Vector2Int coord)
@@ -1292,6 +1309,9 @@ public class BoardView : MonoBehaviour
             .OnKill(() => tcs.TrySetResult(true));
         return tcs.Task;
     }
+    public Task WaitForBlackSheepParticles() => _boardMatchEffects != null
+        ? _boardMatchEffects.WaitForBlackSheepParticles() : Task.CompletedTask;
+
     public void PlayBlackSheepFx(Vector2Int coord, bool horizontal, int width, int height)
     {
         if (_boardMatchEffects == null || !_cells.TryGetValue(coord, out var cell)) return;
@@ -1361,6 +1381,15 @@ public class BoardView : MonoBehaviour
     public Transform GetFxParent()
     {
         return _swapOverlay != null ? _swapOverlay : transform;
+    }
+
+    public RectTransform GetMatchCellRect(Vector2Int cell) => _cells.TryGetValue(cell, out var view) ? view.ImageRect : null;
+
+    public GoalRowView FindAnimalGoal(Sprite sprite)
+    {
+        foreach (var row in _rows)
+            if (row != null && row.CanCollect && row.IconSprite == sprite) return row;
+        return null;
     }
 
     public Task AnimateInvalidSwap(Vector2Int a, Vector2Int? b = null, Vector2Int? dir = null, float duration = 0.20f)
@@ -1520,7 +1549,7 @@ public class BoardView : MonoBehaviour
             var spec = specs[i];
             var row = _rows[i];
             row.transform.SetSiblingIndex(i);
-            row.Set(spec.Icon, spec.Text, spec.Color, spec.IsComplete);
+            row.Set(spec.Icon, spec.Text, spec.Color, spec.IsComplete, spec.AnimateCounter);
         }
     }
 

@@ -36,6 +36,9 @@ public class AnimalDialogueController : MonoBehaviour
         if (_speechConfig.TryGetTutorialLevel(levelIndex, out var tutorialLevel))
         {
             await ShowTutorialLevelAsync(tutorialLevel);
+            if (levelIndex == 3 && GameBootstrapper.Instance != null)
+                GameBootstrapper.Instance.Economy.TryClaimOneTimeBoosterReward(
+                    OneTimeRewardId.Tutorial_Level3_TimerBomb, BoosterEffectType.TimerBomb, 1);
             return;
         }
 

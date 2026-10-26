@@ -17,7 +17,6 @@ public class SpeechBubblePresenter : MonoBehaviour
         public Sprite leftSprite;
         public Sprite rightSprite;
         public TextMeshProUGUI speechText;
-        public Button continueButton;
         [Tooltip("Fallback if left/right are not assigned.")]
         public Image speakerImage;
         [Tooltip("Visual-novel left slot (place at bottom-left).")]
@@ -28,14 +27,12 @@ public class SpeechBubblePresenter : MonoBehaviour
         public UISlideInTween slideTween;
     }
 
-    public System.Action<int> OnLineShown;
-    public System.Action OnSpeechFinished;
-
     [Header("Canvas Space")]
     [SerializeField] private RectTransform _screenBoundsRect;
     [SerializeField] private Camera _uiCamera;
     [SerializeField] private float _normalYOffset = 140f;
     [SerializeField] private float _screenPadding = 24f;
+    [SerializeField] private GameObject _tapSurface;
 
     [Header("Modes")]
     [SerializeField] private BubbleModeRefs _tutorial;
@@ -43,20 +40,16 @@ public class SpeechBubblePresenter : MonoBehaviour
     [SerializeField] private BubbleModeRefs _triggered;
 
     private TaskCompletionSource<bool> _clickTcs;
+    private int _lastAdvanceFrame = -1;
 
     private void Awake()
     {
-        BindButton(_tutorial);
-        BindButton(_normal);
-        BindButton(_triggered);
         HideImmediate();
     }
 
     private void OnDestroy()
     {
-        UnbindButton(_tutorial);
-        UnbindButton(_normal);
-        UnbindButton(_triggered);
+        _clickTcs?.TrySetCanceled();
     }
 
     /// <param name="useRightSide">Random per step: left bubble + left speaker vs right bubble + right speaker.</param>
@@ -67,17 +60,24 @@ public class SpeechBubblePresenter : MonoBehaviour
 
         SetupModeVisuals(_tutorial, useRightSide, showSpeaker: true, speakerSprite);
         PlayShow(_tutorial, fromRight: useRightSide);
+        if (_tapSurface != null) _tapSurface.SetActive(true);
 
-        for (int i = 0; i < lines.Count; i++)
+        try
         {
-            OnLineShown?.Invoke(i);
-            string line = string.IsNullOrWhiteSpace(lines[i]) ? "..." : lines[i];
-            _tutorial.speechText.text = line;
-            _clickTcs = new TaskCompletionSource<bool>();
-            await _clickTcs.Task;
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string line = string.IsNullOrWhiteSpace(lines[i]) ? "..." : lines[i];
+                _tutorial.speechText.text = line;
+                _clickTcs = new TaskCompletionSource<bool>();
+                await _clickTcs.Task;
+            }
+        }
+        finally
+        {
+            _clickTcs = null;
+            if (_tapSurface != null) _tapSurface.SetActive(false);
         }
 
-        OnSpeechFinished?.Invoke();
         PlayHide(_tutorial, toRight: useRightSide, deactivateAfterHide: true);
     }
 
@@ -119,8 +119,11 @@ public class SpeechBubblePresenter : MonoBehaviour
         }
     }
 
-    private void HandleButtonClicked()
+    public void ContinueFromScreenTap()
     {
+        // One pointer release advances one line, even when touch also generates a mouse event.
+        if (_lastAdvanceFrame == Time.frameCount || _clickTcs == null) return;
+        _lastAdvanceFrame = Time.frameCount;
         _clickTcs?.TrySetResult(true);
     }
 
@@ -128,6 +131,7 @@ public class SpeechBubblePresenter : MonoBehaviour
     {
         _clickTcs?.TrySetCanceled();
         _clickTcs = null;
+        if (_tapSurface != null) _tapSurface.SetActive(false);
         HideModeImmediate(_tutorial);
         HideModeImmediate(_normal);
         HideModeImmediate(_triggered);
@@ -262,18 +266,6 @@ public class SpeechBubblePresenter : MonoBehaviour
             return;
 
         slideTween.SetFromSide(fromRight ? UISlideInTween.FromSide.Right : UISlideInTween.FromSide.Left);
-    }
-
-    private void BindButton(BubbleModeRefs mode)
-    {
-        if (mode != null && mode.continueButton != null)
-            mode.continueButton.onClick.AddListener(HandleButtonClicked);
-    }
-
-    private void UnbindButton(BubbleModeRefs mode)
-    {
-        if (mode != null && mode.continueButton != null)
-            mode.continueButton.onClick.RemoveListener(HandleButtonClicked);
     }
 
     public void HideNormalImmediate()

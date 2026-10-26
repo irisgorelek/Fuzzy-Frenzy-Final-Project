@@ -78,6 +78,7 @@ GameObject:
   - component: {fileID: 1650985475521923327}
   - component: {fileID: 1034223459961420033}
   - component: {fileID: 5051442782048203934}
+  - component: {fileID: 5647805471430116305}
   m_Layer: 5
   m_Name: Grid
   m_TagString: Untagged
@@ -124,6 +125,12 @@ MonoBehaviour:
   _normalColor: {r: 1, g: 1, b: 1, a: 0}
   _tutorialLockedColor: {r: 1, g: 0.9, b: 0.35, a: 1}
   _swapOverlay: {fileID: 0}
+  _landingBounceHeight: 0.08
+  _landingBounceSeconds: 0.14
+  _spawnFallSeconds: 0.36
+  _spawnFadeSeconds: 0.3
+  _spawnStaggerSeconds: 0.055
+  _spawnEntryHeight: 1.2
   _defaultSprite: {fileID: 3625043607559282579, guid: 19fb86013d8c24d6cb8410c0aadf30fa, type: 3}
   _backgroundImage: {fileID: 0}
   _levelNumberText: {fileID: 0}
@@ -134,6 +141,7 @@ MonoBehaviour:
   _timerPowerUp: {fileID: 0}
   _timerBackground: {fileID: 0}
   _boardMatchEffects: {fileID: 5051442782048203934}
+  _clearAnimation: {fileID: 5647805471430116305}
   _matchRingSprite: {fileID: 4004708080983207187, guid: 1e74acaa133d3a24c8714d63c42f917c, type: 3}
   _sparkleSprite: {fileID: -4934262671210103338, guid: ae2455dfc9ba6ee45ba734ed1f1d5b4e, type: 3}
   _matchFxColor: {r: 1, g: 1, b: 1, a: 0.95}
@@ -184,3 +192,37 @@ MonoBehaviour:
   _bomb: {fileID: 8843225538582706425, guid: 4736a358a5ab75c49ae23810d29474b5, type: 3}
   _sheepAnger: {fileID: 2868345954406194182, guid: 8187736052bc964409ff51242ff9224e, type: 3}
   _effectScale: 1
+--- !u!114 &5647805471430116305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7414411753382228682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba8120e314b380c4aa9f4d84fcdfd348, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FunzzyFrenzy.core::BoardClearAnimation
+  _view: {fileID: 1650985475521923327}
+  _effects: {fileID: 5051442782048203934}
+  _stagger: 0.07
+  _popSeconds: 0.35
+  _popScale: 1.07
+  _flightSeconds: 0.85
+  _collectionArrivalOverlap: 0.08
+  _collectionFadeSeconds: 0.22
+  _collectionPeakScale: 1.32
+  _palette:
+  - animal: {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
+    color: {r: 0.9411765, g: 0.6745098, b: 0.6431373, a: 1}
+  - animal: {fileID: 11400000, guid: c09661451337efb468fca264d4b56a0b, type: 2}
+    color: {r: 0.72156864, g: 0.5176471, b: 0.3764706, a: 1}
+  - animal: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+    color: {r: 1, g: 0.9411765, b: 0.8627451, a: 1}
+  - animal: {fileID: 11400000, guid: f91e787c00742b441b6e21f9b3bc58be, type: 2}
+    color: {r: 1, g: 0.94509804, b: 0.6901961, a: 1}
+  - animal: {fileID: 11400000, guid: d193b94364d3b434c8124d00644933a3, type: 2}
+    color: {r: 0.43529412, g: 0.49803922, b: 0.6431373, a: 1}
+  - animal: {fileID: 11400000, guid: e1eca746db8cc6e428202c4772320467, type: 2}
+    color: {r: 0.42745098, g: 0.36862746, b: 0.5647059, a: 1}

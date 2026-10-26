@@ -335,10 +335,12 @@ public class BoardController : MonoBehaviour
             await AnimateBlackSheepBlastFromCenter(sheepPosAfterSwap, swipeVertical);
 
             // Then actually clear the model and show the result
-            _board.TriggerSheepSwipeBlast(sheepPosAfterSwap, swipeVertical);
+            var blastFalls = new List<Board.FallMove>();
+            var blastSpawns = new List<Board.SpawnInfo>();
+            _board.TriggerSheepSwipeBlast(sheepPosAfterSwap, swipeVertical, blastFalls, blastSpawns);
 
             UpdateGoalUI();
-            _view.AssignSprites(_board);
+            await _view.AnimateGravity(blastFalls, blastSpawns, _board);
 
             await ResolveCascadesAsync();
             _animalDialogueController.HideNormalBubbleIfActive();
@@ -802,6 +804,7 @@ public class BoardController : MonoBehaviour
         for (int wave = 0; wave <= maxWave; wave++)
         {
             var waveCells = new List<Vector2Int>();
+            var waveLineCells = new List<Vector2Int>();
 
             if (swipedVertically)
             {
@@ -813,14 +816,16 @@ public class BoardController : MonoBehaviour
                 if (leftX >= 0)
                 {
                     var leftCell = new Vector2Int(leftX, y);
-                    if (_board.GetAnimalFromCell(leftCell) != BoneBlock)
+                    waveLineCells.Add(leftCell);
+                    if (_board.GetAnimalFromCell(leftCell) != null && _board.GetAnimalFromCell(leftCell) != BoneBlock)
                         waveCells.Add(leftCell);
                 }
 
                 if (rightX < _cfg.weidth && rightX != leftX)
                 {
                     var rightCell = new Vector2Int(rightX, y);
-                    if (_board.GetAnimalFromCell(rightCell) != BoneBlock)
+                    waveLineCells.Add(rightCell);
+                    if (_board.GetAnimalFromCell(rightCell) != null && _board.GetAnimalFromCell(rightCell) != BoneBlock)
                         waveCells.Add(rightCell);
                 }
             }
@@ -834,26 +839,29 @@ public class BoardController : MonoBehaviour
                 if (downY >= 0)
                 {
                     var downCell = new Vector2Int(x, downY);
-                    if (_board.GetAnimalFromCell(downCell) != BoneBlock)
+                    waveLineCells.Add(downCell);
+                    if (_board.GetAnimalFromCell(downCell) != null && _board.GetAnimalFromCell(downCell) != BoneBlock)
                         waveCells.Add(downCell);
                 }
 
                 if (upY < _cfg.height && upY != downY)
                 {
                     var upCell = new Vector2Int(x, upY);
-                    if (_board.GetAnimalFromCell(upCell) != BoneBlock)
+                    waveLineCells.Add(upCell);
+                    if (_board.GetAnimalFromCell(upCell) != null && _board.GetAnimalFromCell(upCell) != BoneBlock)
                         waveCells.Add(upCell);
                 }
             }
 
-            if (waveCells.Count == 0)
-                continue;
+            // Break bones during the passing wave, without refilling or duplicating the later explosion.
+            _board.BreakBonesAdjacentTo(waveLineCells);
 
-            if (AudioManager.instance != null)
+            if (waveCells.Count > 0 && AudioManager.instance != null)
                 AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f);
 
             await _view.AnimateMatchPopFx(waveCells, BoardEffectsTiming.LineStep, BoardClearEffect.BlackSheep);
         }
+        await _view.WaitForBlackSheepParticles();
     }
 
     private bool TryHandleLevelFailed()

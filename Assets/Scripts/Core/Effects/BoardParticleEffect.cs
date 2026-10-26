@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>A pooled burst. One local unit equals one tile width.</summary>
@@ -7,6 +8,8 @@ public sealed class BoardParticleEffect : MonoBehaviour
     private ParticleSystem[] _systems;
     private Action<BoardParticleEffect> _returnToPool;
     private float _age;
+    private TaskCompletionSource<bool> _finished;
+    public Task Completion => _finished?.Task ?? Task.CompletedTask;
     public int LiveParticleCount
     {
         get
@@ -17,11 +20,14 @@ public sealed class BoardParticleEffect : MonoBehaviour
         }
     }
 
-    public void Play(Action<BoardParticleEffect> returnToPool = null)
+    public void Play(Action<BoardParticleEffect> returnToPool = null, Color? animalTint = null)
     {
         _returnToPool = returnToPool;
+        _finished = new TaskCompletionSource<bool>();
         _age = 0;
         _systems ??= GetComponentsInChildren<ParticleSystem>(true);
+        var tint = GetComponent<AnimalMatchParticleTint>();
+        if (tint != null) tint.Apply(animalTint ?? Color.white);
         foreach (var ps in _systems)
         {
             ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -75,5 +81,6 @@ public sealed class BoardParticleEffect : MonoBehaviour
         if (_systems == null) return;
         foreach (var ps in _systems) if (ps != null)
             ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        _finished?.TrySetResult(true);
     }
 }

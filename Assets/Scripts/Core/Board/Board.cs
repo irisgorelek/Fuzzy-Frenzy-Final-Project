@@ -615,6 +615,8 @@ public class Board
     }
 
     // ----- Wolf -> Sheep interaction ----- //
+    public void BreakBonesAdjacentTo(List<Vector2Int> matches) => DamageAdjacentBoneBlocks(matches);
+
     private void DamageAdjacentBoneBlocks(List<Vector2Int> matches)
     {
         if (_boneBlock == null || matches == null || matches.Count == 0)
@@ -835,7 +837,8 @@ public class Board
             _blackSheepArmed = true;
     }
 
-    public void TriggerSheepSwipeBlast(Vector2Int sheepPosAfterSwap, bool swipedVertically)
+    public void TriggerSheepSwipeBlast(Vector2Int sheepPosAfterSwap, bool swipedVertically,
+        List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
     {
         if (!IsCellInBounds(sheepPosAfterSwap))
             return;
@@ -857,10 +860,10 @@ public class Board
                 cellsToClear.Add(new Vector2Int(x, y));
         }
 
-        ClearCellsAsExplosion(cellsToClear);
+        ClearCellsAsExplosion(cellsToClear, fallMoves, spawns);
     }
 
-    private void ClearCellsAsExplosion(List<Vector2Int> cells)
+    private void ClearCellsAsExplosion(List<Vector2Int> cells, List<FallMove> fallMoves, List<SpawnInfo> spawns)
     {
         var destroyedByAnimal = new Dictionary<string, int>();
         int pointsGainedThisClear = 0;
@@ -896,8 +899,8 @@ public class Board
         foreach (var kvp in destroyedByAnimal)
             OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
 
-        ApplyGravity();
-        Refill();
+        ApplyGravity(fallMoves);
+        Refill(spawns);
         //ResolveWolfSheepInteractions();
     }
 

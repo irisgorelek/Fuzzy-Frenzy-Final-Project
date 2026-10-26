@@ -4,6 +4,43 @@ using UnityEngine;
 
 public class BoardBoneFeedbackTests
 {
+    [Test]
+    public void SheepWave_BreaksBoneBeforeRefillAndDoesNotReportItTwice()
+    {
+        var animal = ScriptableObject.CreateInstance<Animal>();
+        var bone = ScriptableObject.CreateInstance<Animal>();
+        var config = ScriptableObject.CreateInstance<BoardConfig>();
+        try
+        {
+            animal._id = "animal";
+            animal._affectedByGravity = true;
+            bone._id = "bone";
+            bone._affectedByGravity = false;
+            config.weidth = config.height = 3;
+            config.animals = new List<Animal> { animal };
+            config.boneBlock = bone;
+            var board = new Board(config);
+            for (int x = 0; x < 3; x++)
+            for (int y = 0; y < 3; y++) board.SetAnimalInCell(new Vector2Int(x,y), animal);
+            board.SetAnimalInCell(Vector2Int.one, bone);
+            int breaks = 0;
+            board.OnBoneBlockBroken += _ => breaks++;
+            board.BreakBonesAdjacentTo(new List<Vector2Int> { new Vector2Int(0,1) });
+            Assert.AreEqual(1, breaks);
+            Assert.IsNull(board.GetAnimalFromCell(Vector2Int.one), "Bone breaks during the wave, without waiting for refill.");
+            Assert.AreSame(animal, board.GetAnimalFromCell(new Vector2Int(1,0)));
+            board.TriggerSheepSwipeBlast(new Vector2Int(0,1), true);
+            Assert.AreEqual(1, breaks, "Final model clear must not duplicate the crack or reward.");
+            Assert.IsNotNull(board.GetAnimalFromCell(Vector2Int.one));
+        }
+        finally
+        {
+            Object.DestroyImmediate(animal);
+            Object.DestroyImmediate(bone);
+            Object.DestroyImmediate(config);
+        }
+    }
+
     [TestCase(true)]
     [TestCase(false)]
     public void ClearCells_BoneAdjacentToTwoClears_ReportsItsPositionOnceBeforeRemoval(bool configuredInLevel)

@@ -25,6 +25,19 @@ namespace FuzzyFrenzy.Domain
         }
     }
 
+    /// <summary>A tile removed from a specific board position.</summary>
+    public readonly struct ClearedTile
+    {
+        public readonly GridPos Cell;
+        public readonly int Type;
+
+        public ClearedTile(GridPos cell, int type)
+        {
+            Cell = cell;
+            Type = type;
+        }
+    }
+
     /// <summary>A predator eating the tile next to it (a wolf eating a sheep).</summary>
     public readonly struct Meal
     {
@@ -45,6 +58,7 @@ namespace FuzzyFrenzy.Domain
     public sealed class ClearReport
     {
         public readonly List<GridPos> Cleared = new List<GridPos>();
+        public readonly List<ClearedTile> ClearedTiles = new List<ClearedTile>();
         public readonly List<DestroyedCount> Destroyed = new List<DestroyedCount>();
         public int Points;
 
@@ -91,6 +105,8 @@ namespace FuzzyFrenzy.Domain
                     report.CountDestroyed(def.Id);
 
                 report.Cleared.Add(cell);
+                report.ClearedTiles.Add(new ClearedTile(cell, def.Type));
+
                 board.Clear(cell);
             }
 

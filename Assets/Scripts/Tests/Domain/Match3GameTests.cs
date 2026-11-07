@@ -508,3 +508,193 @@ public class PigFormCycleTests
             Catalog.Add(new TileDefinition(id, 1, true, true, true, 1f));
     }
 }
+
+/// <summary>
+/// Tests the goose's permanent-wake ability through the real clear/rule/action pipeline.
+/// </summary>
+public class GoosePermanentWakeTests
+{
+    private static readonly TurnContext NoShuffle =
+        new TurnContext(movesLeft: 0, maxMoves: 0, timerActive: false);
+
+    [TestCase("cycling-pig-awake")]
+    [TestCase("cycling-pig-sleep-1")]
+    [TestCase("cycling-pig-sleep-2")]
+    public void MatchedGoose_PermanentlyWakesAdjacentCyclingPig(string startingPigId)
+    {
+        var fixture = new GooseMatchFixture(startingPigId, new GridPos(1, 1));
+        int startingType = fixture.Board.TypeAt(fixture.PigCell);
+
+        TurnResult result = fixture.Game.ResolveBoard(NoShuffle);
+
+        Assert.That(fixture.Board.TypeAt(fixture.PigCell), Is.EqualTo(fixture.Types.NormalPig));
+
+        TileFormChange change = result.Steps
+            .OfType<TileFormsChangedStep>()
+            .SelectMany(step => step.Changes)
+            .Single(item => item.Cell == fixture.PigCell);
+
+        Assert.That(change.OldType, Is.EqualTo(startingType));
+        Assert.That(change.NewType, Is.EqualTo(fixture.Types.NormalPig));
+    }
+
+    [Test]
+    public void PermanentWake_PreservesThePigRuntimeId()
+    {
+        var fixture = new GooseMatchFixture("cycling-pig-sleep-1", new GridPos(1, 1));
+        int pigId = fixture.Board.Get(fixture.PigCell).Id;
+
+        fixture.Game.ResolveBoard(NoShuffle);
+
+        Assert.That(fixture.Board.Get(fixture.PigCell).Id, Is.EqualTo(pigId));
+        Assert.That(fixture.Board.TypeAt(fixture.PigCell), Is.EqualTo(fixture.Types.NormalPig));
+    }
+
+    [Test]
+    public void MatchedGoose_DoesNotWakeDiagonallyAdjacentPig()
+    {
+        // The pig is diagonal to the rightmost matched goose, but not orthogonally adjacent to any goose.
+        var fixture = new GooseMatchFixture("cycling-pig-sleep-1", new GridPos(3, 1));
+        int sleepingType = fixture.Board.TypeAt(fixture.PigCell);
+
+        TurnResult result = fixture.Game.ResolveBoard(NoShuffle);
+
+        Assert.That(fixture.Board.TypeAt(fixture.PigCell), Is.EqualTo(sleepingType));
+        bool pigChanged = result.Steps
+            .OfType<TileFormsChangedStep>()
+            .SelectMany(step => step.Changes)
+            .Any(change => change.Cell == fixture.PigCell);
+        Assert.That(pigChanged, Is.False);
+    }
+
+    [Test]
+    public void BoosterClearedGoose_DoesNotWakeAdjacentPig()
+    {
+        var types = new GooseTypes();
+        var board = new BoardState(types.Catalog, 2, 1);
+        var gooseCell = new GridPos(0, 0);
+        var pigCell = new GridPos(1, 0);
+        board.Place(gooseCell, types.Goose);
+        board.Place(pigCell, types.Sleep1Pig);
+        board.SpawnPool.Add(types.A);
+        board.ForcedSpawns.Enqueue(types.A);
+        int sleepingType = board.TypeAt(pigCell);
+        var game = NewGame(board);
+
+        TurnResult result = game.ClearCells(new[] { gooseCell }, NoShuffle);
+
+        Assert.That(board.TypeAt(pigCell), Is.EqualTo(sleepingType));
+        Assert.That(result.Steps.OfType<TileFormsChangedStep>(), Is.Empty,
+            "The goose ability activates on a match clear, not on a booster clear.");
+    }
+
+    [Test]
+    public void MatchedGoose_DoesNotChangeAdjacentNormalPig()
+    {
+        var fixture = new GooseMatchFixture("pig", new GridPos(1, 1));
+        int pigId = fixture.Board.Get(fixture.PigCell).Id;
+
+        TurnResult result = fixture.Game.ResolveBoard(NoShuffle);
+
+        Assert.That(fixture.Board.TypeAt(fixture.PigCell), Is.EqualTo(fixture.Types.NormalPig));
+        Assert.That(fixture.Board.Get(fixture.PigCell).Id, Is.EqualTo(pigId));
+        Assert.That(result.Steps.OfType<TileFormsChangedStep>(), Is.Empty,
+            "An already permanent pig has no CanBePermanentlyAwakened trait.");
+    }
+
+    private static Match3Game NewGame(BoardState board) =>
+        new Match3Game(
+            board,
+            new GameSession(TestBoards.NoGoal()),
+            new SeededRandomSource(1),
+            Match3Game.DefaultRules(),
+            SpecialSpawnSettings.None);
+
+    private sealed class GooseMatchFixture
+    {
+        public GooseMatchFixture(string startingPigId, GridPos pigCell)
+        {
+            Types = new GooseTypes();
+            Board = new BoardState(Types.Catalog, 4, 2);
+            PigCell = pigCell;
+
+            // Three geese begin matched across the top. ResolveBoard clears them as a match,
+            // allowing the test to exercise ClearAction -> PermanentWakeRule -> wake action.
+            int[,] rows =
+            {
+                { Types.Goose, Types.Goose, Types.Goose, Types.A },
+                { Types.A, Types.B, Types.C, Types.D },
+            };
+            rows[PigCell.Y, PigCell.X] = Types.Catalog.TypeOfId(startingPigId);
+
+            for (int y = 0; y < Board.Height; y++)
+                for (int x = 0; x < Board.Width; x++)
+                    Board.Place(new GridPos(x, y), rows[y, x]);
+
+            Board.SpawnPool.AddRange(new[] { Types.A, Types.B, Types.C, Types.D });
+            Board.ForcedSpawns.Enqueue(Types.B);
+            Board.ForcedSpawns.Enqueue(Types.C);
+            Board.ForcedSpawns.Enqueue(Types.D);
+            Game = NewGame(Board);
+        }
+
+        public GooseTypes Types { get; }
+        public BoardState Board { get; }
+        public Match3Game Game { get; }
+        public GridPos PigCell { get; }
+    }
+
+    private sealed class GooseTypes
+    {
+        public GooseTypes()
+        {
+            NormalPig = Catalog.Add(new TileDefinition(
+                "pig", 1, true, true, true, 1f,
+                matchGroupId: "pig"));
+
+            AwakePig = Catalog.Add(new TileDefinition(
+                "cycling-pig-awake", 1, true, true, true, 0f,
+                TileTraits.AdvancesFormEachTurn | TileTraits.CanBePermanentlyAwakened,
+                matchGroupId: "pig",
+                nextTurnFormId: "cycling-pig-sleep-1",
+                permanentAwakeFormId: "pig"));
+
+            Sleep1Pig = Catalog.Add(new TileDefinition(
+                "cycling-pig-sleep-1", 1, false, false, true, 0f,
+                TileTraits.AdvancesFormEachTurn | TileTraits.CanBePermanentlyAwakened,
+                matchGroupId: "pig",
+                nextTurnFormId: "cycling-pig-sleep-2",
+                permanentAwakeFormId: "pig"));
+
+            Sleep2Pig = Catalog.Add(new TileDefinition(
+                "cycling-pig-sleep-2", 1, false, false, true, 0f,
+                TileTraits.AdvancesFormEachTurn | TileTraits.CanBePermanentlyAwakened,
+                matchGroupId: "pig",
+                nextTurnFormId: "cycling-pig-awake",
+                permanentAwakeFormId: "pig"));
+
+            Goose = Catalog.Add(new TileDefinition(
+                "goose", 1, true, true, true, 1f,
+                TileTraits.PermanentlyWakesAdjacent));
+
+            A = AddNormal("goose-test-a");
+            B = AddNormal("goose-test-b");
+            C = AddNormal("goose-test-c");
+            D = AddNormal("goose-test-d");
+        }
+
+        public TileCatalog Catalog { get; } = new TileCatalog();
+        public int NormalPig { get; }
+        public int AwakePig { get; }
+        public int Sleep1Pig { get; }
+        public int Sleep2Pig { get; }
+        public int Goose { get; }
+        public int A { get; }
+        public int B { get; }
+        public int C { get; }
+        public int D { get; }
+
+        private int AddNormal(string id) =>
+            Catalog.Add(new TileDefinition(id, 1, true, true, true, 1f));
+    }
+}

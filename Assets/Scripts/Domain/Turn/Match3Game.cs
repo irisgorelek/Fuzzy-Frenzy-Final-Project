@@ -57,6 +57,7 @@ namespace FuzzyFrenzy.Domain
         {
             new LineBlastOnSwapRule(),
             new BoneDamageRule(),
+            new PermanentWakeRule(),
             new PredatorsEatRule(),
         };
 

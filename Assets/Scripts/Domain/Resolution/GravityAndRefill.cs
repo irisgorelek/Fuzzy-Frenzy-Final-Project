@@ -90,13 +90,14 @@ namespace FuzzyFrenzy.Domain
                     if (board.IsEmpty(p)) empties.Add(p);
                 }
 
-            // An armed black sheep takes exactly one random empty cell.
-            if (board.BlackSheepArmed && board.Specials.BlackSheep >= 0 && empties.Count > 0)
+            // An armed spawn (a black sheep) takes exactly one random empty cell.
+            int armed = board.ArmedSpawnType;
+            if (armed >= 0 && empties.Count > 0)
             {
                 var cell = empties[random.Range(0, empties.Count)];
-                board.Place(cell, board.Specials.BlackSheep);
-                spawns?.Add(new SpawnedTile(cell, board.Specials.BlackSheep, SpawnFromY(board, cell)));
-                board.BlackSheepArmed = false;
+                board.Place(cell, armed);
+                spawns?.Add(new SpawnedTile(cell, armed, SpawnFromY(board, cell)));
+                board.ArmedSpawnType = -1;
                 empties.Remove(cell);
             }
 

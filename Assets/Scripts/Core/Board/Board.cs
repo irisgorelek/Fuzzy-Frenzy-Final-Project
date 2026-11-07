@@ -43,10 +43,8 @@ public class Board : IAnimalGrid
             foreach (var animal in config.animals)
                 if (animal != null) _state.SpawnPool.Add(_catalog.TypeOf(animal));
 
-        _state.Specials.Wolf = _catalog.TypeOf(config.wolf);
-        _state.Specials.Sheep = _catalog.TypeOf(config.sheep);
-        _state.Specials.Bone = _catalog.TypeOf(config.boneBlock);
-        _state.Specials.BlackSheep = _catalog.TypeOf(config.blackSheep);
+        // Registered up front so the delayed spawn has a type. What each tile does comes from its Animal asset.
+        _catalog.TypeOf(config.blackSheep);
 
         _session = new GameSession(BuildGoals(config));
     }
@@ -98,18 +96,14 @@ public class Board : IAnimalGrid
     /// <summary>Fills the board with no starting matches and no sheep next to a wolf.</summary>
     public void Initialize() => BoardGenerator.Generate(_state, _random);
 
-    /// <summary>Places a tile directly. For level setup, debug tools and tests, not for gameplay.</summary>
+    /// <summary>
+    /// Places a tile directly. For level setup, debug tools and tests, not for gameplay.
+    /// Any Animal works, even one the level doesn't list: its behaviour comes with its asset.
+    /// </summary>
     public void SetAnimalInCell(Vector2Int cell, Animal animal)
     {
         if (IsCellInBounds(cell))
             _state.Place(cell.ToGrid(), _catalog.TypeOf(animal));
-    }
-
-    /// <summary>Debug only: lets a level without these tiles use them.</summary>
-    public void DebugSetSpecialAnimals(Animal blackSheep, Animal boneBlock)
-    {
-        _state.Specials.BlackSheep = _catalog.TypeOf(blackSheep);
-        _state.Specials.Bone = _catalog.TypeOf(boneBlock);
     }
 
     // Kept under this name: tests read it through reflection.

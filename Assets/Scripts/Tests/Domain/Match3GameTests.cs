@@ -172,9 +172,9 @@ public class Match3GameTests
 
         var result = game.ResolveBoard(new TurnContext(0, 10, false));
 
-        var feast = result.Steps.OfType<WolfFeastStep>().Single();
-        Assert.That(feast.Meals.Single().Wolf, Is.EqualTo(new GridPos(0, 0)));
-        Assert.That(feast.Meals.Single().Sheep, Is.EqualTo(new GridPos(1, 0)));
+        var feast = result.Steps.OfType<FeastStep>().Single();
+        Assert.That(feast.Meals.Single().Predator, Is.EqualTo(new GridPos(0, 0)));
+        Assert.That(feast.Meals.Single().Prey, Is.EqualTo(new GridPos(1, 0)));
         Assert.That(TestBoards.Rows(board)[0], Is.EqualTo("WXG"));
         Assert.That(game.Session.Points, Is.EqualTo(2));
         Assert.That(game.Session.CollectedCount("sheep"), Is.EqualTo(1));
@@ -218,7 +218,7 @@ public class Match3GameTests
         var result = game.ResolveBoard(new TurnContext(5, 10, false));
 
         Assert.That(result.GoalsComplete, Is.True);
-        Assert.That(result.Steps.OfType<WolfFeastStep>(), Is.Empty, "The wolf doesn't act after the level is won.");
+        Assert.That(result.Steps.OfType<FeastStep>(), Is.Empty, "The wolf doesn't act after the level is won.");
         Assert.That(game.Session.Points, Is.EqualTo(3));
     }
 
@@ -264,16 +264,13 @@ public class Match3GameTests
     {
         var board = TestBoards.Parse("RGB", "GBR", "BRG");
         var game = new Match3Game(board, new GameSession(TestBoards.NoGoal()), new SeededRandomSource(1),
-            new IActionRule[] { new EndlessRule() }, new BlackSheepRollSettings(false, 0, 0f));
+            new IActionRule[] { new EndlessRule() }, SpecialSpawnSettings.None);
 
         Assert.Throws<InvalidOperationException>(() => game.ResolveBoard(new TurnContext(0, 10, false)));
     }
 
-    private sealed class EndlessRule : IActionRule
+    private sealed class EndlessRule : ActionRule<BoardSettledAction>
     {
-        public void React(TurnRun run, IBoardAction applied)
-        {
-            if (applied is BoardSettledAction) run.Enqueue(new BoardSettledAction());
-        }
+        protected override void React(TurnRun run, BoardSettledAction applied) => run.Enqueue(new BoardSettledAction());
     }
 }

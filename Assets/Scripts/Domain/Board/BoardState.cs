@@ -25,7 +25,7 @@ namespace FuzzyFrenzy.Domain
     }
 
     /// <summary>
-    /// The authoritative board. Owns the grid and level-wide board settings (spawn pool, special roles).
+    /// The authoritative board. Owns the grid and level-wide board settings (spawn pool, armed spawns).
     /// Knows nothing about scoring, goals, animation, audio or Unity.
     /// </summary>
     public sealed class BoardState
@@ -56,13 +56,12 @@ namespace FuzzyFrenzy.Domain
         public TileCatalog Catalog { get; }
         public int Width { get; }
         public int Height { get; }
-        public SpecialTiles Specials { get; } = new SpecialTiles();
 
         /// <summary>Tile types refill and level generation pick from.</summary>
         public List<int> SpawnPool { get; } = new List<int>();
 
-        /// <summary>When set, the next refill places exactly one black sheep.</summary>
-        public bool BlackSheepArmed { get; set; }
+        /// <summary>When 0 or more, the next refill places exactly one tile of this type (an armed black sheep).</summary>
+        public int ArmedSpawnType { get; set; } = -1;
 
         /// <summary>Tile types the next refills use before random picks. For tests and scripted boards.</summary>
         public Queue<int> ForcedSpawns { get; } = new Queue<int>();
@@ -83,20 +82,10 @@ namespace FuzzyFrenzy.Domain
             return def != null && def.CanMatch;
         }
 
-        public bool IsBone(GridPos p) => Specials.Bone >= 0 && TypeAt(p) == Specials.Bone;
-
-        /// <summary>
-        /// True when the tile at p is a black sheep. Compared by string ID, so a black sheep placed by a
-        /// debug tool counts even if it is a different asset from the level's own.
-        /// </summary>
-        public bool IsBlackSheep(GridPos p) => IsBlackSheepType(TypeAt(p));
-
-        public bool IsBlackSheepType(int type)
+        public bool Has(GridPos p, TileTraits trait)
         {
-            if (type < 0 || Specials.BlackSheep < 0) return false;
-            if (type == Specials.BlackSheep) return true;
-            string id = Catalog.Get(Specials.BlackSheep).Id;
-            return id.Length > 0 && Catalog.Get(type).Id == id;
+            var def = DefinitionAt(p);
+            return def != null && def.Has(trait);
         }
 
         /// <summary>Places a new tile (with a new ID). A negative type empties the cell.</summary>

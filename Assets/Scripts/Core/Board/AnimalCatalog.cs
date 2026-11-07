@@ -13,7 +13,10 @@ public sealed class AnimalCatalog
 
     public TileCatalog Tiles { get; } = new TileCatalog();
 
-    /// <summary>The tile type for an animal, registering it on first use. Null maps to an empty cell (-1).</summary>
+    /// <summary>
+    /// The tile type for an animal, registering it on first use. Null maps to an empty cell (-1).
+    /// Registering a predator also registers what it eats and leaves behind, so its remains can appear.
+    /// </summary>
     public int TypeOf(Animal animal)
     {
         if (animal == null)
@@ -28,11 +31,17 @@ public sealed class AnimalCatalog
             animal._canMatch,
             animal._canSwap,
             animal._affectedByGravity,
-            animal._spawnWeight);
+            animal._spawnWeight,
+            animal._traits,
+            animal._eats != null ? animal._eats._id : null,
+            animal._leavesBehind != null ? animal._leavesBehind._id : null);
 
         type = Tiles.Add(definition);
         _animals.Add(animal);
         _types[animal] = type;
+
+        TypeOf(animal._eats);
+        TypeOf(animal._leavesBehind);
         return type;
     }
 

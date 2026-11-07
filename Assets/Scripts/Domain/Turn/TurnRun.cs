@@ -10,11 +10,15 @@ namespace FuzzyFrenzy.Domain
     }
 
     /// <summary>
-    /// A game rule (an animal ability, an obstacle behaviour). After every action, each rule may react
-    /// by queuing more actions. Rules never change the board themselves.
+    /// A game rule (an animal ability, an obstacle behaviour). After each action of <see cref="ActionType"/>,
+    /// the rule may react by queuing more actions. Rules never change the board themselves.
+    /// Derive from <see cref="ActionRule{TAction}"/> rather than implementing this directly.
     /// </summary>
     public interface IActionRule
     {
+        /// <summary>The action type this rule reacts to, including derived types. Null means every action.</summary>
+        Type ActionType { get; }
+
         void React(TurnRun run, IBoardAction applied);
     }
 
@@ -29,10 +33,10 @@ namespace FuzzyFrenzy.Domain
 
         private readonly Queue<IBoardAction> _queue = new Queue<IBoardAction>();
         private readonly List<TurnStep> _steps = new List<TurnStep>();
-        private readonly IReadOnlyList<IActionRule> _rules;
+        private readonly RuleBook _rules;
         private int _applied;
 
-        internal TurnRun(BoardState board, GameSession session, IRandomSource random, IReadOnlyList<IActionRule> rules)
+        internal TurnRun(BoardState board, GameSession session, IRandomSource random, RuleBook rules)
         {
             Board = board;
             Session = session;
@@ -57,7 +61,7 @@ namespace FuzzyFrenzy.Domain
             if (step != null) _steps.Add(step);
         }
 
-        /// <summary>Applies the next action and lets every rule react to it.</summary>
+        /// <summary>Applies the next action and lets every rule for its type react to it.</summary>
         internal void ApplyNext()
         {
             if (++_applied > MaxActionsPerTurn)
@@ -66,8 +70,9 @@ namespace FuzzyFrenzy.Domain
             var action = _queue.Dequeue();
             action.Apply(this);
 
-            for (int i = 0; i < _rules.Count; i++)
-                _rules[i].React(this, action);
+            var rules = _rules.For(action);
+            for (int i = 0; i < rules.Length; i++)
+                rules[i].React(this, action);
         }
 
         /// <summary>Applies actions until the queue is empty.</summary>

@@ -53,7 +53,7 @@ public class LevelDebugFlowCheats : MonoBehaviour
             return;
         }
 
-        _board.DebugPlaceAnimalAtCenter(animal, _blackSheep, _boneBlock);
+        _board.DebugPlaceAnimalAtCenter(animal);
     }
 
     public void AddOneTimerBooster()

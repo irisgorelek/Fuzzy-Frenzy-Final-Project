@@ -43,7 +43,7 @@ namespace FuzzyFrenzy.Domain
     {
         private static readonly IReadOnlyList<TurnStep> NoSteps = new TurnStep[0];
 
-        internal TurnResult(TurnOutcome outcome, RejectReason reason, IReadOnlyList<TurnStep> steps, bool goalsComplete)
+        public TurnResult(TurnOutcome outcome, RejectReason reason, IReadOnlyList<TurnStep> steps, bool goalsComplete)
         {
             Outcome = outcome;
             RejectReason = reason;

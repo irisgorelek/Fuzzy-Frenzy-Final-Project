@@ -7,9 +7,9 @@ namespace FuzzyFrenzy.Domain
     {
         /// <summary>Matched tiles. Every cell in the list is a matchable tile.</summary>
         Match,
-        /// <summary>A special's line blast. Bones and empty cells in the line are skipped.</summary>
+        /// <summary>A special's line blast. Blast-resistant tiles (bones) and empty cells in the line are skipped.</summary>
         Explosion,
-        /// <summary>A booster area (bomb). Duplicates, out-of-bounds cells, bones and empty cells are skipped.</summary>
+        /// <summary>A booster area (bomb). Duplicates, out-of-bounds cells, blast-resistant tiles and empty cells are skipped.</summary>
         Booster
     }
 
@@ -25,15 +25,19 @@ namespace FuzzyFrenzy.Domain
         }
     }
 
-    public readonly struct WolfMeal
+    /// <summary>A predator eating the tile next to it (a wolf eating a sheep).</summary>
+    public readonly struct Meal
     {
-        public readonly GridPos Wolf;
-        public readonly GridPos Sheep;
+        public readonly GridPos Predator;
+        public readonly GridPos Prey;
+        /// <summary>What the prey turns into, or -1 to leave the cell empty.</summary>
+        public readonly int RemainsType;
 
-        public WolfMeal(GridPos wolf, GridPos sheep)
+        public Meal(GridPos predator, GridPos prey, int remainsType)
         {
-            Wolf = wolf;
-            Sheep = sheep;
+            Predator = predator;
+            Prey = prey;
+            RemainsType = remainsType;
         }
     }
 
@@ -80,7 +84,7 @@ namespace FuzzyFrenzy.Domain
 
                 var def = board.DefinitionAt(cell);
                 if (def == null) continue;
-                if (cause != ClearCause.Match && board.IsBone(cell)) continue;
+                if (cause != ClearCause.Match && def.Has(TileTraits.ResistsBlasts)) continue;
 
                 report.Points += def.Points;
                 if (cause != ClearCause.Booster || !string.IsNullOrEmpty(def.Id))
@@ -93,11 +97,11 @@ namespace FuzzyFrenzy.Domain
             return report;
         }
 
-        /// <summary>Bones orthogonally next to any source cell, each once, in source order.</summary>
-        public static void FindAdjacentBones(BoardState board, IReadOnlyList<GridPos> sources, List<GridPos> results)
+        /// <summary>Tiles that break next to a clear (bones) orthogonally next to any source cell, each once, in source order.</summary>
+        public static void FindBreakableNeighbours(BoardState board, IReadOnlyList<GridPos> sources, List<GridPos> results)
         {
             results.Clear();
-            if (board.Specials.Bone < 0 || sources == null) return;
+            if (sources == null) return;
 
             var seen = board.Scratch.BeginSeen();
             for (int i = 0; i < sources.Count; i++)
@@ -105,7 +109,7 @@ namespace FuzzyFrenzy.Domain
                 for (int d = 0; d < GridPos.Orthogonal.Length; d++)
                 {
                     var n = sources[i] + GridPos.Orthogonal[d];
-                    if (!board.InBounds(n) || !board.IsBone(n)) continue;
+                    if (!board.InBounds(n) || !board.Has(n, TileTraits.BreaksNextToClear)) continue;
 
                     int index = n.Y * board.Width + n.X;
                     if (seen[index]) continue;
@@ -115,46 +119,49 @@ namespace FuzzyFrenzy.Domain
             }
         }
 
-        /// <summary>Every sheep with a wolf next to it, paired with the first wolf in neighbour order.</summary>
-        public static void FindWolfMeals(BoardState board, List<WolfMeal> results)
+        /// <summary>Every tile with a predator next to it, paired with the first predator in neighbour order.</summary>
+        public static void FindMeals(BoardState board, List<Meal> results)
         {
             results.Clear();
-            var s = board.Specials;
-            if (s.Wolf < 0 || s.Sheep < 0 || s.Bone < 0) return;
 
             for (int x = 0; x < board.Width; x++)
             {
                 for (int y = 0; y < board.Height; y++)
                 {
-                    var sheep = new GridPos(x, y);
-                    if (board.TypeAt(sheep) != s.Sheep) continue;
+                    var prey = new GridPos(x, y);
+                    var preyDef = board.DefinitionAt(prey);
+                    if (preyDef == null) continue;
 
                     for (int d = 0; d < GridPos.Orthogonal.Length; d++)
                     {
-                        var wolf = sheep + GridPos.Orthogonal[d];
-                        if (!board.InBounds(wolf) || board.TypeAt(wolf) != s.Wolf) continue;
+                        var predator = prey + GridPos.Orthogonal[d];
+                        if (!board.InBounds(predator)) continue;
 
-                        results.Add(new WolfMeal(wolf, sheep));
+                        var predatorDef = board.DefinitionAt(predator);
+                        if (predatorDef == null || !predatorDef.Eats(preyDef)) continue;
+
+                        results.Add(new Meal(predator, prey, board.Catalog.TypeOfId(predatorDef.LeavesId)));
                         break;
                     }
                 }
             }
         }
 
-        /// <summary>Turns each eaten sheep into bones. Returns the points the eaten sheep were worth.</summary>
-        public static int ApplyWolfMeals(BoardState board, IReadOnlyList<WolfMeal> meals, out int eaten)
+        /// <summary>Replaces each eaten tile with its remains and counts it. Returns the points the eaten tiles were worth.</summary>
+        public static int ApplyMeals(BoardState board, IReadOnlyList<Meal> meals, ClearReport eaten)
         {
-            eaten = 0;
             int points = 0;
             for (int i = 0; i < meals.Count; i++)
             {
-                var def = board.DefinitionAt(meals[i].Sheep);
+                var def = board.DefinitionAt(meals[i].Prey);
                 if (def == null) continue;
 
-                eaten++;
                 points += def.Points;
-                board.Place(meals[i].Sheep, board.Specials.Bone);
+                eaten.CountDestroyed(def.Id);
+                eaten.Cleared.Add(meals[i].Prey);
+                board.Place(meals[i].Prey, meals[i].RemainsType);
             }
+            eaten.Points += points;
             return points;
         }
 

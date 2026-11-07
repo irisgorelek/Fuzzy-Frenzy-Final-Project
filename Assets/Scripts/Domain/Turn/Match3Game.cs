@@ -2,17 +2,21 @@ using System.Collections.Generic;
 
 namespace FuzzyFrenzy.Domain
 {
-    /// <summary>How often a black sheep may be armed for the next refill.</summary>
-    public readonly struct BlackSheepRollSettings
+    /// <summary>How often a special tile (the black sheep) may be armed for the next refill.</summary>
+    public readonly struct SpecialSpawnSettings
     {
-        public BlackSheepRollSettings(bool enabled, int everyMoves, float chance)
+        public static SpecialSpawnSettings None => new SpecialSpawnSettings(-1, 0, 0f);
+
+        public SpecialSpawnSettings(int type, int everyMoves, float chance)
         {
-            Enabled = enabled;
+            Type = type;
             EveryMoves = everyMoves;
             Chance = chance;
         }
 
-        public bool Enabled { get; }
+        /// <summary>The tile type to arm, or -1 when the level has none.</summary>
+        public int Type { get; }
+        public bool Enabled => Type >= 0;
         /// <summary>Roll once every this many moves. 0 or less disables rolling.</summary>
         public int EveryMoves { get; }
         /// <summary>Chance from 0 to 1 for each roll.</summary>
@@ -30,18 +34,18 @@ namespace FuzzyFrenzy.Domain
         private const float BoosterGravitySeconds = 0.10f;
         private const int MaxSettlePasses = 100;
 
-        private readonly IReadOnlyList<IActionRule> _rules;
-        private readonly BlackSheepRollSettings _blackSheepRoll;
+        private readonly RuleBook _rules;
+        private readonly SpecialSpawnSettings _specialSpawn;
         private readonly List<GridPos> _matches = new List<GridPos>();
 
         public Match3Game(BoardState board, GameSession session, IRandomSource random,
-            IReadOnlyList<IActionRule> rules, BlackSheepRollSettings blackSheepRoll)
+            IReadOnlyList<IActionRule> rules, SpecialSpawnSettings specialSpawn)
         {
             Board = board;
             Session = session;
             Random = random;
-            _rules = rules ?? DefaultRules();
-            _blackSheepRoll = blackSheepRoll;
+            _rules = new RuleBook(rules ?? DefaultRules());
+            _specialSpawn = specialSpawn;
         }
 
         public BoardState Board { get; }
@@ -51,9 +55,9 @@ namespace FuzzyFrenzy.Domain
         /// <summary>The rules every level uses today, in priority order.</summary>
         public static IActionRule[] DefaultRules() => new IActionRule[]
         {
-            new BlackSheepSwipeRule(),
+            new LineBlastOnSwapRule(),
             new BoneDamageRule(),
-            new WolfEatsSheepRule(),
+            new PredatorsEatRule(),
         };
 
         /// <summary>A normal swap. Uses a move only when it makes a match or sets off a special.</summary>
@@ -77,7 +81,7 @@ namespace FuzzyFrenzy.Domain
 
             int movesLeft = context.MovesLeft - 1;
             run.Record(new MoveUsedStep(byMatch: !setOffSpecial));
-            RollBlackSheep(movesMade: context.MaxMoves - movesLeft);
+            RollSpecialSpawn(movesMade: context.MaxMoves - movesLeft);
 
             run.Drain();
             if (setOffSpecial)
@@ -172,15 +176,15 @@ namespace FuzzyFrenzy.Domain
             return false;
         }
 
-        private void RollBlackSheep(int movesMade)
+        private void RollSpecialSpawn(int movesMade)
         {
-            if (!_blackSheepRoll.Enabled || _blackSheepRoll.EveryMoves <= 0) return;
-            if (movesMade % _blackSheepRoll.EveryMoves != 0) return;
-            if (Board.Specials.BlackSheep < 0 || Board.BlackSheepArmed) return;
+            if (!_specialSpawn.Enabled || _specialSpawn.EveryMoves <= 0) return;
+            if (movesMade % _specialSpawn.EveryMoves != 0) return;
+            if (Board.ArmedSpawnType >= 0) return;
 
-            float chance = _blackSheepRoll.Chance < 0f ? 0f : _blackSheepRoll.Chance > 1f ? 1f : _blackSheepRoll.Chance;
+            float chance = _specialSpawn.Chance < 0f ? 0f : _specialSpawn.Chance > 1f ? 1f : _specialSpawn.Chance;
             if (Random.Value() < chance)
-                Board.BlackSheepArmed = true;
+                Board.ArmedSpawnType = _specialSpawn.Type;
         }
 
         private static void FillGaps(TurnRun run, float seconds)

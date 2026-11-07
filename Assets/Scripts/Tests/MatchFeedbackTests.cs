@@ -25,7 +25,7 @@ public class MatchFeedbackTests
             var cells = (System.Collections.IDictionary)typeof(BoardView).GetField("_cells", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view);
             cells.Add(Vector2Int.zero, cell);
             var task = view.AnimateMatchPopFx(new System.Collections.Generic.List<Vector2Int> { Vector2Int.zero }, .14f, BoardClearEffect.BlackSheep);
-            var tweenAssembly = typeof(BoardView).GetMethod("BuildMatchLikePop", BindingFlags.Instance | BindingFlags.NonPublic).ReturnType.Assembly;
+            var tweenAssembly = System.AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetType("DG.Tweening.DOTween") != null);
             tweenAssembly.GetType("DG.Tweening.DOTween").GetMethod("Complete", new[] { typeof(object), typeof(bool) }).Invoke(null, new object[] { view, true });
             Assert.IsTrue(task.IsCompletedSuccessfully);
             Assert.IsFalse(image.enabled, "Finished tiles must not reappear while later waves and particles play.");

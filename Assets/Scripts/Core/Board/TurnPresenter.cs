@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,32 +18,42 @@ public interface ITurnPresentationListener
 
 /// <summary>
 /// Replays a <see cref="TurnResult"/> on the board view, step by step. The core has already resolved the
-/// whole turn; this only decides what the player sees and hears, and when.
+/// whole turn; this only decides what the player sees and hears, and when. Each step type is shown by its
+/// own <see cref="ITurnStepPlayer"/>, so a new kind of step never changes this class.
 /// </summary>
 public sealed class TurnPresenter
 {
-    private const float SwapSeconds = 0.18f;
-    private const float WolfNudgeSeconds = 0.20f;
-    private const float PopVolume = 0.2f;
-    private const float SwapVolume = 0.2f;
+    private readonly PresentationContext _context;
+    private readonly Dictionary<Type, ITurnStepPlayer> _players = new Dictionary<Type, ITurnStepPlayer>();
 
-    // AudioManager SFX ids
-    private const int SfxPop = 8;
-    private const int SfxSwap = 12;
-    private const int SfxSheepColumnBlast = 17;
-    private const int SfxSheepRowBlast = 18;
-
-    private readonly BoardView _view;
-    private readonly AnimalCatalog _catalog;
-    private readonly ITurnPresentationListener _listener;
-    private readonly List<Board.FallMove> _falls = new List<Board.FallMove>();
-    private readonly List<Board.SpawnInfo> _spawns = new List<Board.SpawnInfo>();
-
-    public TurnPresenter(BoardView view, AnimalCatalog catalog, ITurnPresentationListener listener)
+    public TurnPresenter(IBoardAnimator view, AnimalCatalog catalog, ITurnPresentationListener listener,
+        IEnumerable<ITurnStepPlayer> players = null)
     {
-        _view = view;
-        _catalog = catalog;
-        _listener = listener;
+        _context = new PresentationContext(view, catalog, listener);
+        foreach (var player in players ?? DefaultPlayers())
+            Register(player);
+    }
+
+    /// <summary>A fresh set of the players every level uses.</summary>
+    public static ITurnStepPlayer[] DefaultPlayers() => new ITurnStepPlayer[]
+    {
+        new SwapStepPlayer(),
+        new SwapBackStepPlayer(),
+        new MoveUsedStepPlayer(),
+        new MatchPopStepPlayer(),
+        new ClearStepPlayer(),
+        new BonesBrokenStepPlayer(),
+        new BlackSheepBlastStepPlayer(),
+        new GravityStepPlayer(),
+        new FeastStepPlayer(),
+        new ShuffleStepPlayer(),
+    };
+
+    /// <summary>Adds a player, replacing any player already registered for the same step type.</summary>
+    public void Register(ITurnStepPlayer player)
+    {
+        if (player == null) throw new ArgumentNullException(nameof(player));
+        _players[player.StepType] = player;
     }
 
     /// <summary>Plays every step in order. Returns false if it stopped early because the scene is closing.</summary>
@@ -52,143 +63,33 @@ public sealed class TurnPresenter
 
         foreach (var step in result.Steps)
         {
-            if (cancellation.IsCancellationRequested || _view == null)
+            if (cancellation.IsCancellationRequested || IsViewGone)
                 return false;
 
-            await PlayStepAsync(step);
+            await PlayerFor(step).PlayAsync(step, _context);
         }
 
         return !cancellation.IsCancellationRequested;
     }
 
-    private Task PlayStepAsync(TurnStep step)
+    // The view is a Unity object behind an interface, so check for a destroyed one explicitly.
+    private bool IsViewGone => _context.View == null || (_context.View is UnityEngine.Object unityView && unityView == null);
+
+    private ITurnStepPlayer PlayerFor(TurnStep step)
     {
-        switch (step)
-        {
-            case SwapStep s:
-                PlaySfx(SfxSwap, SwapVolume);
-                return _view.AnimateSwap(s.From.ToVector(), s.To.ToVector(), SwapSeconds);
+        // Exact type first, then base types, so a player can cover a family of steps.
+        for (var type = step.GetType(); type != null && type != typeof(TurnStep); type = type.BaseType)
+            if (_players.TryGetValue(type, out var player))
+                return player;
 
-            case SwapBackStep s:
-                return _view.AnimateSwap(s.From.ToVector(), s.To.ToVector(), SwapSeconds);
-
-            case MoveUsedStep s:
-                if (s.ByMatch) PlaySfx(SfxPop, PopVolume);
-                _listener.OnMoveUsed();
-                return Task.CompletedTask;
-
-            case MatchPopStep s:
-                return _view.AnimateMatchPopFx(s.Cells.ToVectors(), BoardEffectsTiming.MatchPop);
-
-            case ClearStep s:
-                PlayClear(s);
-                return Task.CompletedTask;
-
-            case BonesBrokenStep s:
-                PlayBonesBroken(s.Cells, s.BoneId);
-                _listener.OnGoalProgressChanged();
-                return Task.CompletedTask;
-
-            case BlackSheepBlastStep s: return PlayBlackSheepBlastAsync(s);
-            case GravityStep s: return PlayGravityAsync(s);
-            case WolfFeastStep s: return PlayWolfFeastAsync(s);
-            case ShuffleStep s: return PlayShuffleAsync(s);
-
-            default:
-                Debug.LogWarning($"TurnPresenter: no presentation for {step.GetType().Name}.");
-                return Task.CompletedTask;
-        }
+        Debug.LogWarning($"TurnPresenter: no presentation for {step.GetType().Name}.");
+        return MissingPlayer.Instance;
     }
 
-    private void PlayClear(ClearStep step)
+    private sealed class MissingPlayer : ITurnStepPlayer
     {
-        if (step.Cause == ClearCause.Match)
-            for (int i = 0; i < step.Cleared.Count; i++)
-                PlaySfx(SfxPop, PopVolume);
-
-        _listener.OnTilesScored(step.Points, step.Matched);
-
-        for (int i = 0; i < step.Destroyed.Count; i++)
-            _listener.OnTilesDestroyed(step.Destroyed[i].Id, step.Destroyed[i].Count);
-
-        _listener.OnGoalProgressChanged();
-    }
-
-    private void PlayBonesBroken(IReadOnlyList<GridPos> cells, string boneId)
-    {
-        for (int i = 0; i < cells.Count; i++)
-        {
-            _listener.OnBoneBroken(cells[i].ToVector());
-            _listener.OnTilesDestroyed(boneId, 1);
-        }
-    }
-
-    private async Task PlayBlackSheepBlastAsync(BlackSheepBlastStep step)
-    {
-        var center = step.Center.ToVector();
-        bool vertical = step.SwipedVertically;
-
-        await _view.AnimateSheepAnger(center);
-        _view.PlayBlackSheepFx(center, vertical, _view._width, _view._height);
-        PlaySfx(vertical ? SfxSheepRowBlast : SfxSheepColumnBlast);
-
-        foreach (var wave in step.Waves)
-        {
-            if (wave.BonesBroken.Count > 0)
-            {
-                PlayBonesBroken(wave.BonesBroken, step.BoneId);
-                _listener.OnGoalProgressChanged();
-            }
-
-            if (wave.PopCells.Count > 0)
-                PlaySfx(SfxPop, PopVolume);
-
-            await _view.AnimateMatchPopFx(wave.PopCells.ToVectors(), BoardEffectsTiming.LineStep, BoardClearEffect.BlackSheep);
-        }
-
-        await _view.WaitForBlackSheepParticles();
-    }
-
-    private async Task PlayGravityAsync(GravityStep step)
-    {
-        // Reused every cascade. Safe because steps play one at a time and the view only reads these lists
-        // while building its animation, before the await returns.
-        _falls.Clear();
-        foreach (var f in step.Falls)
-            _falls.Add(new Board.FallMove { from = f.From.ToVector(), to = f.To.ToVector() });
-
-        _spawns.Clear();
-        foreach (var s in step.Spawns)
-            _spawns.Add(new Board.SpawnInfo { cell = s.Cell.ToVector(), animal = _catalog.AnimalOf(s.Type), spawnFromY = s.SpawnFromY });
-
-        await _view.AnimateGravity(_falls, _spawns, new SnapshotAnimalGrid(step.After, _catalog), step.Duration);
-        _listener.OnGoalProgressChanged();
-    }
-
-    private async Task PlayWolfFeastAsync(WolfFeastStep step)
-    {
-        _listener.OnTilesScored(step.Points, step.Eaten);
-        if (step.Eaten > 0)
-            _listener.OnTilesDestroyed(step.SheepId, step.Eaten);
-
-        var bone = _catalog.AnimalOf(step.BoneType);
-        foreach (var meal in step.Meals)
-        {
-            await _view.AnimateWolfNudge(meal.Wolf.ToVector(), meal.Sheep.ToVector(), WolfNudgeSeconds);
-            _view.SetCellAnimal(meal.Sheep.ToVector(), bone);
-            _listener.OnGoalProgressChanged();
-        }
-    }
-
-    private async Task PlayShuffleAsync(ShuffleStep step)
-    {
-        await _view.ShowShuffleMessage(0.35f);
-        await _view.AnimateShuffle(new SnapshotAnimalGrid(step.After, _catalog), 0.07f, 0.09f, 0.008f);
-    }
-
-    private static void PlaySfx(int id, float volume = 1f)
-    {
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlaySFXPitchAdjusted(id, volume);
+        public static readonly MissingPlayer Instance = new MissingPlayer();
+        public Type StepType => typeof(TurnStep);
+        public Task PlayAsync(TurnStep step, PresentationContext context) => Task.CompletedTask;
     }
 }

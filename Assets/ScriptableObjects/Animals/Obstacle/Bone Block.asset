@@ -20,3 +20,6 @@ MonoBehaviour:
   _canMatch: 0
   _canSwap: 0
   _affectedByGravity: 0
+  _traits: 7
+  _eats: {fileID: 0}
+  _leavesBehind: {fileID: 0}

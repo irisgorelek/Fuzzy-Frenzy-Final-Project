@@ -20,10 +20,6 @@ internal static class TestBoards
             catalog.Add(Definition(letter));
 
         var board = new BoardState(catalog, width, rows.Length);
-        board.Specials.Wolf = TypeOf('W');
-        board.Specials.Sheep = TypeOf('S');
-        board.Specials.Bone = TypeOf('X');
-        board.Specials.BlackSheep = TypeOf('K');
         foreach (char letter in "RGBY")
             board.SpawnPool.Add(TypeOf(letter));
 
@@ -69,7 +65,7 @@ internal static class TestBoards
 
     public static Match3Game Game(BoardState board, LevelGoals goals = null, int seed = 1) =>
         new Match3Game(board, new GameSession(goals ?? NoGoal()), new SeededRandomSource(seed),
-            Match3Game.DefaultRules(), new BlackSheepRollSettings(false, 0, 0f));
+            Match3Game.DefaultRules(), SpecialSpawnSettings.None);
 
     /// <summary>A goal the tests never reach, so turns always play out fully.</summary>
     public static LevelGoals NoGoal() => new LevelGoals(GoalKind.Points, int.MaxValue, null);
@@ -81,9 +77,11 @@ internal static class TestBoards
     {
         switch (letter)
         {
-            case 'X': return new TileDefinition("bone", 0, canMatch: false, canSwap: false, affectedByGravity: false, spawnWeight: 0f);
-            case 'K': return new TileDefinition("blackSheep", 5, canMatch: false, canSwap: true, affectedByGravity: true, spawnWeight: 0f);
-            case 'W': return new TileDefinition("wolf", 1, true, true, true, 1f);
+            case 'X': return new TileDefinition("bone", 0, canMatch: false, canSwap: false, affectedByGravity: false, spawnWeight: 0f,
+                TileTraits.BreaksNextToClear | TileTraits.ResistsBlasts | TileTraits.NoRefill);
+            case 'K': return new TileDefinition("blackSheep", 5, canMatch: false, canSwap: true, affectedByGravity: true, spawnWeight: 0f,
+                TileTraits.LineBlastOnSwap | TileTraits.NoRefill);
+            case 'W': return new TileDefinition("wolf", 1, true, true, true, 1f, eatsId: "sheep", leavesId: "bone");
             case 'S': return new TileDefinition("sheep", 2, true, true, true, 1f);
             default: return new TileDefinition(letter.ToString(), 1, true, true, true, 1f);
         }

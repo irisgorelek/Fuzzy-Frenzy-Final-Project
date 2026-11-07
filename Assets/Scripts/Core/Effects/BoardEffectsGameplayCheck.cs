@@ -49,15 +49,15 @@ public sealed class BoardEffectsGameplayCheck : MonoBehaviour
         config.collectGoals = new List<AnimalGoal>();
         config.maxMoves = 100;
         config.blackSheepRollChance = 0;
+        // Plain animals only: nothing that eats, gets eaten or has a special behaviour.
         config.animals = original.animals.Where(a => a != null && a._canSwap && a._canMatch &&
-            a != original.wolf && a != original.sheep && a != original.blackSheep).ToList();
+            a._traits == FuzzyFrenzy.Domain.TileTraits.None && a._eats == null &&
+            !original.animals.Any(o => o != null && o._eats == a)).ToList();
         if (config.animals.Count < 3) throw new InvalidOperationException("Diagnostic needs three normal animal types.");
         typeof(BoardController).GetField("_cfg", Private).SetValue(controller, config);
         // Exercise Inspector actions on a level that does not normally define either special tile.
         var configuredSheep = config.blackSheep;
-        var configuredBone = config.boneBlock;
         config.blackSheep = null;
-        config.boneBlock = null;
         controller.InitializeGame();
         yield return null;
         yield return null;
@@ -66,23 +66,21 @@ public sealed class BoardEffectsGameplayCheck : MonoBehaviour
         cheats.AddBlackSheepToCenter();
         VerifyDebugCenter(controller, view, cheats, "_blackSheep");
         var debugCenter = new Vector2Int(config.weidth / 2, config.height / 2);
-        if (!controller.IsBlackSheep(controller.CurrentBoard.GetAnimalFromCell(debugCenter)))
+        if (!BoardController.IsBlackSheep(controller.CurrentBoard.GetAnimalFromCell(debugCenter)))
             throw new InvalidOperationException("Placed debug sheep is not recognized by gameplay.");
         cheats.AddBoneToCenter();
         VerifyDebugCenter(controller, view, cheats, "_boneBlock");
-        if (config.blackSheep != null || config.boneBlock != null)
+        if (config.blackSheep != null)
             throw new InvalidOperationException("Debug placement changed the level configuration.");
         _passed.Add("Debug buttons: black sheep and bone placed visibly on a level with neither configured.");
         config.blackSheep = configuredSheep;
-        config.boneBlock = configuredBone;
         controller.InitializeGame();
         yield return null;
         yield return null;
         var board = controller.CurrentBoard;
-        // The level picked may not use bones or black sheep; fall back to the debug cheat's tiles.
-        var bone = configuredBone != null ? configuredBone : (Animal)typeof(LevelDebugFlowCheats).GetField("_boneBlock", Private).GetValue(cheats);
+        // The level picked may not use bones or black sheep; use the debug cheat's tiles. Their behaviour comes with the asset.
+        var bone = (Animal)typeof(LevelDebugFlowCheats).GetField("_boneBlock", Private).GetValue(cheats);
         var blackSheep = configuredSheep != null ? configuredSheep : (Animal)typeof(LevelDebugFlowCheats).GetField("_blackSheep", Private).GetValue(cheats);
-        board.DebugSetSpecialAnimals(blackSheep, bone);
         Fill(board, view, config);
         var a = config.animals[0];
         var b = config.animals[1];

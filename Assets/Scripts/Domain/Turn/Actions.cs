@@ -51,7 +51,7 @@ namespace FuzzyFrenzy.Domain
         }
     }
 
-    /// <summary>Breaks bones. They count as destroyed for goals but give no points.</summary>
+    /// <summary>Breaks bones (tiles with <see cref="TileTraits.BreaksNextToClear"/>). They count as destroyed for goals but give no points.</summary>
     public sealed class BreakBonesAction : IBoardAction
     {
         private readonly IReadOnlyList<GridPos> _cells;
@@ -60,19 +60,30 @@ namespace FuzzyFrenzy.Domain
 
         public void Apply(TurnRun run)
         {
-            string boneId = run.Board.Catalog.Get(run.Board.Specials.Bone)?.Id;
             var broken = new List<GridPos>(_cells.Count);
+            var ids = new List<string>(_cells.Count);
 
             for (int i = 0; i < _cells.Count; i++)
             {
-                if (!run.Board.IsBone(_cells[i])) continue;
-                run.Board.Clear(_cells[i]);
-                run.Session.AddDestroyed(boneId, 1);
+                if (!Break(run, _cells[i], out string id)) continue;
                 broken.Add(_cells[i]);
+                ids.Add(id);
             }
 
             if (broken.Count > 0)
-                run.Record(new BonesBrokenStep(broken, boneId));
+                run.Record(new BonesBrokenStep(broken, ids));
+        }
+
+        /// <summary>Breaks one bone and counts it. False if the cell holds no bone.</summary>
+        internal static bool Break(TurnRun run, GridPos cell, out string id)
+        {
+            var def = run.Board.DefinitionAt(cell);
+            id = def?.Id;
+            if (def == null || !def.Has(TileTraits.BreaksNextToClear)) return false;
+
+            run.Board.Clear(cell);
+            run.Session.AddDestroyed(id, 1);
+            return true;
         }
     }
 
@@ -111,7 +122,6 @@ namespace FuzzyFrenzy.Domain
         public void Apply(TurnRun run)
         {
             var board = run.Board;
-            string boneId = board.Catalog.Get(board.Specials.Bone)?.Id;
             var waveCells = new List<List<GridPos>>();
             var line = new List<GridPos>();
             BoardOperations.BuildBlastWaves(board, Center, SwipedVertically, waveCells, line);
@@ -122,21 +132,22 @@ namespace FuzzyFrenzy.Domain
                 var cells = waveCells[w];
                 var pops = new List<GridPos>(cells.Count);
                 for (int i = 0; i < cells.Count; i++)
-                    if (!board.IsEmpty(cells[i]) && !board.IsBone(cells[i]))
+                    if (!board.IsEmpty(cells[i]) && !board.Has(cells[i], TileTraits.ResistsBlasts))
                         pops.Add(cells[i]);
 
                 var bones = new List<GridPos>();
-                BoardOperations.FindAdjacentBones(board, cells, bones);
+                var boneIds = new List<string>();
+                BoardOperations.FindBreakableNeighbours(board, cells, bones);
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    board.Clear(bones[i]);
-                    run.Session.AddDestroyed(boneId, 1);
+                    BreakBonesAction.Break(run, bones[i], out string id);
+                    boneIds.Add(id);
                 }
 
-                waves.Add(new BlastWave(cells, pops, bones));
+                waves.Add(new BlastWave(cells, pops, bones, boneIds));
             }
 
-            run.Record(new BlackSheepBlastStep(Center, SwipedVertically, waves, boneId));
+            run.Record(new BlackSheepBlastStep(Center, SwipedVertically, waves));
             run.Enqueue(new ClearAction(line, ClearCause.Explosion, showPop: false));
         }
     }
@@ -147,24 +158,24 @@ namespace FuzzyFrenzy.Domain
         public void Apply(TurnRun run) { }
     }
 
-    /// <summary>Wolves eat the sheep next to them; each sheep becomes bones.</summary>
-    public sealed class WolfFeastAction : IBoardAction
+    /// <summary>Predators eat the prey next to them; each prey becomes the predator's remains (the wolf leaves bones).</summary>
+    public sealed class FeastAction : IBoardAction
     {
-        private readonly IReadOnlyList<WolfMeal> _meals;
+        private readonly IReadOnlyList<Meal> _meals;
 
-        public WolfFeastAction(IReadOnlyList<WolfMeal> meals) { _meals = meals; }
+        public FeastAction(IReadOnlyList<Meal> meals) { _meals = meals; }
 
         public void Apply(TurnRun run)
         {
-            var board = run.Board;
-            string sheepId = board.Catalog.Get(board.Specials.Sheep)?.Id;
-            int points = BoardOperations.ApplyWolfMeals(board, _meals, out int eaten);
+            var eaten = new ClearReport();
+            BoardOperations.ApplyMeals(run.Board, _meals, eaten);
 
-            run.Session.AddPoints(points);
-            run.Session.AddMatched(eaten);
-            run.Session.AddDestroyed(sheepId, eaten);
+            run.Session.AddPoints(eaten.Points);
+            run.Session.AddMatched(eaten.Matched);
+            for (int i = 0; i < eaten.Destroyed.Count; i++)
+                run.Session.AddDestroyed(eaten.Destroyed[i].Id, eaten.Destroyed[i].Count);
 
-            run.Record(new WolfFeastStep(_meals, points, eaten, sheepId, board.Specials.Bone));
+            run.Record(new FeastStep(_meals, eaten));
         }
     }
 

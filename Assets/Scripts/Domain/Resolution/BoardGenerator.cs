@@ -2,15 +2,15 @@ using System;
 
 namespace FuzzyFrenzy.Domain
 {
-    /// <summary>Builds a level's starting board: no ready-made matches and no sheep already next to a wolf.</summary>
+    /// <summary>Builds a level's starting board: no ready-made matches and no prey already next to its predator.</summary>
     public static class BoardGenerator
     {
         private const int MaxPlacementAttempts = 20;
         private const int MaxRerollAttempts = 30;
 
         /// <summary>
-        /// Fills every cell, then removes bones and black sheep from the spawn pool so they
-        /// only appear through gameplay.
+        /// Fills every cell, then removes tiles that never refill (bones, black sheep) from the spawn pool so
+        /// they only appear through gameplay.
         /// </summary>
         public static void Generate(BoardState board, IRandomSource random)
         {
@@ -36,10 +36,9 @@ namespace FuzzyFrenzy.Domain
                 }
             }
 
-            board.SpawnPool.Remove(board.Specials.Bone);
-            board.SpawnPool.Remove(board.Specials.BlackSheep);
+            board.SpawnPool.RemoveAll(type => board.Catalog.Get(type)?.Has(TileTraits.NoRefill) == true);
 
-            SeparateSheepFromWolves(board, random);
+            SeparatePreyFromPredators(board, random);
         }
 
         // Cells are filled column by column, top to bottom, so only the two cells to the left and above are set.
@@ -58,23 +57,22 @@ namespace FuzzyFrenzy.Domain
             return false;
         }
 
-        /// <summary>Rerolls each sheep that starts next to a wolf into another animal that doesn't create a match.</summary>
-        private static void SeparateSheepFromWolves(BoardState board, IRandomSource random)
+        /// <summary>Rerolls each tile that starts next to something that eats it into one that is safe there and makes no match.</summary>
+        private static void SeparatePreyFromPredators(BoardState board, IRandomSource random)
         {
-            var s = board.Specials;
-            if (s.Wolf < 0 || s.Sheep < 0) return;
-
             for (int x = 0; x < board.Width; x++)
             {
                 for (int y = 0; y < board.Height; y++)
                 {
                     var cell = new GridPos(x, y);
-                    if (board.TypeAt(cell) != s.Sheep || !HasNeighbour(board, cell, s.Wolf)) continue;
+                    if (!IsInDanger(board, cell, board.DefinitionAt(cell))) continue;
 
+                    int prey = board.TypeAt(cell);
                     for (int attempt = 0; attempt < MaxRerollAttempts; attempt++)
                     {
                         int candidate = RefillPlanner.PickWeighted(board, random);
-                        if (candidate == s.Sheep || candidate == s.Wolf) continue;
+                        if (candidate == prey) continue;
+                        if (InFeedingPair(board, cell, board.Catalog.Get(candidate))) continue;
                         if (WouldCreateMatchAnywhere(board, cell, candidate)) continue;
 
                         board.Place(cell, candidate);
@@ -84,12 +82,27 @@ namespace FuzzyFrenzy.Domain
             }
         }
 
-        private static bool HasNeighbour(BoardState board, GridPos cell, int type)
+        /// <summary>True when a neighbour would eat a tile of this kind placed at the cell.</summary>
+        private static bool IsInDanger(BoardState board, GridPos cell, TileDefinition def)
         {
+            if (def == null) return false;
             for (int d = 0; d < GridPos.Orthogonal.Length; d++)
             {
                 var n = cell + GridPos.Orthogonal[d];
-                if (board.InBounds(n) && board.TypeAt(n) == type) return true;
+                if (board.InBounds(n) && board.DefinitionAt(n)?.Eats(def) == true) return true;
+            }
+            return false;
+        }
+
+        /// <summary>True when a tile of this kind at the cell would eat, or be eaten by, a neighbour.</summary>
+        private static bool InFeedingPair(BoardState board, GridPos cell, TileDefinition def)
+        {
+            if (def == null) return false;
+            if (IsInDanger(board, cell, def)) return true;
+            for (int d = 0; d < GridPos.Orthogonal.Length; d++)
+            {
+                var n = cell + GridPos.Orthogonal[d];
+                if (board.InBounds(n) && def.Eats(board.DefinitionAt(n))) return true;
             }
             return false;
         }

@@ -61,18 +61,20 @@ namespace FuzzyFrenzy.Domain
     /// <summary>Bones broke. They're counted as destroyed but give no points.</summary>
     public sealed class BonesBrokenStep : TurnStep
     {
-        public BonesBrokenStep(IReadOnlyList<GridPos> cells, string boneId) { Cells = cells; BoneId = boneId; }
+        public BonesBrokenStep(IReadOnlyList<GridPos> cells, IReadOnlyList<string> ids) { Cells = cells; Ids = ids; }
         public IReadOnlyList<GridPos> Cells { get; }
-        public string BoneId { get; }
+        /// <summary>The tile ID of each broken cell, in the same order as <see cref="Cells"/>.</summary>
+        public IReadOnlyList<string> Ids { get; }
     }
 
     public sealed class BlastWave
     {
-        public BlastWave(IReadOnlyList<GridPos> lineCells, IReadOnlyList<GridPos> popCells, IReadOnlyList<GridPos> bonesBroken)
+        public BlastWave(IReadOnlyList<GridPos> lineCells, IReadOnlyList<GridPos> popCells, IReadOnlyList<GridPos> bonesBroken, IReadOnlyList<string> boneIds)
         {
             LineCells = lineCells;
             PopCells = popCells;
             BonesBroken = bonesBroken;
+            BoneIds = boneIds;
         }
 
         /// <summary>The cells this wave reaches.</summary>
@@ -81,24 +83,24 @@ namespace FuzzyFrenzy.Domain
         public IReadOnlyList<GridPos> PopCells { get; }
         /// <summary>Bones next to this wave's cells, broken as the wave passes.</summary>
         public IReadOnlyList<GridPos> BonesBroken { get; }
+        /// <summary>The tile ID of each broken bone, in the same order as <see cref="BonesBroken"/>.</summary>
+        public IReadOnlyList<string> BoneIds { get; }
     }
 
     /// <summary>A black sheep blasted its row or column. A ClearStep for the line follows it.</summary>
     public sealed class BlackSheepBlastStep : TurnStep
     {
-        public BlackSheepBlastStep(GridPos center, bool swipedVertically, IReadOnlyList<BlastWave> waves, string boneId)
+        public BlackSheepBlastStep(GridPos center, bool swipedVertically, IReadOnlyList<BlastWave> waves)
         {
             Center = center;
             SwipedVertically = swipedVertically;
             Waves = waves;
-            BoneId = boneId;
         }
 
         public GridPos Center { get; }
         /// <summary>A vertical swipe blasts the row; a horizontal swipe blasts the column.</summary>
         public bool SwipedVertically { get; }
         public IReadOnlyList<BlastWave> Waves { get; }
-        public string BoneId { get; }
     }
 
     /// <summary>Tiles fell and new tiles entered.</summary>
@@ -120,23 +122,22 @@ namespace FuzzyFrenzy.Domain
         public float Duration { get; }
     }
 
-    /// <summary>Wolves ate the sheep next to them; each sheep became bones.</summary>
-    public sealed class WolfFeastStep : TurnStep
+    /// <summary>Predators ate the prey next to them; each prey became the predator's remains.</summary>
+    public sealed class FeastStep : TurnStep
     {
-        public WolfFeastStep(IReadOnlyList<WolfMeal> meals, int points, int eaten, string sheepId, int boneType)
+        public FeastStep(IReadOnlyList<Meal> meals, ClearReport eaten)
         {
             Meals = meals;
-            Points = points;
-            Eaten = eaten;
-            SheepId = sheepId;
-            BoneType = boneType;
+            Points = eaten.Points;
+            Eaten = eaten.Matched;
+            Destroyed = eaten.Destroyed;
         }
 
-        public IReadOnlyList<WolfMeal> Meals { get; }
+        public IReadOnlyList<Meal> Meals { get; }
         public int Points { get; }
+        /// <summary>Tiles eaten. Counts toward "matches" goals.</summary>
         public int Eaten { get; }
-        public string SheepId { get; }
-        public int BoneType { get; }
+        public IReadOnlyList<DestroyedCount> Destroyed { get; }
     }
 
     /// <summary>The board had no legal move, so it was shuffled.</summary>

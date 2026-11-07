@@ -20,4 +20,7 @@ MonoBehaviour:
   _canMatch: 1
   _canSwap: 1
   _affectedByGravity: 1
+  _traits: 0
+  _eats: {fileID: 11400000, guid: 84b66fa645728d24caa8e18f13854547, type: 2}
+  _leavesBehind: {fileID: 11400000, guid: 86978a525bf04f948ae52cb097b73350, type: 2}
   _speakSfxId: 21

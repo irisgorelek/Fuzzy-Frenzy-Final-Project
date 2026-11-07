@@ -22,11 +22,6 @@ public class BoardConfig : ScriptableObject
     public List<AnimalGoal> collectGoals;
     
 
-    [Header("Special Pieces")]
-    public Animal wolf;
-    public Animal sheep;
-    public Animal boneBlock;
-
     [Header("Delayed Spawns")]
     public Animal blackSheep;
     public int blackSheepUnlockAfterMoves = 1;

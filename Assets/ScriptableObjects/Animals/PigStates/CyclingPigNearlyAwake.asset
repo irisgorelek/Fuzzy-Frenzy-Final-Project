@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee029291298beba4984d3a96b6ec8ef3, type: 3}
+  m_Name: CyclingPigNearlyAwake
+  m_EditorClassIdentifier: FuzzyFrenzy.Data::Animal
+  _id: CyclingPig_Sleep2
+  _sprite: {fileID: 1711786808809668205, guid: 7d313759c6f9bc24280aa4d98df33196, type: 3}
+  _points: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
+  _spawnWeight: 0
+  _canMatch: 0
+  _canSwap: 0
+  _affectedByGravity: 1
+  _traits: 48
+  _eats: {fileID: 0}
+  _leavesBehind: {fileID: 0}
+  _matchGroupId: pig
+  _nextTurnForm: {fileID: 11400000, guid: 85ba6ec89d49ed64d888ba57071a221c, type: 2}
+  _permanentAwakeForm: {fileID: 11400000, guid: 65d21da7d3e8d484dad5ce7abd735740, type: 2}
+  _speakSfxId: 26

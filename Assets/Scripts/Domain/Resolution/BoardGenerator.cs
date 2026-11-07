@@ -44,15 +44,18 @@ namespace FuzzyFrenzy.Domain
         // Cells are filled column by column, top to bottom, so only the two cells to the left and above are set.
         private static bool WouldCreateInitialMatch(BoardState board, GridPos cell, int type)
         {
-            if (cell.X >= 2 &&
-                board.TypeAt(new GridPos(cell.X - 1, cell.Y)) == type &&
-                board.TypeAt(new GridPos(cell.X - 2, cell.Y)) == type)
+             if (cell.X >= 2 &&
+                board.Catalog.CanMatch(type, board.TypeAt(new GridPos(cell.X - 1, cell.Y))) &&
+                board.Catalog.CanMatch(type, board.TypeAt(new GridPos(cell.X - 2, cell.Y))))
+            {
                 return true;
+            }
 
-            if (cell.Y >= 2 &&
-                board.TypeAt(new GridPos(cell.X, cell.Y - 1)) == type &&
-                board.TypeAt(new GridPos(cell.X, cell.Y - 2)) == type)
+            if (cell.Y >= 2 && board.Catalog.CanMatch(type, board.TypeAt(new GridPos(cell.X, cell.Y - 1))) &&
+                board.Catalog.CanMatch( type, board.TypeAt(new GridPos(cell.X, cell.Y - 2))))
+            {
                 return true;
+            }
 
             return false;
         }
@@ -120,11 +123,12 @@ namespace FuzzyFrenzy.Domain
         {
             int count = 0;
             var p = start + dir;
-            while (board.InBounds(p) && board.TypeAt(p) == type)
+            while (board.InBounds(p) && board.Catalog.CanMatch(type,board.TypeAt(p)))
             {
                 count++;
                 p += dir;
             }
+            
             return count;
         }
     }

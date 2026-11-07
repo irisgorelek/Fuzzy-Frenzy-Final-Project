@@ -77,9 +77,7 @@ namespace FuzzyFrenzy.Domain
         // Both cells are matchable and hold the same tile type.
         private static bool Continues(BoardState board, int x, int y, int prevX, int prevY)
         {
-            var here = new GridPos(x, y);
-            var prev = new GridPos(prevX, prevY);
-            return board.IsMatchable(here) && board.IsMatchable(prev) && board.TypeAt(here) == board.TypeAt(prev);
+            return board.Matches(new GridPos(x, y), new GridPos(prevX, prevY));
         }
 
         private static void FlushColumn(BoardState board, int x, int endY, int run, List<GridPos> results, bool[] seen)

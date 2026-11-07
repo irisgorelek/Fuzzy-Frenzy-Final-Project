@@ -34,7 +34,11 @@ public sealed class AnimalCatalog
             animal._spawnWeight,
             animal._traits,
             animal._eats != null ? animal._eats._id : null,
-            animal._leavesBehind != null ? animal._leavesBehind._id : null);
+            animal._leavesBehind != null ? animal._leavesBehind._id : null,
+            animal._matchGroupId,
+            animal._nextTurnForm != null ? animal._nextTurnForm._id : null,
+            animal._permanentAwakeForm != null ? animal._permanentAwakeForm._id : null);
+            
 
         type = Tiles.Add(definition);
         _animals.Add(animal);
@@ -42,6 +46,9 @@ public sealed class AnimalCatalog
 
         TypeOf(animal._eats);
         TypeOf(animal._leavesBehind);
+        TypeOf(animal._nextTurnForm);
+        TypeOf(animal._permanentAwakeForm);
+        
         return type;
     }
 

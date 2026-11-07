@@ -8,6 +8,20 @@ namespace FuzzyFrenzy.Domain
     /// </summary>
     public abstract class TurnStep { }
 
+    public readonly struct TileFormChange
+    {
+        public readonly GridPos Cell;
+        public readonly int OldType;
+        public readonly int NewType;
+
+        public TileFormChange(GridPos cell, int oldType, int newType)
+        {
+            Cell = cell;
+            OldType = oldType;
+            NewType = newType;
+        }
+    }
+
     /// <summary>Two tiles swapped places.</summary>
     public sealed class SwapStep : TurnStep
     {
@@ -145,5 +159,16 @@ namespace FuzzyFrenzy.Domain
     {
         public ShuffleStep(BoardSnapshot after) { After = after; }
         public BoardSnapshot After { get; }
+    }
+
+    // This step is required because the model changes before Unity begins animating.
+    public sealed class TileFormsChangedStep : TurnStep
+    {
+        public TileFormsChangedStep(IReadOnlyList<TileFormChange> changes)
+        {
+            Changes = changes;
+        }
+
+        public IReadOnlyList<TileFormChange> Changes { get; }
     }
 }

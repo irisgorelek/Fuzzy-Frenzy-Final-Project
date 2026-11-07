@@ -23,6 +23,16 @@ public class Animal : ScriptableObject
     [Tooltip("What an eaten tile turns into (the wolf leaves bones). Empty leaves the cell empty for refill.")]
     public Animal _leavesBehind;
 
+    [Header("Tile Forms")]
+    [Tooltip("Different forms with the same value match together.")]
+    public string _matchGroupId;
+
+    [Tooltip("The form this tile becomes after one accepted turn.")]
+    public Animal _nextTurnForm;
+
+    [Tooltip("The permanent form created by a wake-up ability.")]
+    public Animal _permanentAwakeForm;
+
     [Header("Audio")]
     public int _speakSfxId;
 }

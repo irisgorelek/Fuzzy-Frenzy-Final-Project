@@ -87,7 +87,23 @@ namespace FuzzyFrenzy.Domain
             if (setOffSpecial)
                 FillGaps(run, CascadeGravitySeconds);
 
-            bool won = ResolveUntilStable(run, CanShuffle(context.TimerActive, movesLeft));
+            bool canShuffle = CanShuffle(context.TimerActive, movesLeft);
+
+            // Do not shuffle yet. Changing the pig into a sleeping
+            // form may remove a legal move.
+            bool won = ResolveUntilStable(run, canShuffle: false);
+
+            if (!won)
+            {
+                run.Run(new AdvanceTileFormsAction());
+
+                // Recheck playability after form changes.
+                if (canShuffle && !MoveFinder.HasAnyMove(Board))
+                {
+                    run.Run(new ShuffleAction());
+                }
+            }
+
             return Resolved(run, won);
         }
 

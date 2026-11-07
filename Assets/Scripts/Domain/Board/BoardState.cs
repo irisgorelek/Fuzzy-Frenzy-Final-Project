@@ -82,6 +82,9 @@ namespace FuzzyFrenzy.Domain
             return def != null && def.CanMatch;
         }
 
+        public bool Matches(GridPos first, GridPos second) => 
+            Catalog.CanMatch(TypeAt(first), TypeAt(second));
+
         public bool Has(GridPos p, TileTraits trait)
         {
             var def = DefinitionAt(p);
@@ -130,6 +133,29 @@ namespace FuzzyFrenzy.Domain
                 for (int y = 0; y < Height; y++)
                     types[y * Width + x] = _cells[x, y].Type;
             return new BoardSnapshot(Width, Height, types);
+        }
+
+        /// <summary>
+        /// Preserves the pig’s unique ID:
+        /// Tile 27: Awake
+        /// → Tile 27: Sleep2
+        /// → Tile 27: Sleep1
+        /// → Tile 27: Awake
+        /// </summary>
+
+        public bool ChangeType(GridPos position, int newType)
+        {
+            if (!InBounds(position) || newType < 0)
+                return false;
+
+            Tile current = Get(position);
+
+            if (current.IsEmpty)
+                return false;
+
+            _cells[position.X, position.Y] = new Tile(newType, current.Id);
+
+            return true;
         }
     }
 

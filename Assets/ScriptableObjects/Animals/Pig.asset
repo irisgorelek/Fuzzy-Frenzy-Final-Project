@@ -20,4 +20,10 @@ MonoBehaviour:
   _canMatch: 1
   _canSwap: 1
   _affectedByGravity: 1
+  _traits: 0
+  _eats: {fileID: 0}
+  _leavesBehind: {fileID: 0}
+  _matchGroupId: pig
+  _nextTurnForm: {fileID: 0}
+  _permanentAwakeForm: {fileID: 0}
   _speakSfxId: 26

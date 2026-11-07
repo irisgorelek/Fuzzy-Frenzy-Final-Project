@@ -19,13 +19,20 @@ namespace FuzzyFrenzy.Domain
         NoRefill = 1 << 2,
         /// <summary>Swapping it blasts a row or column (black sheep).</summary>
         LineBlastOnSwap = 1 << 3,
+        /// <summary> Advances in states throughout turns </summary>
+        AdvancesFormEachTurn    = 1 << 4,
+        /// <summary> After being permenantly awake, becomes a regular tile </summary>
+        CanBePermanentlyAwakened = 1 << 5,
+        /// <summary> Matching it wakes the nearby sleeping animals </summary>
+        PermanentlyWakesAdjacent = 1 << 6
     }
 
     /// <summary>Immutable rules for one kind of tile (an animal or an obstacle). Has no sprites or Unity data.</summary>
     public sealed class TileDefinition
     {
         public TileDefinition(string id, int points, bool canMatch, bool canSwap, bool affectedByGravity, float spawnWeight,
-            TileTraits traits = TileTraits.None, string eatsId = null, string leavesId = null)
+                              TileTraits traits = TileTraits.None, string eatsId = null, string leavesId = null, string matchGroupId = null, 
+                              string nextTurnFormId = null, string permanentAwakeFormId = null)
         {
             Id = id ?? string.Empty;
             Points = points;
@@ -36,6 +43,9 @@ namespace FuzzyFrenzy.Domain
             Traits = traits;
             EatsId = string.IsNullOrEmpty(eatsId) ? null : eatsId;
             LeavesId = string.IsNullOrEmpty(leavesId) ? null : leavesId;
+            MatchGroupId = string.IsNullOrEmpty(matchGroupId) ? null : matchGroupId;
+            NextTurnFormId = string.IsNullOrEmpty(nextTurnFormId) ? null : nextTurnFormId;
+            PermanentAwakeFormId = string.IsNullOrEmpty(permanentAwakeFormId) ? null : permanentAwakeFormId;
         }
 
         /// <summary>Index in the owning <see cref="TileCatalog"/>. This is the runtime type of a tile.</summary>
@@ -56,9 +66,33 @@ namespace FuzzyFrenzy.Domain
         /// <summary>ID of the tile left where the eaten tile was (the wolf leaves bones), or null to leave the cell empty.</summary>
         public string LeavesId { get; }
 
+        public string MatchGroupId { get; }
+
+        public string NextTurnFormId { get; }
+
+        public string PermanentAwakeFormId { get; }
+
+        /// <summary> 
+        /// Normal animals without a group match by their normal ID.
+        /// - Every pig form with MatchGroupId = "pig" belongs to the pig family.
+        /// * CanMatch can still disable matching for sleeping forms.
+        /// </summary>
+        public string MatchKey => string.IsNullOrEmpty(MatchGroupId) ? Id : MatchGroupId;
+
         public bool Has(TileTraits trait) => (Traits & trait) == trait;
 
         public bool Eats(TileDefinition other) => EatsId != null && other != null && other.Id == EatsId;
+
+        public bool CanMatchWith(TileDefinition other)
+        {
+            if (other == null)
+                return false;
+
+            if (!CanMatch || !other.CanMatch)
+                return false;
+
+            return MatchKey == other.MatchKey;
+        }
     }
 
     /// <summary>Registry of tile definitions. A tile's runtime type is its index here, so lookups are array reads.</summary>
@@ -88,6 +122,14 @@ namespace FuzzyFrenzy.Domain
             for (int i = 0; i < _definitions.Count; i++)
                 if (_definitions[i].Id == id) return i;
             return -1;
+        }
+
+        public bool CanMatch(int firstType, int secondType)
+        {
+            TileDefinition first = Get(firstType);
+            TileDefinition second = Get(secondType);
+
+            return first?.CanMatchWith(second) == true;
         }
     }
 }

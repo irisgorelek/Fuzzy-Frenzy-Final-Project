@@ -46,6 +46,7 @@ public sealed class TurnPresenter
         new BlackSheepBlastStepPlayer(),
         new GravityStepPlayer(),
         new FeastStepPlayer(),
+        new TileFormsChangedStepPlayer(),
         new ShuffleStepPlayer(),
     };
 

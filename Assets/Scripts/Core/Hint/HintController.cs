@@ -13,6 +13,10 @@ public class HintController : MonoBehaviour
         if (_boardController == null || _boardView == null)
             return;
 
+        // Ignore the hint while a turn is playing out: the board is mid-cascade.
+        if (!_boardController.CanAcceptInput)
+            return;
+
         Board board = _boardController.CurrentBoard;
         if (board == null)
             return;

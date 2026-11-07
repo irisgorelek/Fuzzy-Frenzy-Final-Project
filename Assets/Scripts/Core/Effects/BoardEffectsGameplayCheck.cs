@@ -65,9 +65,8 @@ public sealed class BoardEffectsGameplayCheck : MonoBehaviour
         if (cheats == null) throw new InvalidOperationException("Debug cheat component is missing.");
         cheats.AddBlackSheepToCenter();
         VerifyDebugCenter(controller, view, cheats, "_blackSheep");
-        var isBlackSheep = typeof(BoardController).GetMethod("IsAnySheep", Private);
         var debugCenter = new Vector2Int(config.weidth / 2, config.height / 2);
-        if (!(bool)isBlackSheep.Invoke(controller, new object[] {controller.CurrentBoard.GetAnimalFromCell(debugCenter)}))
+        if (!controller.IsBlackSheep(controller.CurrentBoard.GetAnimalFromCell(debugCenter)))
             throw new InvalidOperationException("Placed debug sheep is not recognized by gameplay.");
         cheats.AddBoneToCenter();
         VerifyDebugCenter(controller, view, cheats, "_boneBlock");
@@ -80,6 +79,10 @@ public sealed class BoardEffectsGameplayCheck : MonoBehaviour
         yield return null;
         yield return null;
         var board = controller.CurrentBoard;
+        // The level picked may not use bones or black sheep; fall back to the debug cheat's tiles.
+        var bone = configuredBone != null ? configuredBone : (Animal)typeof(LevelDebugFlowCheats).GetField("_boneBlock", Private).GetValue(cheats);
+        var blackSheep = configuredSheep != null ? configuredSheep : (Animal)typeof(LevelDebugFlowCheats).GetField("_blackSheep", Private).GetValue(cheats);
+        board.DebugSetSpecialAnimals(blackSheep, bone);
         Fill(board, view, config);
         var a = config.animals[0];
         var b = config.animals[1];
@@ -87,19 +90,19 @@ public sealed class BoardEffectsGameplayCheck : MonoBehaviour
         board.SetAnimalInCell(new Vector2Int(1, 0), a);
         board.SetAnimalInCell(new Vector2Int(2, 0), b);
         board.SetAnimalInCell(new Vector2Int(2, 1), a);
-        board.SetAnimalInCell(new Vector2Int(1, 1), config.boneBlock);
+        board.SetAnimalInCell(new Vector2Int(1, 1), bone);
         view.AssignSprites(board);
         controller.OnSwapRequested(new Vector2Int(2, 1), new Vector2Int(2, 0));
         yield return Observe("NormalAndBone", 2f, "MatchPop", "BoneBreak");
         yield return Settle(controller);
         Fill(board, view, config);
-        board.SetAnimalInCell(new Vector2Int(2, 2), config.blackSheep);
+        board.SetAnimalInCell(new Vector2Int(2, 2), blackSheep);
         view.AssignSprites(board);
         controller.OnSwapRequested(new Vector2Int(2, 2), new Vector2Int(2, 3));
         yield return Observe("SheepHorizontal", 3f, "BlackSheepLine", "SheepAnger");
         yield return Settle(controller);
         Fill(board, view, config);
-        board.SetAnimalInCell(new Vector2Int(2, 2), config.blackSheep);
+        board.SetAnimalInCell(new Vector2Int(2, 2), blackSheep);
         view.AssignSprites(board);
         controller.OnSwapRequested(new Vector2Int(2, 2), new Vector2Int(3, 2));
         yield return Observe("SheepVertical", 3f, "BlackSheepLine", "SheepAnger");
@@ -307,13 +310,11 @@ public sealed class BoardEffectsGameplayCheck : MonoBehaviour
         while (Time.realtimeSinceStartup < end)
         {
             var presenter = FindFirstObjectByType<SpeechBubblePresenter>();
-            var tutorial = presenter == null ? null : typeof(SpeechBubblePresenter).GetField("_tutorial", Private).GetValue(presenter);
-            var button = tutorial == null ? null : tutorial.GetType().GetField("continueButton").GetValue(tutorial) as Button;
-            if (button != null && button.gameObject.activeInHierarchy && button.interactable) button.onClick.Invoke();
             var dialogue = FindFirstObjectByType<AnimalDialogueController>();
             bool tutorialActive = dialogue != null && (bool)typeof(AnimalDialogueController).GetField("_tutorialActive", Private).GetValue(dialogue);
-            bool busy = (bool)typeof(BoardController).GetField("_isBusy", Private).GetValue(controller);
-            if (!busy && !controller.IsSpeechBubbleInputBlocked && !tutorialActive) break;
+            // Tutorial bubbles advance on a screen tap.
+            if (tutorialActive && presenter != null) presenter.ContinueFromScreenTap();
+            if (!controller.IsBusy && !controller.IsSpeechBubbleInputBlocked && !tutorialActive) break;
             yield return null;
         }
         FindFirstObjectByType<SpeechBubblePresenter>()?.HideNormalImmediate();

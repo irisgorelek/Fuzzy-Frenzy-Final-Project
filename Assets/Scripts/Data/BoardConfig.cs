@@ -1,8 +1,6 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum PointsOrMatches { points, matches, collectAnimals }
 public enum SongName { happy, chilly }

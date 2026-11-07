@@ -1,0 +1,28 @@
+using FuzzyFrenzy.Domain;
+using UnityEngine;
+
+/// <summary>Read-only animals by cell. The live board and a mid-turn snapshot both provide this, so the view can draw either.</summary>
+public interface IAnimalGrid
+{
+    int Width { get; }
+    int Height { get; }
+    Animal GetAnimalFromCell(Vector2Int cell);
+}
+
+/// <summary>A board snapshot from a turn step, shown as animals.</summary>
+public sealed class SnapshotAnimalGrid : IAnimalGrid
+{
+    private readonly BoardSnapshot _snapshot;
+    private readonly AnimalCatalog _catalog;
+
+    public SnapshotAnimalGrid(BoardSnapshot snapshot, AnimalCatalog catalog)
+    {
+        _snapshot = snapshot;
+        _catalog = catalog;
+    }
+
+    public int Width => _snapshot.Width;
+    public int Height => _snapshot.Height;
+
+    public Animal GetAnimalFromCell(Vector2Int cell) => _catalog.AnimalOf(_snapshot.TypeAt(cell.ToGrid()));
+}

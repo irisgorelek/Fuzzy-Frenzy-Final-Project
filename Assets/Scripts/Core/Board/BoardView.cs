@@ -151,7 +151,7 @@ public class BoardView : MonoBehaviour
     }
 
     // Assign the sprites to the animals on the board
-    public void AssignSprites(Board board)
+    public void AssignSprites(IAnimalGrid board)
     {
         for (int y = 0; y < _height; y++)
         {
@@ -172,12 +172,11 @@ public class BoardView : MonoBehaviour
         }
     }
 
-    public void RefreshCellSprite(Vector2Int coord, Board board)
+    /// <summary>Draws one animal in one cell, or the empty sprite for null.</summary>
+    public void SetCellAnimal(Vector2Int coord, Animal animal)
     {
         if (!_cells.TryGetValue(coord, out var cellView))
             return;
-
-        var animal = board.GetAnimalFromCell(coord);
 
         if (animal == null)
         {
@@ -200,23 +199,6 @@ public class BoardView : MonoBehaviour
         }
 
         _backgroundImage.sprite = backgroundSprite;
-    }
-    public void SwapCellVisuals(Vector2Int a, Vector2Int b)
-    {
-        if (!_cells.ContainsKey(a) || !_cells.ContainsKey(b))
-        {
-            Debug.LogWarning($"SwapCellVisuals failed: {a} or {b} not found");
-            return;
-        }
-
-        var aView = _cells[a];
-        var bView = _cells[b];
-
-        var aSprite = aView.CurrentSprite;
-        var aColor = aView.CurrentColor;
-
-        aView.SetSprite(bView.CurrentSprite, bView.CurrentColor);
-        bView.SetSprite(aSprite, aColor);
     }
     public void ShowGoal(bool show)
     {
@@ -612,45 +594,6 @@ public class BoardView : MonoBehaviour
         ApplyGoalRows(specs);
     }
 
-    public void SetMatchesAndCollectGoals(int matched, int matchGoal, List<AnimalGoal> goals, Dictionary<string, int> collected)
-    {
-        int remainingMatches = Mathf.Max(0, matchGoal - matched);
-
-        var specs = new List<GoalRowSpec>
-    {
-        new GoalRowSpec
-        {
-            IsPrimary = true,
-            Icon = null,
-            Text = remainingMatches.ToString(),
-            AnimateCounter = true,
-            Color = Color.white,
-            IsComplete = matched >= matchGoal
-        }
-    };
-
-        foreach (var g in goals)
-        {
-            if (g.animal == null)
-                continue;
-
-            collected.TryGetValue(g.animal._id, out int have);
-            int remaining = Mathf.Max(0, g.amount - have);
-            bool isComplete = have >= g.amount;
-
-            specs.Add(new GoalRowSpec
-            {
-                IsPrimary = false,
-                Icon = g.animal._sprite,
-                Text = remaining.ToString(),
-                Color = g.animal.color,
-                IsComplete = isComplete
-            });
-        }
-
-        ApplyGoalRows(specs);
-    }
-
     public Task AnimateWolfNudge(Vector2Int wolfCell, Vector2Int sheepCell, float duration = 0.10f)
     {
         var tcs = new TaskCompletionSource<bool>();
@@ -693,7 +636,7 @@ public class BoardView : MonoBehaviour
     }
 
     // Animate the gravity 
-    public Task AnimateGravity(List<Board.FallMove> moves, List<Board.SpawnInfo> spawns, Board board, float duration = 0.20f)
+    public Task AnimateGravity(List<Board.FallMove> moves, List<Board.SpawnInfo> spawns, IAnimalGrid board, float duration = 0.20f)
     {
         bool hasMoves = moves != null && moves.Count > 0;
         bool hasSpawns = spawns != null && spawns.Count > 0;
@@ -1036,7 +979,7 @@ public class BoardView : MonoBehaviour
         return tcs.Task;
     }
 
-    public Task AnimateShuffle(Board board, float outDuration = 0.08f, float inDuration = 0.1f, float stagger = 0.002f)
+    public Task AnimateShuffle(IAnimalGrid board, float outDuration = 0.08f, float inDuration = 0.1f, float stagger = 0.002f)
     {
         if (board == null || _cells.Count == 0)
             return Task.CompletedTask;
@@ -1518,27 +1461,6 @@ public class BoardView : MonoBehaviour
     {
         SetHighlightedCell(null);
     }
-    private void AddGoalRow(GoalRowView prefab, Sprite icon, string text, Color color, bool isComplete = false)
-    {
-        if (prefab == null || _goalRowsParent == null)
-            return;
-
-        bool isPrimary = prefab == _primaryGoalRowPrefab;
-        var row = GetGoalRow(prefab, isPrimary);
-        row.Set(icon, text, color, isComplete);
-        _rows.Add(row);
-    }
-
-    private void AddPrimaryGoalRow(string text, bool isComplete = false)
-    {
-        AddGoalRow(_primaryGoalRowPrefab, null, text, Color.white, isComplete);
-    }
-
-    private void AddAnimalGoalRow(Sprite icon, string text, Color color, bool isComplete = false)
-    {
-        AddGoalRow(_animalGoalRowPrefab, icon, text, color, isComplete);
-    }
-
     private void ApplyGoalRows(List<GoalRowSpec> specs)
     {
         if (!GoalLayoutMatches(specs))

@@ -6,6 +6,7 @@
         "UnityEditor.TestRunner",
         "FunzzyFrenzy.core",
         "FuzzyFrenzy.Data",
+        "FuzzyFrenzy.Domain",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [

@@ -1,11 +1,17 @@
-using UnityEngine;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FuzzyFrenzy.Domain;
+using UnityEngine;
 
-public class BoardController : MonoBehaviour
+/// <summary>
+/// Unity entry point for a level. Turns input into calls on <see cref="Match3Game"/>, replays each
+/// <see cref="TurnResult"/> through <see cref="TurnPresenter"/>, and handles what happens around a turn:
+/// moves, goals UI, win/lose, the timer booster and dialogue. All input goes through one <see cref="InputGate"/>.
+/// </summary>
+public class BoardController : MonoBehaviour, ITurnPresentationListener
 {
-    [Header("Board Parameters")] 
+    [Header("Board Parameters")]
     [SerializeField] private BoardConfig _cfg;
     [SerializeField] private BoardView _view;
     [SerializeField] private MoveCounter _moveCounter;
@@ -22,56 +28,71 @@ public class BoardController : MonoBehaviour
 
     [SerializeField] private LevelCompletedEventChannelSO _levelCompletedChannelSO;
     [SerializeField] private AnimalsDestroyedEventChannelSO _animalsDestroyedChannelSO;
-    [SerializeField] private ScoreEventChannelSO _scoreEventChannelSO;
-
     [SerializeField] private LevelScoreEventChannelSO _levelScoreEventChannelSO;
 
-    [Header("Speech Bubble Configs")]
-    [SerializeField] private AnimalSpeechConfig _speechConfig;
-    [SerializeField] private SpeechBubblePresenter _speechBubblePresenter;
-    //[SerializeField] private float _normalBubbleDelaySeconds = 2.5f;
-    //[SerializeField] private float _normalBubbleVisibleSeconds = 3f;
-    //[SerializeField] private float _triggeredBubbleVisibleSeconds = 3f;
-    //[SerializeField] private float _speechCellHighlightDuration = 0.48f;
+    [Header("Dialogue")]
     [SerializeField] private AnimalDialogueController _animalDialogueController;
 
-    public BoardConfig Config => _cfg;
+    public float _speakSfxDuration = 1f;
 
-    /// <summary>True while tutorial sequence runs or a triggered bubble is showing (normal bubble does not set this).</summary>
-    public bool IsSpeechBubbleInputBlocked => _bubbleActive;
+    // AudioManager SFX ids
+    private const int SfxCannotSwap = 4;
+    private const int SfxLevelCleared = 16;
+    private const int SfxTimerStart = 13;
+
+    private readonly InputGate _input = new InputGate();
+    private readonly BoardHintFinder _hintFinder = new BoardHintFinder();
 
     private Board _board;
+    private Match3Game _game;
+    private TurnPresenter _presenter;
+
+    private bool _isLevelOver;
+    private IDisposable _levelOverLock;
+    private bool _swapsSuppressed;
+
     private Animal _debugBlackSheep;
     private Animal _debugBoneBlock;
-    private Animal BlackSheep => _cfg.blackSheep != null ? _cfg.blackSheep : _debugBlackSheep;
-    private Animal BoneBlock => _cfg.boneBlock != null ? _cfg.boneBlock : _debugBoneBlock;
-    private bool _isBusy; // If an animation is going, or in the middle of a swap/cascade 
-    private bool _isLevelOver = false;
-    private readonly Queue<(Vector2Int wolf, Vector2Int sheep)> _pendingWolfEats = new(); // Shich wolf ate which sheep
 
-    private Dictionary<string, int> _collected = new Dictionary<string, int>(); // Track collected animals
+    // Goal progress as the player has seen it so far. The core is ahead of this while a turn replays.
+    private int _shownPoints;
+    private int _shownMatched;
+    private readonly Dictionary<string, int> _collected = new Dictionary<string, int>();
 
-    // Timer bomb parameters
-    public bool IsTimerBombActive { get; private set; }
+    // Timer booster
     private float _timerBombEndTime;
     private bool _timerBombResolving;
     private int _lastShownTimerSecond = -1;
-    public float _speakSfxDuration = 1f;
+    private Task _timerSwapTask = Task.CompletedTask;
 
     public Action<bool> OnTimerBombStateChanged;
 
+    public BoardConfig Config => _cfg;
+    public Board CurrentBoard => _board;
+    public bool IsTimerBombActive { get; private set; }
+
+    /// <summary>True while a tutorial or a triggered bubble is showing.</summary>
+    public bool IsSpeechBubbleInputBlocked => _animalDialogueController != null && _animalDialogueController.IsBlockingInput;
+
+    /// <summary>True while a turn, booster or shuffle is playing out.</summary>
+    public bool IsBusy => !_input.IsOpen;
+
+    /// <summary>Whether a swap, booster or hint may start right now.</summary>
+    public bool CanAcceptInput => _board != null && _input.IsOpen && !_isLevelOver && !IsSpeechBubbleInputBlocked;
+
     public int GetWidth() => _cfg.weidth;
     public int GetHeight() => _cfg.height;
-    public Board CurrentBoard => _board;
+
+    private Animal BlackSheep => _cfg.blackSheep != null ? _cfg.blackSheep : _debugBlackSheep;
+    private Animal BoneBlock => _cfg.boneBlock != null ? _cfg.boneBlock : _debugBoneBlock;
     private bool HasCollectGoals => _cfg.collectGoals != null && _cfg.collectGoals.Count > 0;
 
-    // For the out of moves shuffle
-    private readonly BoardHintFinder _hintFinder = new BoardHintFinder();
-    private bool _bubbleActive;
-    private readonly HashSet<int> _triggeredEntryIndicesShown = new HashSet<int>();
+    // ---------------- Lifecycle ----------------
 
     private void Awake()
     {
+        _input.Changed += _ => ApplySwapsEnabled();
+
         var bootstrapper = GameBootstrapper.Instance;
         if (bootstrapper != null && bootstrapper.SelectedLevel != null)
             _cfg = bootstrapper.SelectedLevel;
@@ -79,13 +100,10 @@ public class BoardController : MonoBehaviour
 
     public async void Start()
     {
-
         if (_cfg == null || _view == null)
             Debug.LogError("Error: Either cfg or view weren't inserted in the board controller");
 
         InitializeGame();
-
-        // Show initial goal/progress
         UpdateGoalUI();
 
         await EnsurePlayableBoardAsync();
@@ -95,18 +113,13 @@ public class BoardController : MonoBehaviour
     private void Update()
     {
         if (!IsTimerBombActive || _timerBombResolving)
-        {
             return;
-        }
 
         UpdateTimerUI();
 
-        if (Time.time >= _timerBombEndTime || AreAllGoalsComplete())
-        {
+        if (Time.time >= _timerBombEndTime || _board.Session.AreAllGoalsComplete)
             EndTimerBomb();
-        }
     }
-
 
     private void OnEnable()
     {
@@ -123,14 +136,15 @@ public class BoardController : MonoBehaviour
         }
 
         _lastShownTimerSecond = -1;
-        _view.SetTimerVisible(IsTimerBombActive);
-        if (IsTimerBombActive)
-            UpdateTimerUI();
-
-        if (AudioManager.instance != null)
+        if (_view != null)
         {
-            AudioManager.instance.PlayBG((int)_cfg.songNumber);
+            _view.SetTimerVisible(IsTimerBombActive);
+            if (IsTimerBombActive)
+                UpdateTimerUI();
         }
+
+        if (AudioManager.instance != null && _cfg != null)
+            AudioManager.instance.PlayBG((int)_cfg.songNumber);
     }
 
     private void OnDisable()
@@ -145,299 +159,150 @@ public class BoardController : MonoBehaviour
             _moveCounter.OnMovesChanged -= OnMovesChangedForView;
     }
 
-    private void OnMovesChangedForView(int movesLeft)
-    {
-        if (_view == null)
-            return;
-
-        _view.SetMovesText(movesLeft);
-        _view.SetMovesLastMoveTension(movesLeft == 1);
-    }
-
-    public void DebugForceWin()
-    {
-        if (_isLevelOver || _board == null)
-            return;
-
-        _board.DebugCheatFillPrimaryGoal();
-
-        if (HasCollectGoals && _cfg.collectGoals != null)
-        {
-            foreach (var g in _cfg.collectGoals)
-            {
-                if (g.animal == null || string.IsNullOrEmpty(g.animal._id))
-                    continue;
-                _collected[g.animal._id] = g.amount;
-            }
-        }
-
-        UpdateGoalUI();
-        TryHandleLevelComplete();
-    }
-
-    public void DebugPlaceAnimalAtCenter(Animal animal, Animal blackSheep, Animal boneBlock)
-    {
-        if (!Application.isPlaying || _board == null || _view == null ||
-            _isBusy || _isLevelOver || !_view.SwapsEnabled)
-        {
-            Debug.LogWarning("Wait until the board is ready and idle before placing a debug tile.", this);
-            return;
-        }
-
-        if (animal == null)
-        {
-            Debug.LogWarning("Assign the requested tile on LevelDebugFlowCheats.", this);
-            return;
-        }
-
-        _debugBlackSheep = blackSheep;
-        _debugBoneBlock = boneBlock;
-        _board.DebugSetSpecialAnimals(BlackSheep, BoneBlock);
-
-        var center = new Vector2Int(_board.Width / 2, _board.Height / 2);
-        _board.SetAnimalInCell(center, animal);
-        _view.AssignSprites(_board);
-    }
-
-    public void DebugForceLose()
-    {
-        if (_isLevelOver)
-            return;
-
-        _isLevelOver = true;
-        _view.SwapsEnabled = false;
-        IsTimerBombActive = false;
-        _view.SetTimerVisible(false);
-
-        if (_locator != null && _locator.Bootstrapper != null)
-            _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
-        
-        if (_levelVFXToggle != null)
-            _levelVFXToggle.SetCurrentVFXActive(false);
-
-        if (_levelLostPopupUI != null)
-            _levelLostPopupUI.Show();
-    }
-
-    private void HandleBoneBlockBroken(Vector2Int cell)
-    {
-        _view.PlayBoneBreakFx(cell);
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlayBoneBreak();
-    }
+    /// <summary>Starts a fresh play of the level: builds its runtime through LevelFactory and draws the board.</summary>
     public void InitializeGame()
     {
-        // Technical
-        _board = new Board(_cfg);
-        _board.OnBoneBlockBroken += HandleBoneBlockBroken;
-        _triggeredEntryIndicesShown.Clear();
+        var level = LevelFactory.Create(_cfg, _view, this);
+        _board = level.Board;
+        _game = level.Game;
+        _presenter = level.Presenter;
 
-        _board.OnWolfAteSheep += (wolf, sheep) =>
-        {
-            _pendingWolfEats.Enqueue((wolf, sheep));
-        };
-
+        _shownPoints = 0;
+        _shownMatched = 0;
         _collected.Clear();
-        _board.OnAnimalsDestroyed = HandleAnimalsDestroyed;
-
-        //_board.OnScoreAdded = amount => _scoreEventChannelSO.RaiseEvent(amount);
-        _board.OnScoreAdded += amount => _levelScoreEventChannelSO.RaiseEvent(amount); // In-Level
 
         _moveCounter.InitializeMoves(_cfg.maxMoves);
-
         _board.Initialize();
 
-        //_board.InitializeStaticDeadBoard(); // For the shuffle tests
-
-        //_blackSheepTriggered = false;
-
-        // Visual
         _view.Build(_cfg.weidth, _cfg.height);
         _view.AssignSprites(_board);
         _view.SetLevelNumber(_cfg.levelIndex);
         _view.SetBackground(_cfg.BackgroundSprite);
+        ApplySwapsEnabled();
+    }
+
+    // ---------------- Input ----------------
+
+    /// <summary>Takes an input lock, for example while a booster plays its own animation. Dispose to release.</summary>
+    public IDisposable AcquireInputLock(string reason) => _input.Acquire(reason);
+
+    /// <summary>Stops swipes from committing without locking other input. Used while the bomb waits for a target.</summary>
+    public void SetSwapsSuppressed(bool suppressed)
+    {
+        _swapsSuppressed = suppressed;
+        ApplySwapsEnabled();
+    }
+
+    public bool IsBlackSheep(Animal piece) => piece != null && BlackSheep != null && piece._id == BlackSheep._id;
+
+    private void ApplySwapsEnabled()
+    {
+        if (_view != null)
+            _view.SwapsEnabled = _input.IsOpen && !_swapsSuppressed;
+    }
+
+    private bool CanStartSwapAt(Vector2Int coord)
+    {
+        if (_board == null || !_board.IsCellInBounds(coord))
+            return false;
+
+        var animal = _board.GetAnimalFromCell(coord);
+        return animal != null && animal._canSwap;
     }
 
     public async void OnSwapRequested(Vector2Int from, Vector2Int to)
     {
-        if (_isBusy || _isLevelOver || _bubbleActive) return;
+        if (!CanAcceptInput) return;
         if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
 
-        var a = _board.GetAnimalFromCell(from);
-        var b = _board.GetAnimalFromCell(to);
-
-        if (a == null || b == null) 
-            return;
-
-        if (!a._canSwap || !b._canSwap)
-        {
-            if (AudioManager.instance != null)
-                AudioManager.instance.PlaySFX(4); // can't swap sound
-
-            await _view.AnimateInvalidSwap(from, to, to - from);
-            return;
-        }
-
-        // Do if activated timer power up
         if (IsTimerBombActive)
         {
-            bool swapped = _board.SwapCellsRaw(from, to);
-            if (!swapped) return;
+            await TimerSwapAsync(from, to);
+            return;
+        }
 
-            if (AudioManager.instance != null)
+        using (_input.Acquire("turn"))
+        {
+            var result = _game.TrySwap(from.ToGrid(), to.ToGrid(), CurrentContext());
+
+            if (result.Outcome == TurnOutcome.Rejected)
             {
-                AudioManager.instance.PlaySFXPitchAdjusted(12, 0.2f); // Play swap sound.
+                if (result.RejectReason != RejectReason.EmptyCell)
+                    await PlayInvalidSwapAsync(from, to);
+                return;
             }
-            await _view.AnimateSwap(from, to, 0.18f);
-            return;
+
+            if (!await _presenter.PlayAsync(result, destroyCancellationToken))
+                return;
+
+            if (result.Outcome == TurnOutcome.Resolved)
+                await FinishTurnAsync(result, checkFailure: true);
         }
+    }
 
-        // Do if normal gameplay
-        _isBusy = true;
+    private async Task TimerSwapAsync(Vector2Int from, Vector2Int to)
+    {
+        var result = _game.SwapFree(from.ToGrid(), to.ToGrid());
 
-        bool sheepSwiped = IsAnySheep(a); // started swipe on a sheep
-        bool otherIsSheep = IsAnySheep(b); // or you swiped into a sheep
-        bool sheepInvolved = sheepSwiped || otherIsSheep;
-
-        bool swipeVertical = (from.x == to.x);
-
-        // where the sheep ends up after the swap
-        Vector2Int sheepPosAfterSwap = sheepSwiped ? to : otherIsSheep ? from : from;
-
-        if (!_board.SwapCellsRaw(from, to))
+        if (result.Outcome == TurnOutcome.Rejected)
         {
-            _isBusy = false;
-
-            if (AudioManager.instance != null)
-                AudioManager.instance.PlaySFX(4);
-
-            await _view.AnimateInvalidSwap(from, to, to - from);
+            if (result.RejectReason == RejectReason.NotSwappable)
+                await PlayInvalidSwapAsync(from, to);
             return;
         }
 
-        // Show the swap immediately even if invalid
+        using (_input.Acquire("timer-swap"))
+        {
+            _timerSwapTask = _presenter.PlayAsync(result, destroyCancellationToken);
+            await _timerSwapTask;
+        }
+    }
+
+    private async Task PlayInvalidSwapAsync(Vector2Int from, Vector2Int to)
+    {
         if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySFXPitchAdjusted(12, 0.2f); // Play swap sound.
-        }
-        await _view.AnimateSwap(from, to, 0.18f);
+            AudioManager.instance.PlaySFX(SfxCannotSwap);
 
-        // Let the swap show in unity
-        // await WaitFrames(framesBetweenSteps);
+        await _view.AnimateInvalidSwap(from, to, to - from);
+    }
 
-        if (sheepInvolved) // Black sheep
-        {
-            _moveCounter.UseMove();
+    /// <summary>What happens after a turn has played out: win, lose, then any triggered dialogue.</summary>
+    private async Task FinishTurnAsync(TurnResult result, bool checkFailure)
+    {
+        if (result.GoalsComplete)
+            TryHandleLevelComplete();
 
-            TryRollBlackSheep();
-
-            // Animate the blast with dark wool bursts along the line
-            await AnimateBlackSheepBlastFromCenter(sheepPosAfterSwap, swipeVertical);
-
-            // Then actually clear the model and show the result
-            var blastFalls = new List<Board.FallMove>();
-            var blastSpawns = new List<Board.SpawnInfo>();
-            _board.TriggerSheepSwipeBlast(sheepPosAfterSwap, swipeVertical, blastFalls, blastSpawns);
-
-            UpdateGoalUI();
-            await _view.AnimateGravity(blastFalls, blastSpawns, _board);
-
-            await ResolveCascadesAsync();
+        if (_animalDialogueController != null)
             _animalDialogueController.HideNormalBubbleIfActive();
 
-            if (_isLevelOver)
-            {
-                _isBusy = false;
-                return;
-            }
-
-            if (TryHandleLevelFailed())
-            {
-                _isBusy = false;
-                return;
-            }
-
-            await TryShowTriggeredDialogueAsync();
-
-            _isBusy = false;
-            return;
-        }
-
-        // Check if the swap didn't produce any match
-        if (!_board.HasAnyMatch())
-        {
-            // The swap was invalid. Swap back in model and animate back
-            _board.SwapCellsRaw(from, to);
-            await _view.AnimateSwap(from, to, 0.18f); // animate back
-
-            _isBusy = false;
-            return;
-        }
-
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f); // Play pop sound.
-        }
-        _moveCounter.UseMove();
-        TryRollBlackSheep(); // Roll the black sheep spawn
-
-        // The swap was valid. Resolve cascades with pacing
-        _view.AssignSprites(_board); // Sync view to model after swap
-        
-        await ResolveCascadesAsync();
-        _animalDialogueController.HideNormalBubbleIfActive();
-
         if (_isLevelOver)
-        {
-            _isBusy = false;
             return;
-        }
 
-        if (TryHandleLevelFailed())
-        {
-            _isBusy = false;
+        if (checkFailure && TryHandleLevelFailed())
             return;
-        }
 
         await TryShowTriggeredDialogueAsync();
-
-        _isBusy = false;
-
     }
 
-    private void TryRollBlackSheep()
+    private TurnContext CurrentContext() => new TurnContext(_moveCounter.MovesLeft, _cfg.maxMoves, IsTimerBombActive);
+
+    // ---------------- Boosters ----------------
+
+    /// <summary>Clears the bomb's area and plays out the cascade. The bomb plays its own impact animation first.</summary>
+    public async Task ResolveBombAsync(IReadOnlyList<Vector2Int> cells)
     {
-        if (_cfg.blackSheep == null) return; // not this level
-
-        int movesMade = _cfg.maxMoves - _moveCounter.MovesLeft;
-
-        if (_cfg.blackSheepUnlockAfterMoves <= 0) return;
-
-        if (movesMade % _cfg.blackSheepUnlockAfterMoves == 0)
-        {
-            _board.RollForBlackSheep(_cfg.blackSheepRollChance);
-        }
-    }
-
-    public async void TryRemoveCellsFromGrid(List<Vector2Int> cells)
-    {
-        if (cells == null || cells.Count == 0)
+        if (_board == null || cells == null || cells.Count == 0)
             return;
 
-        var uniqueCells = new HashSet<Vector2Int>(cells);
+        using (_input.Acquire("turn"))
+        {
+            var result = _game.ClearCells(cells.ToGrid(), CurrentContext());
 
-        var fallMoves = new List<Board.FallMove>();
-        var spawns = new List<Board.SpawnInfo>();
+            if (!await _presenter.PlayAsync(result, destroyCancellationToken))
+                return;
 
-        _board.ClearCells(uniqueCells, fallMoves, spawns);
-        UpdateGoalUI();
-
-        await _view.AnimateGravity(fallMoves, spawns, _board, 0.1f);
-        await ResolveCascadesAsync();
-
-        _animalDialogueController.HideNormalBubbleIfActive();
-
-        await TryShowTriggeredDialogueAsync();
+            await FinishTurnAsync(result, checkFailure: false);
+        }
     }
 
     public void StartTimerBomb(float durationSeconds)
@@ -456,10 +321,8 @@ public class BoardController : MonoBehaviour
         if (AudioManager.instance != null)
         {
             AudioManager.instance.PlayTimerMusic();
-            AudioManager.instance.PlaySFX(13);
+            AudioManager.instance.PlaySFX(SfxTimerStart);
         }
-
-        _view.SwapsEnabled = true;
     }
 
     private async void EndTimerBomb()
@@ -468,96 +331,155 @@ public class BoardController : MonoBehaviour
         IsTimerBombActive = false;
 
         OnTimerBombStateChanged?.Invoke(false);
-
-
         _view.SetTimerVisible(false);
 
-        // freeze input while resolving
-        _view.SwapsEnabled = false;
-        _isBusy = true;
-
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlayBG((int)_cfg.songNumber);
-
-        await ResolveCascadesAsync();
-
-        if (!_isLevelOver)
+        using (_input.Acquire("turn"))
         {
-            if (TryHandleLevelFailed())
-            {
-                _isBusy = false;
-                _timerBombResolving = false;
-                return;
-            }
+            await _timerSwapTask; // let the last free swap finish moving first
+
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlayBG((int)_cfg.songNumber);
+
+            var result = _game.ResolveBoard(CurrentContext());
+            if (await _presenter.PlayAsync(result, destroyCancellationToken))
+                await FinishTurnAsync(result, checkFailure: true);
         }
 
-        _animalDialogueController.HideNormalBubbleIfActive();
-
-        await TryShowTriggeredDialogueAsync();
-
-        _isBusy = false;
-        _view.SwapsEnabled = !_isLevelOver;
         _timerBombResolving = false;
     }
 
-    private async Task ResolveCascadesAsync()
+    private void UpdateTimerUI()
     {
-        if (TryHandleLevelComplete())
+        float remaining = Mathf.Max(0f, _timerBombEndTime - Time.time);
+        int seconds = Mathf.CeilToInt(remaining);
+
+        if (seconds == _lastShownTimerSecond)
             return;
 
-        var matches = _board.FindMatches();
-        while (matches.Count > 0)
-        {
-            await _view.AnimateMatchPopFx(matches, BoardEffectsTiming.MatchPop);
+        _lastShownTimerSecond = seconds;
+        _view.SetTimerSeconds(seconds);
+    }
 
-            var fallMoves = new List<Board.FallMove>();
-            var spawns = new List<Board.SpawnInfo>();
+    // ---------------- Hint and dead board ----------------
 
-            _board.ResolveMatches(matches, fallMoves, spawns);
+    public async Task ShowHintOrHandleDeadBoardAsync()
+    {
+        if (!CanAcceptInput)
+            return;
 
-            UpdateGoalUI();
-            await _view.AnimateGravity(fallMoves, spawns, _board, 0.20f);
-            UpdateGoalUI();
-
-            if (TryHandleLevelComplete())
-                return;
-
-            matches = _board.FindMatches();
-
-            if (!_isLevelOver && !AreAllGoalsComplete())
-                await EnsurePlayableBoardAsync();
-        }
-
-        // Only after cascades are fully done:
-        _board.ResolveWolfSheepAfterCascades();
-
-        while (_pendingWolfEats.Count > 0)
-        {
-            var eat = _pendingWolfEats.Dequeue();
-
-            // 1. Wolf nudges
-            await _view.AnimateWolfNudge(eat.wolf, eat.sheep, 0.20f);
-
-            // 2. Only now this sheep turns into bones
-            _view.RefreshCellSprite(eat.sheep, _board);
-
-            UpdateGoalUI();
-        }
-
-        TryHandleLevelComplete();
-
-        if (!_isLevelOver)
+        if (_hintFinder.TryFindHint(_board, out HintMove hint))
+            await _view.AnimateHint(hint.From, hint.To);
+        else
             await EnsurePlayableBoardAsync();
     }
 
-    //private async Task<bool> TryHandleLevelCompleteAsync()
+    private async Task EnsurePlayableBoardAsync()
+    {
+        if (_isLevelOver || _game == null) return;
+
+        var result = _game.EnsurePlayable(CurrentContext());
+        if (result.Steps.Count == 0) return;
+
+        using (_input.Acquire("shuffle"))
+            await _presenter.PlayAsync(result, destroyCancellationToken);
+    }
+
+    // ---------------- Presentation callbacks (ITurnPresentationListener) ----------------
+
+    void ITurnPresentationListener.OnMoveUsed() => _moveCounter.UseMove();
+
+    void ITurnPresentationListener.OnTilesScored(int points, int matched)
+    {
+        _shownPoints += points;
+        _shownMatched += matched;
+
+        if (points > 0 && _levelScoreEventChannelSO != null)
+            _levelScoreEventChannelSO.RaiseEvent(points);
+    }
+
+    void ITurnPresentationListener.OnTilesDestroyed(string tileId, int count)
+    {
+        if (string.IsNullOrEmpty(tileId) || count <= 0)
+            return;
+
+        if (_animalsDestroyedChannelSO != null)
+            _animalsDestroyedChannelSO.RaiseEvent(tileId, count);
+
+        _collected.TryGetValue(tileId, out int have);
+        _collected[tileId] = have + count;
+
+        if (HasCollectGoals)
+            UpdateGoalUI();
+    }
+
+    void ITurnPresentationListener.OnBoneBroken(Vector2Int cell)
+    {
+        _view.PlayBoneBreakFx(cell);
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayBoneBreak();
+    }
+
+    void ITurnPresentationListener.OnGoalProgressChanged() => UpdateGoalUI();
+
+    private void OnMovesChangedForView(int movesLeft)
+    {
+        if (_view == null)
+            return;
+
+        _view.SetMovesText(movesLeft);
+        _view.SetMovesLastMoveTension(movesLeft == 1);
+    }
+
+    private void UpdateGoalUI()
+    {
+        if (_board == null)
+            return;
+
+        // Points plus collect goals (last-level style)
+        if (_cfg.goalType == PointsOrMatches.points && HasCollectGoals)
+        {
+            _view.SetPointsAndCollectGoals(_shownPoints, _cfg.goal, _cfg.collectGoals, _collected);
+            return;
+        }
+
+        if (_cfg.goalType == PointsOrMatches.collectAnimals)
+            _view.SetCollectGoals(_cfg.collectGoals, _collected);
+
+        if (_board.GoalType == PointsOrMatches.points)
+            _view.SetScore(_shownPoints, _board.GoalAmount);
+        else if (_board.GoalType == PointsOrMatches.matches)
+            _view.SetMatchedAnimals(_shownMatched, _board.GoalAmount);
+
+        _view.ShowGoal(true);
+    }
+
+    /// <summary>Makes the shown progress match the core, for example after a debug cheat.</summary>
+    private void SyncShownProgress()
+    {
+        var session = _board.Session;
+        _shownPoints = session.Points;
+        _shownMatched = session.MatchedAnimals;
+        _collected.Clear();
+        foreach (var entry in session.Collected)
+            _collected[entry.Key] = entry.Value;
+    }
+
+    // ---------------- Win / lose ----------------
+
+    private void EndLevel()
+    {
+        _isLevelOver = true;
+        if (_levelOverLock == null)
+            _levelOverLock = _input.Acquire("level-over");
+    }
+
     private bool TryHandleLevelComplete()
     {
-        if (_isLevelOver || !AreAllGoalsComplete())
+        if (_isLevelOver || !_board.Session.AreAllGoalsComplete)
             return false;
 
-        _isLevelOver = true;
-        
+        EndLevel();
+
         if (_levelVFXToggle != null)
             _levelVFXToggle.SetCurrentVFXActive(false);
 
@@ -596,282 +518,30 @@ public class BoardController : MonoBehaviour
         }
 
         if (_levelClearedDimmer != null)
-        {
             _levelClearedDimmer.SetActive(true);
-        }
 
         if (_levelClearedPopupUI != null)
-        {
             _levelClearedPopupUI.Show(level, finalScore, coins, stars);
-        }
         else
-        {
             Debug.LogError("LevelClearedPopupUI is not assigned on BoardController.");
-        }
 
         if (AudioManager.instance != null)
         {
             AudioManager.instance.ChangeMusicVolume(0.4f);
-            AudioManager.instance.PlaySFX(16);
-            //await WaitFrames(25);
+            AudioManager.instance.PlaySFX(SfxLevelCleared);
             AudioManager.instance.ChangeMusicVolume(1f);
         }
 
         return true;
     }
 
-    private void UpdateGoalUI()
-    {
-        // last-level style - points and collectGoals
-        if (_cfg.goalType == PointsOrMatches.points && HasCollectGoals)
-        {
-            _view.SetPointsAndCollectGoals(_board.CurrentPoints, _cfg.goal, _cfg.collectGoals, _collected);
-            return;
-        }
-
-        else if (_cfg.goalType == PointsOrMatches.collectAnimals)
-        {
-            _view.SetCollectGoals(_cfg.collectGoals, _collected);
-        }
-
-        if (_board.GoalType == PointsOrMatches.points)
-        {
-            _view.SetScore(_board.CurrentPoints, _board.GoalAmount);
-        }
-        else if (_board.GoalType == PointsOrMatches.matches)
-        {
-            _view.SetMatchedAnimals(_board.MatchedAnimals, _board.GoalAmount);
-        }
-
-        _view.ShowGoal(true); // Show the goal text
-    }
-
-    // For the animal collection goal
-    private void HandleAnimalsDestroyed(string animalId, int count)
-    {
-        _animalsDestroyedChannelSO.RaiseEvent(animalId, count);
-
-        // Only track collection if this level is a collect level
-        if (!HasCollectGoals) // && _cfg.goalType != PointsOrMatches.collectAnimals)
-            return;
-
-        if (!_collected.TryGetValue(animalId, out int have))
-            have = 0;
-
-        _collected[animalId] = have + count;
-
-        // Update goal UI
-        UpdateGoalUI();
-    }
-
-    private bool IsCollectGoalComplete()
-    {
-        foreach (var g in _cfg.collectGoals)
-        {
-            if (g.animal == null) continue;
-
-            _collected.TryGetValue(g.animal._id, out int have);
-            if (have < g.amount) return false;
-        }
-        return true;
-    }
-    public async Task ShowHintOrHandleDeadBoardAsync()
-    {
-        if (_isBusy || _isLevelOver || _board == null)
-            return;
-
-        if (_hintFinder.TryFindHint(_board, out HintMove hint))
-        {
-            await _view.AnimateHint(hint.From, hint.To);
-        }
-        else
-        {
-            await EnsurePlayableBoardAsync();
-        }
-    }
-    private async Task EnsurePlayableBoardAsync()
-    {
-        if (_isLevelOver) return;
-        if (!IsTimerBombActive && _moveCounter.MovesLeft <= 0) return;
-
-        if (_hintFinder.TryFindHint(_board, out _))
-            return;
-
-        _isBusy = true;
-        _view.SwapsEnabled = false;
-
-        await _view.ShowShuffleMessage(0.35f);
-
-        int safety = 0;
-        bool playable = false;
-
-        do
-        {
-            _board.ShuffleSwappablePieces();
-            safety++;
-
-            playable = !_board.HasAnyMatch() && _hintFinder.TryFindHint(_board, out _);
-        }
-        while (!playable && safety < 100);
-
-        await _view.AnimateShuffle(_board, 0.07f, 0.09f, 0.008f);
-
-        _view.SwapsEnabled = true;
-        _isBusy = false;
-    }
-
-    //private async Task WaitFrames(int frameCount)
-    //{
-    //    for (int i = 0; i < frameCount; i++)
-    //        await Task.Yield();
-    //}
-
-    private void UpdateTimerUI()
-    {
-        float remaining = Mathf.Max(0f, _timerBombEndTime - Time.time);
-        int seconds = Mathf.CeilToInt(remaining);
-
-        if (seconds == _lastShownTimerSecond)
-            return;
-
-        _lastShownTimerSecond = seconds;
-        _view.SetTimerSeconds(seconds);
-    }
-    private bool AreAllGoalsComplete()
-    {
-        // points or total matches
-        bool primaryComplete = _cfg.goalType == PointsOrMatches.collectAnimals ? IsCollectGoalComplete() : _board.IsGoalReached;
-
-        bool collectComplete = HasCollectGoals ? IsCollectGoalComplete() : true;
-
-        return primaryComplete && collectComplete;
-    }
-    private bool CanStartSwapAt(Vector2Int coord)
-    {
-        if (_board == null)
-            return false;
-
-        if (coord.x < 0 || coord.x >= GetWidth() || coord.y < 0 || coord.y >= GetHeight())
-            return false;
-
-        if (_board.IsCellLocked(coord))
-            return false;
-
-        var animal = _board.GetAnimalFromCell(coord);
-        return animal != null && animal._canSwap;
-    }
-    private bool IsAnimal(Animal piece, Animal target)
-    {
-        return piece != null && target != null && piece._id == target._id;
-    }
-    private bool IsAnySheep(Animal piece)
-    {
-        return IsAnimal(piece, BlackSheep);
-    }
-
-    private async Task PlayAnimalSpeakSfx(Animal animal)
-    {
-        if (animal == null || animal._speakSfxId == 0) return;
-        if (AudioManager.instance == null) return;
-
-        AudioManager.instance.PlaySFX(animal._speakSfxId);
-
-        if (_speakSfxDuration > 0f)
-            await Task.Delay(Mathf.CeilToInt(_speakSfxDuration * 1000f));
-    }
-
-    private async Task AnimateBlackSheepBlastFromCenter(Vector2Int center, bool swipedVertically)
-    {
-        await _view.AnimateSheepAnger(center);
-        _view.PlayBlackSheepFx(center, swipedVertically, _cfg.weidth, _cfg.height);
-        // vertical swipe => ROW blast (left + right)
-        // horizontal swipe => COLUMN blast (up + down)
-
-        int maxWave = swipedVertically
-            ? Mathf.Max(center.x, (_cfg.weidth - 1) - center.x)
-            : Mathf.Max(center.y, (_cfg.height - 1) - center.y);
-
-        if (AudioManager.instance != null && !swipedVertically) // PLay longer sound
-        {
-            AudioManager.instance.PlaySFXPitchAdjusted(17);
-        }
-
-        if (AudioManager.instance != null && swipedVertically) // Play shorter sound
-        {
-            AudioManager.instance.PlaySFXPitchAdjusted(18);
-        }
-
-        for (int wave = 0; wave <= maxWave; wave++)
-        {
-            var waveCells = new List<Vector2Int>();
-            var waveLineCells = new List<Vector2Int>();
-
-            if (swipedVertically)
-            {
-                int y = center.y;
-
-                int leftX = center.x - wave;
-                int rightX = center.x + wave;
-
-                if (leftX >= 0)
-                {
-                    var leftCell = new Vector2Int(leftX, y);
-                    waveLineCells.Add(leftCell);
-                    if (_board.GetAnimalFromCell(leftCell) != null && _board.GetAnimalFromCell(leftCell) != BoneBlock)
-                        waveCells.Add(leftCell);
-                }
-
-                if (rightX < _cfg.weidth && rightX != leftX)
-                {
-                    var rightCell = new Vector2Int(rightX, y);
-                    waveLineCells.Add(rightCell);
-                    if (_board.GetAnimalFromCell(rightCell) != null && _board.GetAnimalFromCell(rightCell) != BoneBlock)
-                        waveCells.Add(rightCell);
-                }
-            }
-            else
-            {
-                int x = center.x;
-
-                int downY = center.y - wave;
-                int upY = center.y + wave;
-
-                if (downY >= 0)
-                {
-                    var downCell = new Vector2Int(x, downY);
-                    waveLineCells.Add(downCell);
-                    if (_board.GetAnimalFromCell(downCell) != null && _board.GetAnimalFromCell(downCell) != BoneBlock)
-                        waveCells.Add(downCell);
-                }
-
-                if (upY < _cfg.height && upY != downY)
-                {
-                    var upCell = new Vector2Int(x, upY);
-                    waveLineCells.Add(upCell);
-                    if (_board.GetAnimalFromCell(upCell) != null && _board.GetAnimalFromCell(upCell) != BoneBlock)
-                        waveCells.Add(upCell);
-                }
-            }
-
-            // Break bones during the passing wave, without refilling or duplicating the later explosion.
-            _board.BreakBonesAdjacentTo(waveLineCells);
-
-            if (waveCells.Count > 0 && AudioManager.instance != null)
-                AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f);
-
-            await _view.AnimateMatchPopFx(waveCells, BoardEffectsTiming.LineStep, BoardClearEffect.BlackSheep);
-        }
-        await _view.WaitForBlackSheepParticles();
-    }
-
     private bool TryHandleLevelFailed()
     {
         if (_isLevelOver) return true;
-        if (AreAllGoalsComplete()) return false;
+        if (_board.Session.AreAllGoalsComplete) return false;
         if (_moveCounter.MovesLeft > 0) return false;
 
-        _isLevelOver = true;
-        _view.SwapsEnabled = false;
+        EndLevel();
 
         if (_levelVFXToggle != null)
             _levelVFXToggle.SetCurrentVFXActive(false);
@@ -887,28 +557,89 @@ public class BoardController : MonoBehaviour
         return true;
     }
 
+    // ---------------- Dialogue ----------------
+
     private async Task TryStartLevelDialogueAsync()
     {
-        if (_isLevelOver)
+        if (_isLevelOver || _animalDialogueController == null)
             return;
 
         var context = new BoardDialogueContext(_board, _view, PlayAnimalSpeakSfx);
-
-        await _animalDialogueController.HandleLevelStartBubblesAsync(
-            _cfg.levelIndex,
-            context,
-            _cfg.weidth
-        );
+        await _animalDialogueController.HandleLevelStartBubblesAsync(_cfg.levelIndex, context, _cfg.weidth);
     }
 
     private async Task TryShowTriggeredDialogueAsync()
     {
-        var context = new BoardDialogueContext(_board, _view, PlayAnimalSpeakSfx);
+        if (_animalDialogueController == null)
+            return;
 
-        await _animalDialogueController.TryShowTriggeredBubbleAsync(
-            _cfg.levelIndex,
-            context,
-            _cfg.weidth
-        );
+        var context = new BoardDialogueContext(_board, _view, PlayAnimalSpeakSfx);
+        await _animalDialogueController.TryShowTriggeredBubbleAsync(_cfg.levelIndex, context, _cfg.weidth);
+    }
+
+    private async Task PlayAnimalSpeakSfx(Animal animal)
+    {
+        if (animal == null || animal._speakSfxId == 0) return;
+        if (AudioManager.instance == null) return;
+
+        AudioManager.instance.PlaySFX(animal._speakSfxId);
+
+        if (_speakSfxDuration > 0f)
+            await Task.Delay(Mathf.CeilToInt(_speakSfxDuration * 1000f));
+    }
+
+    // ---------------- Debug ----------------
+
+    public void DebugForceWin()
+    {
+        if (_isLevelOver || _board == null)
+            return;
+
+        _board.Session.CheatCompleteGoals();
+        SyncShownProgress();
+        UpdateGoalUI();
+        TryHandleLevelComplete();
+    }
+
+    public void DebugForceLose()
+    {
+        if (_isLevelOver)
+            return;
+
+        EndLevel();
+        IsTimerBombActive = false;
+        _view.SetTimerVisible(false);
+
+        if (_locator != null && _locator.Bootstrapper != null)
+            _locator.Bootstrapper.Economy.TrySpendLifeOnLevelFail();
+
+        if (_levelVFXToggle != null)
+            _levelVFXToggle.SetCurrentVFXActive(false);
+
+        if (_levelLostPopupUI != null)
+            _levelLostPopupUI.Show();
+    }
+
+    public void DebugPlaceAnimalAtCenter(Animal animal, Animal blackSheep, Animal boneBlock)
+    {
+        if (!Application.isPlaying || _board == null || _view == null || !CanAcceptInput || !_view.SwapsEnabled)
+        {
+            Debug.LogWarning("Wait until the board is ready and idle before placing a debug tile.", this);
+            return;
+        }
+
+        if (animal == null)
+        {
+            Debug.LogWarning("Assign the requested tile on LevelDebugFlowCheats.", this);
+            return;
+        }
+
+        _debugBlackSheep = blackSheep;
+        _debugBoneBlock = boneBlock;
+        _board.DebugSetSpecialAnimals(BlackSheep, BoneBlock);
+
+        var center = new Vector2Int(_board.Width / 2, _board.Height / 2);
+        _board.SetAnimalInCell(center, animal);
+        _view.AssignSprites(_board);
     }
 }

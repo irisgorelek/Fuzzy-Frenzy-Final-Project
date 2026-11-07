@@ -1,39 +1,10 @@
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
+// The black-sheep fall/spawn reporting this file used to test now lives in BoardRulesTests.
 public class BoardTileDropTests
 {
-    [TestCase(true)]
-    [TestCase(false)]
-    public void SheepBlast_ReportsRefillSpawnsAndExistingFalls(bool horizontal)
-    {
-        var animal = ScriptableObject.CreateInstance<Animal>();
-        var config = ScriptableObject.CreateInstance<BoardConfig>();
-        try
-        {
-            animal._id = "test";
-            animal._affectedByGravity = true;
-            config.weidth = config.height = 3;
-            config.animals = new List<Animal> { animal };
-            var board = new Board(config);
-            for (int x = 0; x < 3; x++)
-            for (int y = 0; y < 3; y++) board.SetAnimalInCell(new Vector2Int(x,y), animal);
-            var falls = new List<Board.FallMove>();
-            var spawns = new List<Board.SpawnInfo>();
-            board.TriggerSheepSwipeBlast(Vector2Int.one, horizontal, falls, spawns);
-            Assert.AreEqual(3, spawns.Count);
-            Assert.AreEqual(horizontal ? 3 : 0, falls.Count);
-            foreach (var spawn in spawns)
-            {
-                Assert.AreEqual(-1, spawn.spawnFromY);
-                Assert.AreSame(spawn.animal, board.GetAnimalFromCell(spawn.cell));
-            }
-        }
-        finally { Object.DestroyImmediate(animal); Object.DestroyImmediate(config); }
-    }
-
     [Test]
     public void Drop_ReachesGroundThenReboundsAndSettlesExactly()
     {

@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -75,6 +76,10 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_board != null && _board.IsTimerBombActive)
             return;
 
+        // Arming waits until the board is idle; disarming is always allowed.
+        if (!_armed && _board != null && !_board.CanAcceptInput)
+            return;
+
         if (_armed)
         {
             UnarmBomb();
@@ -94,7 +99,8 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_armed || _bombInProgress || _bootstrapper == null)
             return;
 
-        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+        // Not during a turn, another booster or dialogue.
+        if (_board != null && !_board.CanAcceptInput)
             return;
 
         if (_board != null && _board.IsTimerBombActive)
@@ -105,7 +111,8 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
             return;
 
         _armed = true;
-        _boardView.SwapsEnabled = false;
+        if (_board != null)
+            _board.SetSwapsSuppressed(true); // taps choose the target instead of swiping
         _boardView.CellTapped += OnCellTapped;
 
         //ShowArmedButtonVfx(); - The VFX looks bad with the current UI (Might add something else in a future update)
@@ -117,7 +124,8 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (!_armed) return;
 
         _armed = false;
-        _boardView.SwapsEnabled = true;
+        if (_board != null)
+            _board.SetSwapsSuppressed(false);
 
         _boardView.CellTapped -= OnCellTapped;
 
@@ -146,18 +154,21 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
         if (_bombInProgress)
             return;
 
-        if (_board != null && _board.IsSpeechBubbleInputBlocked)
+        // Not during a turn, another booster or dialogue.
+        if (_board == null || !_board.CanAcceptInput)
             return;
 
         _bombInProgress = true;
         RefreshAmount();
 
+        IDisposable inputLock = null;
         try
         {
             if (!_bootstrapper.Economy.TryConsumeBooster(BoosterEffectType.FuzzyBlast, 1))
                 return;
 
-            _boardView.SwapsEnabled = false;
+            // Hold input until the bomb's whole cascade has played out.
+            inputLock = _board.AcquireInputLock("bomb");
             var affected = new List<Vector2Int>(9);
 
             for (int dx = -1; dx <= 1; dx++)
@@ -184,15 +195,16 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
 
             await _boardView.AnimateBombImpact(affected, BoardEffectsTiming.BombImpact);
 
-            _board.TryRemoveCellsFromGrid(affected);
+            var resolving = _board.ResolveBombAsync(affected);
             _powerUpChannel.RaiseEvent("bomb");
             RefreshAmount();
-
             _feedback?.PopAmount();
+
+            await resolving;
         }
         finally
         {
-            _boardView.SwapsEnabled = true;
+            inputLock?.Dispose();
             _bombInProgress = false;
             RefreshAmount();
         }

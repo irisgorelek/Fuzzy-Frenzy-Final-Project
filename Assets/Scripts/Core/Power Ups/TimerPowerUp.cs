@@ -79,7 +79,8 @@ public class TimerPowerUp : MonoBehaviour, IPointerClickHandler
         if (_board == null) 
             return;
 
-        if (_board.IsSpeechBubbleInputBlocked)
+        // Not during a turn, a booster or dialogue.
+        if (!_board.CanAcceptInput)
             return;
 
         // Don't start it twice

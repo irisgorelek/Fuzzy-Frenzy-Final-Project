@@ -25,6 +25,9 @@ public class AnimalDialogueController : MonoBehaviour
     private bool _triggeredBubbleActive;
     private readonly HashSet<int> _triggeredEntryIndicesShown = new();
 
+    /// <summary>True while a tutorial or a triggered bubble is showing. The ambient normal bubble never blocks input.</summary>
+    public bool IsBlockingInput => _tutorialActive || _triggeredBubbleActive;
+
     public async Task HandleLevelStartBubblesAsync(
     int levelIndex,
     IBoardDialogueContext context,

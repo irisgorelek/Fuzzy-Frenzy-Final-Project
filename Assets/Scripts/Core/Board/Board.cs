@@ -1,17 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using FuzzyFrenzy.Domain;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class Board
+/// <summary>
+/// Unity-facing adapter over the core board (<see cref="BoardState"/>). It speaks in Animal assets and
+/// Vector2Int, and owns the level's core objects: the board, the session and the tile catalog.
+/// All changes to the board during play go through <see cref="Match3Game"/>.
+/// </summary>
+public class Board : IAnimalGrid
 {
+    /// <summary>A tile falling from one cell to another, as the view animates it.</summary>
     public struct FallMove
     {
         public Vector2Int from;
         public Vector2Int to;
     }
 
+    /// <summary>A new tile entering the board, as the view animates it.</summary>
     public struct SpawnInfo
     {
         public Vector2Int cell;   // where it ends
@@ -19,1073 +25,109 @@ public class Board
         public int spawnFromY;    // -1 = above board, otherwise y of the blocker above
     }
 
-    private List<Animal> _allowedAnimals; // Which animals are allowed on the board
-    private Animal[,] _grid;
-    private int _width;
-    private int _height;
+    private readonly AnimalCatalog _catalog = new AnimalCatalog();
+    private readonly BoardState _state;
+    private readonly GameSession _session;
+    private readonly IRandomSource _random;
 
-    private int _points = 0;
-    private int _matchedAnimals = 0;
+    public Board(BoardConfig config) : this(config, new UnityRandomSource()) { }
 
-    private int _goalAmount = 0;
-    private PointsOrMatches _goalType;
-    private readonly HashSet<Vector2Int> _lockedCells = new HashSet<Vector2Int>();
-
-    // Special Pieces
-    private readonly Animal _wolf;
-    private readonly Animal _sheep;
-    private Animal _boneBlock;
-    private Animal _blackSheep;
-    private bool _blackSheepArmed; // when true, spawn one black sheep during next refill
-
-    private static readonly Vector2Int[] OrthogonalDirs =
+    public Board(BoardConfig config, IRandomSource random)
     {
-        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-    };
+        if (config == null) throw new ArgumentNullException(nameof(config));
 
-    public int CurrentPoints => _points;
-    public int MatchedAnimals => _matchedAnimals;
-    public int Width => _width;
-    public int Height => _height;
+        _random = random ?? new UnityRandomSource();
+        _state = new BoardState(_catalog.Tiles, config.weidth, config.height);
 
-    public int GoalAmount => _goalAmount;
-    public PointsOrMatches GoalType => _goalType;
+        if (config.animals != null)
+            foreach (var animal in config.animals)
+                if (animal != null) _state.SpawnPool.Add(_catalog.TypeOf(animal));
 
-    public bool IsGoalReached =>
-        _goalType == PointsOrMatches.points
-            ? _points >= _goalAmount
-            : _matchedAnimals >= _goalAmount;
+        _state.Specials.Wolf = _catalog.TypeOf(config.wolf);
+        _state.Specials.Sheep = _catalog.TypeOf(config.sheep);
+        _state.Specials.Bone = _catalog.TypeOf(config.boneBlock);
+        _state.Specials.BlackSheep = _catalog.TypeOf(config.blackSheep);
 
-    public Action<string, int> OnAnimalsDestroyed;
-    public Action<int> OnScoreAdded;
-    public Action<Vector2Int, Vector2Int> OnWolfAteSheep;
-    public Action<Vector2Int> OnBoneBlockBroken;
-
-    private readonly Queue<Animal> _debugForcedSpawns = new Queue<Animal>(); // For the shuffle test
-
-    public Board(BoardConfig config)
-    {
-        _width = config.weidth;
-        _height = config.height;
-
-        _goalAmount = config.goal;
-        _goalType = config.goalType;
-
-        // Get the allowed animals for the level
-        _allowedAnimals = new List<Animal>(config.animals);
-        _grid = new Animal[_width, _height];
-
-        // Special Pieces
-        _wolf = config.wolf;
-        _sheep = config.sheep;
-        _boneBlock = config.boneBlock;
-        _blackSheep = config.blackSheep;
+        _session = new GameSession(BuildGoals(config));
     }
 
-    public void Initialize()
-    {
-        if (_allowedAnimals == null || _allowedAnimals.Count == 0)
-            throw new InvalidOperationException("Board has no allowed animals. Check BoardConfig.");
+    // ---- Core objects ----
 
-        const int MaxPlacementAttempts = 20;
+    public BoardState State => _state;
+    public GameSession Session => _session;
+    public AnimalCatalog Catalog => _catalog;
+    public IRandomSource Random => _random;
 
-        // Fill the grid with animals
-        for (int x = 0; x < _width; x++) // Columns
-        {
-            for (int y = 0; y < _height; y++) // Rows
-            {
-                var cell = new Vector2Int(x, y);
+    // ---- Read-only state ----
 
-                int attempts = 0;
-                Animal chosen;
+    public int Width => _state.Width;
+    public int Height => _state.Height;
+    public int CurrentPoints => _session.Points;
+    public int GoalAmount => _session.Goals.Amount;
+    public PointsOrMatches GoalType => (PointsOrMatches)(int)_session.Goals.Primary;
 
-                do
-                {
-                    chosen = PickRandomAllowedAnimal(); // Create a board of random animals
-                    attempts++;
-                }
-                while (WouldCreateInitialMatches(cell, chosen) && attempts < MaxPlacementAttempts);
+    public Animal GetAnimalFromCell(Vector2Int cell) => _catalog.AnimalOf(_state.TypeAt(cell.ToGrid()));
 
-                _grid[x, y] = chosen;
-            }
-        }
-
-        if (_allowedAnimals.Contains(_boneBlock) && _boneBlock != null)
-            _allowedAnimals.Remove(_boneBlock);
-
-        if (_blackSheep != null)
-            _allowedAnimals.Remove(_blackSheep);
-
-        FixStartWolfSheepAdjacency(); // Make sure sheep don't appear next to wolves at the start of the level
-    }
-
-    // =================================== TEST ======================================== //
-    public void InitializeStaticDeadBoard()
-    {
-        if (_allowedAnimals == null || _allowedAnimals.Count == 0)
-            throw new InvalidOperationException("Board has no allowed animals. Check BoardConfig.");
-
-        if (_width != 5 || _height != 5)
-            throw new InvalidOperationException("InitializeStaticDeadBoard supports only a 5x5 board.");
-
-        if (_wolf == null || _sheep == null || _boneBlock == null)
-            throw new InvalidOperationException("Wolf/Sheep/BoneBlock references are missing in BoardConfig.");
-
-        // Only normal playable animals
-        var pool = new List<Animal>();
-        foreach (var animal in _allowedAnimals)
-        {
-            if (animal == null) continue;
-            if (!animal._canSwap) continue;
-            if (!animal._canMatch) continue;
-
-            if (animal == _wolf) continue;
-            if (animal == _sheep) continue;
-            if (animal == _boneBlock) continue;
-
-            pool.Add(animal);
-        }
-
-        if (pool.Count < 3)
-            throw new InvalidOperationException("Need at least 3 normal swappable/matchable animals for this test board.");
-
-        Animal A = pool[0];
-        Animal B = pool[1];
-        Animal C = pool[2];
-
-        // Intended move:
-        // swap (3,0) with (4,0)
-        //
-        // Top row before move: A B B A B
-        // Top row after move : A B B B A -> match at x = 1,2,3
-        //
-        // Forced refill:
-        // (1,0) = C
-        // (2,0) = C
-        // (3,0) = A
-        //
-        // After cascades, the wolf at (3,1) eats the sheep at (3,2),
-        // and then your dead-board shuffle logic should trigger.
-        Animal[,] pattern = new Animal[5, 5]
-        {
-        { A, A, B, B, C },            // x = 0
-        { B, A, C, B, C },            // x = 1
-        { B, B, C, A, A },            // x = 2
-        { A, _wolf, _sheep, A, A },   // x = 3
-        { B, C, C, B, B }             // x = 4
-        };
-
-        for (int x = 0; x < _width; x++)
-        {
-            for (int y = 0; y < _height; y++)
-            {
-                _grid[x, y] = pattern[x, y];
-            }
-        }
-
-        _blackSheepArmed = false;
-        _blackSheepArmed = false;
-
-        // Refill the three cleared top cells deterministically
-        DebugSetForcedSpawns(C, C, A);
-
-        if (FindMatches().Count > 0)
-            throw new InvalidOperationException("Test board is invalid: it contains starting matches.");
-
-        var hintFinder = new BoardHintFinder();
-        if (!hintFinder.TryFindHint(this, out var hint))
-            throw new InvalidOperationException("Test board is invalid: it has no legal move.");
-
-        //if (hint.From != new Vector2Int(3, 0) || hint.To != new Vector2Int(4, 0))
-        //    throw new InvalidOperationException(
-        //        $"Test board is invalid: expected only move (3,0)->(4,0), but got {hint.From}->{hint.To}");
-
-        Debug.Log("3-animal wolf/sheep test ready. Make move: swap (3,0) with (4,0).");
-    }
-
-    public void DebugSetForcedSpawns(params Animal[] animals)
-    {
-        _debugForcedSpawns.Clear();
-
-        if (animals == null)
-            return;
-
-        for (int i = 0; i < animals.Length; i++)
-        {
-            if (animals[i] != null)
-                _debugForcedSpawns.Enqueue(animals[i]);
-        }
-    }
-
-    // ============================== TEST =============================== //
-
-
-    // Find matches on the board and return a list of matches found
-    private List<Vector2Int> MatchesFound()
-    {
-        HashSet<Vector2Int> matchedCells = new HashSet<Vector2Int>(); // Prevent coordinates duplicates
-        List<Vector2Int> matchesList = new List<Vector2Int>();
-        int sameAnimalCounter = 1;
-
-        for (int x = 0; x < _width; x++)
-        {
-            sameAnimalCounter = 1;  
-
-            for (int y = 1; y < _height; y++)
-            {
-                if (!IsMatchable(_grid[x, y]) || !IsMatchable(_grid[x, y - 1]))
-                {
-                    if (sameAnimalCounter >= 3)
-                    {
-                        int endY = y - 1;
-                        for (int i = 0; i < sameAnimalCounter; i++)
-                            matchedCells.Add(new Vector2Int(x, endY - i));
-                    }
-                    sameAnimalCounter = 1;
-                    continue;
-                }                
-
-                if (_grid[x, y] == _grid[x, y - 1])
-                {
-                    sameAnimalCounter++;
-                }
-                else
-                {
-                    if (sameAnimalCounter >= 3) // If the same animal appeared 3+ times in a row add the cells to the list
-                    {
-                        int endY = y - 1;
-                        for (int i = 0; i < sameAnimalCounter; i++)
-                        {
-                            matchedCells.Add(new Vector2Int(x, endY - i));
-                        }
-                    }
-
-                    sameAnimalCounter = 1;
-                }
-            }
-
-            // Flush a run that continues to the bottom of the column
-            if (sameAnimalCounter >= 3)
-            {
-                int endY = _height - 1;
-                for (int i = 0; i < sameAnimalCounter; i++)
-                {
-                    matchedCells.Add(new Vector2Int(x, endY - i));
-                }
-            }
-        }
-
-        for (int y = 0; y < _height; y++)
-        {
-            sameAnimalCounter = 1;
-
-            for (int x = 1; x < _width; x++)
-            {
-                // Break on nulls (and flush any run that ended at y-1)
-                if (!IsMatchable(_grid[x, y]) || !IsMatchable(_grid[x - 1, y]))
-                {
-                    if (sameAnimalCounter >= 3)
-                    {
-                        int endX = x - 1;
-                        for (int i = 0; i < sameAnimalCounter; i++)
-                            matchedCells.Add(new Vector2Int(endX - i, y));
-                    }
-                    sameAnimalCounter = 1;
-                    continue;
-                }
-
-                if (_grid[x - 1, y] == _grid[x, y])
-                {
-                    sameAnimalCounter++;
-                }
-                else // If the animal changed, add the matching cells to the list
-                {
-                    if (sameAnimalCounter >= 3) // If the same animal appeared 3+ times in a row add the cells to the list
-                    {
-                        int endX = x - 1;
-                        for (int i = 0; i < sameAnimalCounter; i++)
-                        {
-                            matchedCells.Add(new Vector2Int(endX - i, y));
-                        }
-                    }
-
-                    sameAnimalCounter = 1;
-                }
-            }
-
-            // Flush a run that continues to the end of the row
-            if (sameAnimalCounter >= 3)
-            {
-                int endX = _width - 1;
-                for (int i = 0; i < sameAnimalCounter; i++)
-                {
-                    matchedCells.Add(new Vector2Int(endX - i, y));
-                }
-            }
-        }
-
-        return matchedCells.ToList();
-    }
-
-    // Clear the found matches
-    private void ClearMatches(List<Vector2Int> matches, List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
-    {
-        var destroyedByAnimal = new Dictionary<string, int>();
-        int pointsGainedThisClear = 0;
-
-        for (int i = 0; i < matches.Count; i++)
-        {
-            var a = _grid[matches[i].x, matches[i].y];
-            if (a == null) continue;
-            if (IsCellLocked(matches[i])) continue;
-
-            if (AudioManager.instance != null)
-            {
-                AudioManager.instance.PlaySFXPitchAdjusted(8, 0.2f); // Play pop sound.
-            }
-
-            _points += a._points;
-            pointsGainedThisClear += a._points;
-            _matchedAnimals++;
-
-            string animalId = a._id;
-
-            if (destroyedByAnimal.ContainsKey(animalId))
-                destroyedByAnimal[animalId]++;
-            else
-                destroyedByAnimal[animalId] = 1;
-
-            _grid[matches[i].x, matches[i].y] = null;
-        }
-
-        DamageAdjacentBoneBlocks(matches);
-
-        if (pointsGainedThisClear > 0)
-            OnScoreAdded?.Invoke(pointsGainedThisClear);
-
-        foreach (var kvp in destroyedByAnimal)
-        {
-            OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
-        }
-
-        ApplyGravity(fallMoves);
-        Refill(spawns);
-
-        //ResolveWolfSheepInteractions(fallMoves, spawns);
-    }
-
-    // Apply gravity to the cells
-    public void ApplyGravity(List<FallMove> fallMoves = null)
-    {
-        for (int x = 0; x < _width; x++)
-        {
-            int writeY = _height - 1; // Next slot we can write into
-
-            // Scan from bottom to top
-            for (int y = _height - 1; y >= 0; y--)
-            {
-                var piece = _grid[x, y];
-                if (piece == null)
-                    continue;
-
-                if (IsCellLocked(new Vector2Int(x, y)))
-                {
-                    writeY = y - 1;
-                    continue;
-                }
-
-                // If bone block, don't apply gravity
-                if (!piece._affectedByGravity)
-                {
-                    writeY = y - 1;
-                    continue;
-                }
-
-                if (y != writeY)
-                {
-                    // Skip over obstacles if writeY is (somehow) pointing at one
-                    while (writeY >= 0 && _grid[x, writeY] != null && !_grid[x, writeY]._affectedByGravity)
-                        writeY--;
-
-                    if (writeY < 0)
-                        break;
-
-                    fallMoves?.Add(new FallMove
-                    {
-                        from = new Vector2Int(x, y),
-                        to = new Vector2Int(x, writeY)
-                    });
-
-                    _grid[x, writeY] = piece;
-                    _grid[x, y] = null;
-                }
-
-                writeY--;
-            }
-        }
-    }
-
-    // Refill the empty cells
-    public void Refill(List<SpawnInfo> spawns = null)
-    {
-        // Collect empty cells
-        var empties = new List<Vector2Int>();
-        for (int x = 0; x < _width; x++)
-            for (int y = 0; y < _height; y++)
-                if (_grid[x, y] == null)
-                    empties.Add(new Vector2Int(x, y));
-
-        // If armed, spawn exactly ONE black sheep into an empty spot
-        if (_blackSheepArmed && _blackSheep != null && empties.Count > 0)
-        {
-            var chosenCell = empties[Random.Range(0, empties.Count)];
-
-            _grid[chosenCell.x, chosenCell.y] = _blackSheep;
-
-            spawns?.Add(new SpawnInfo
-            {
-                cell = chosenCell,
-                animal = _blackSheep,
-                spawnFromY = GetSpawnFromY(chosenCell)
-            });
-
-            _blackSheepArmed = false;
-            empties.Remove(chosenCell);
-        }
-
-        // Fill remaining empties with normal animals
-        foreach (var cell in empties)
-        {
-            var spawned = _debugForcedSpawns.Count > 0 ? _debugForcedSpawns.Dequeue() : PickRandomAllowedAnimal(); // Depends on if we use the test board
-            _grid[cell.x, cell.y] = spawned;
-
-            spawns?.Add(new SpawnInfo
-            {
-                cell = cell,
-                animal = spawned,
-                spawnFromY = GetSpawnFromY(cell)
-            });
-        }
-    }
-
-    // Get an animal from a cell
-    public Animal GetAnimalFromCell(Vector2Int cell)
-    {
-        if (IsCellInBounds(cell))
-        {
-            return _grid[cell.x, cell.y];
-        }
-
-        return null;
-    }
-    
-    // Put an animal in a cell
-    public void SetAnimalInCell(Vector2Int cell, Animal animal)
-    {
-        if (IsCellInBounds(cell))
-        {
-            _grid[cell.x, cell.y] = animal;
-        }
-    }
-    
-    // Check if the cell is in the grid
-    public bool IsCellInBounds(Vector2Int cell)
-    {
-        if ((0 <= cell.x && cell.x < _width) && (0 <= cell.y && cell.y < _height))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    // Check if the cells are neighbours
-    private bool AreCellsNeighbours(Vector2Int cell1, Vector2Int cell2)
-    {
-        var dx = Math.Abs(cell1.x - cell2.x);
-        var dy = Math.Abs(cell1.y - cell2.y);
-
-        if (dx + dy == 1)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    // Checks if there'll be intial matches (Before the player starts playing himself)
-    private bool WouldCreateInitialMatches(Vector2Int cell, Animal candidateAnimal)
-    {
-        // Horizontal check
-        if (cell.x >= 2)
-        {
-            if (_grid[cell.x - 1, cell.y] == candidateAnimal &&
-                _grid[cell.x - 2, cell.y] == candidateAnimal)
-            {
-                return true;
-            }
-        }
-
-        // Vertical check
-        if (cell.y >= 2)
-        {
-            if (_grid[cell.x, cell.y - 1] == candidateAnimal &&
-                _grid[cell.x, cell.y - 2] == candidateAnimal)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public List<Vector2Int> FindMatches()
-    {
-        return MatchesFound();
-    }
-
-    public void ResolveMatches(List<Vector2Int> matches, List<FallMove> fallMoves, List<SpawnInfo> spawns)
-    {
-        ClearMatches(matches, fallMoves, spawns);
-    }
-
-    public bool SwapCellsRaw(Vector2Int cell1, Vector2Int cell2)
-    {
-        if (IsCellLocked(cell1) || IsCellLocked(cell2)) return false;
-
-        var a = _grid[cell1.x, cell1.y];
-        var b = _grid[cell2.x, cell2.y];
-
-        // Safety checks
-        if ((a != null && !a._canSwap) || (b != null && !b._canSwap)) return false;
-        if (!(IsCellInBounds(cell1) && IsCellInBounds(cell2))) return false;
-        if (!AreCellsNeighbours(cell1, cell2)) return false;
-
-        // Swapping the values with a tupple
-        (_grid[cell2.x, cell2.y], _grid[cell1.x, cell1.y]) = (_grid[cell1.x, cell1.y], _grid[cell2.x, cell2.y]);
-        return true;
-    }
-    public bool HasAnyMatch()
-    {
-        return MatchesFound().Count > 0;
-    }
-
-    public void ClearGridCell(Vector2Int cell)
-    {
-        if (_grid[cell.x, cell.y] == null) 
-            return;
-
-        _points += _grid[cell.x, cell.y]._points;
-        _matchedAnimals++;
-        _grid[cell.x, cell.y] = null;
-    }
-
-    private bool IsMatchable(Animal a) => a != null && a._canMatch;
-
-    private Animal PickRandomAllowedAnimal()
-    {
-        // If there's nothing to pick from, return null
-        if (_allowedAnimals == null || _allowedAnimals.Count == 0)
-            return null;
-
-        // Compute the sum of all weights
-        float total = 0f;
-        for (int i = 0; i < _allowedAnimals.Count; i++)
-            total += Mathf.Max(0f, _allowedAnimals[i]._spawnWeight);
-
-        // If total is 0 (all weights were 0 or negative), fallback to uniform random
-        if (total <= 0f)
-            return _allowedAnimals[Random.Range(0, _allowedAnimals.Count)];
-
-        // Pick a random number in [0, total)
-        float r = Random.value * total;
-
-        // Walk through the animals, adding weights until we "cross" r
-        float cumulative = 0f;
-        for (int i = 0; i < _allowedAnimals.Count; i++)
-        {
-            cumulative += Mathf.Max(0f, _allowedAnimals[i]._spawnWeight);
-
-            // Select the first animal whose cumulative range contains r
-            if (r <= cumulative)
-                return _allowedAnimals[i];
-        }
-
-        return _allowedAnimals[_allowedAnimals.Count - 1];
-    }
-
-    // ----- Wolf -> Sheep interaction ----- //
-    public void BreakBonesAdjacentTo(List<Vector2Int> matches) => DamageAdjacentBoneBlocks(matches);
-
-    private void DamageAdjacentBoneBlocks(List<Vector2Int> matches)
-    {
-        if (_boneBlock == null || matches == null || matches.Count == 0)
-            return;
-
-        var toRemove = new HashSet<Vector2Int>();
-
-        for (int i = 0; i < matches.Count; i++)
-        {
-            var m = matches[i];
-            for (int d = 0; d < OrthogonalDirs.Length; d++)
-            {
-                var n = m + OrthogonalDirs[d];
-                if (!IsCellInBounds(n)) continue;
-
-                if (_grid[n.x, n.y] == _boneBlock)
-                    toRemove.Add(n);
-            }
-        }
-
-        foreach (var cell in toRemove) // HERE //
-        {
-            OnBoneBlockBroken?.Invoke(cell);
-            _grid[cell.x, cell.y] = null;
-            OnAnimalsDestroyed?.Invoke(_boneBlock._id,1);
-        }
-    }
-    public void ResolveWolfSheepAfterCascades()
-    {
-        if (_wolf == null || _sheep == null || _boneBlock == null)
-            return;
-
-        bool changed;
-        int safety = 0;
-
-        do
-        {
-            changed = ResolveWolfSheepOnce(out int eatenCount, out int pointsGained);
-
-            if (changed)
-            {
-                if (pointsGained > 0)
-                    OnScoreAdded?.Invoke(pointsGained);
-
-                if (eatenCount > 0)
-                    OnAnimalsDestroyed?.Invoke(_sheep._id, eatenCount);
-            }
-        }
-        while (changed && safety++ < 100);
-    }
-    private void ResolveWolfSheepInteractions(List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
-    {
-        if (_wolf == null || _sheep == null || _boneBlock == null)
-            return;
-
-        // In case eating creates more falling and more eating, continue until stable
-        bool changed;
-        int safety = 0;
-
-        do
-        {
-            changed = ResolveWolfSheepOnce(out int eatenCount, out int pointsGained);
-
-            if (changed)
-            {
-                if (pointsGained > 0)
-                    OnScoreAdded?.Invoke(pointsGained); // Add the sheep in the score
-
-                if (eatenCount > 0)
-                    OnAnimalsDestroyed?.Invoke(_sheep._id, eatenCount); // Add the sheep as a match
-
-                ApplyGravity(fallMoves);
-                Refill(spawns);
-            }
-        }
-        while (changed && safety++ < 100);
-    }
-
-    private bool ResolveWolfSheepOnce(out int eatenCount, out int pointsGained)
-    {
-        eatenCount = 0;
-        pointsGained = 0;
-
-        var sheepToEat = new List<(Vector2Int sheep, Vector2Int wolf)>();
-
-        for (int x = 0; x < _width; x++)
-        {
-            for (int y = 0; y < _height; y++)
-            {
-                if (_grid[x, y] != _sheep)
-                    continue;
-
-                var sheepCell = new Vector2Int(x, y);
-
-                for (int d = 0; d < OrthogonalDirs.Length; d++)
-                {
-                    var wolfCell = sheepCell + OrthogonalDirs[d];
-                    if (!IsCellInBounds(wolfCell))
-                        continue;
-
-                    if (_grid[wolfCell.x, wolfCell.y] == _wolf)
-                    {
-                        sheepToEat.Add((sheepCell, wolfCell));
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (sheepToEat.Count == 0)
-            return false;
-
-        foreach (var pair in sheepToEat)
-        {
-            var sheepCell = pair.sheep;
-            var sheepAnimal = _grid[sheepCell.x, sheepCell.y];
-            if (sheepAnimal == null)
-                continue;
-
-            eatenCount++;
-            _points += sheepAnimal._points;
-            pointsGained += sheepAnimal._points;
-            _matchedAnimals++;
-
-            // Turn sheep into bone
-            _grid[sheepCell.x, sheepCell.y] = _boneBlock;
-
-            // Tell the controller which wolf and which sheep were involved
-            OnWolfAteSheep?.Invoke(pair.wolf, pair.sheep);
-        }
-
-        return true;
-    }
-
-    private void FixStartWolfSheepAdjacency()
-    {
-        if (_wolf == null || _sheep == null) return;
-
-        const int MaxPasses = 50;
-        const int MaxAttemptsPerCell = 30;
-
-        for (int pass = 0; pass < MaxPasses; pass++)
-        {
-            bool changed = false;
-
-            for (int x = 0; x < _width; x++)
-                for (int y = 0; y < _height; y++)
-                {
-                    if (_grid[x, y] != _sheep) continue;
-
-                    var cell = new Vector2Int(x, y);
-                    if (!HasNeighbor(cell, _wolf)) continue;
-
-                    // Reroll this sheep into something else that:
-                    // isn't sheep or wolf, doesn't create a 3-match immediately, isn't adjacent to a wolf
-                    for (int attempt = 0; attempt < MaxAttemptsPerCell; attempt++)
-                    {
-                        var candidate = PickRandomAllowedAnimal(); // your weighted picker (or your old random)
-
-                        if (candidate == _sheep || candidate == _wolf) continue;
-                        if (WouldCreateMatchAnywhere(cell, candidate)) continue;
-
-                        _grid[cell.x, cell.y] = candidate;
-
-                        if (HasNeighbor(cell, _wolf))
-                            continue; // still adjacent, try again
-
-                        changed = true;
-                        break;
-                    }
-                }
-
-            if (!changed)
-                break; // stable, no sheep next to wolves
-        }
-    }
-    private bool HasNeighbor(Vector2Int cell, Animal target)
-    {
-        for (int i = 0; i < OrthogonalDirs.Length; i++)
-        {
-            var n = cell + OrthogonalDirs[i];
-            if (!IsCellInBounds(n)) continue;
-            if (_grid[n.x, n.y] == target) return true;
-        }
-        return false;
-    }
-
-    private bool WouldCreateMatchAnywhere(Vector2Int cell, Animal candidate)
-    {
-        int h = 1 + CountInDir(cell, Vector2Int.left, candidate) + CountInDir(cell, Vector2Int.right, candidate);
-        if (h >= 3) return true;
-
-        int v = 1 + CountInDir(cell, Vector2Int.down, candidate) + CountInDir(cell, Vector2Int.up, candidate);
-        return v >= 3;
-    }
-
-    // Counts how many of the same animals are in a straight line starting from the cell next to start
-    private int CountInDir(Vector2Int start, Vector2Int dir, Animal a)
-    {
-        int c = 0;
-        var p = start + dir;
-        while (IsCellInBounds(p) && _grid[p.x, p.y] == a)
-        {
-            c++;
-            p += dir;
-        }
-        return c;
-    }
-
-    // ----- Black Sheep ----- //
-    public void RollForBlackSheep(float chance01)
-    {
-        if (_blackSheep == null) return;
-        if (_blackSheepArmed) return; // already queued
-
-        chance01 = Mathf.Clamp01(chance01);
-        if (Random.value < chance01)
-            _blackSheepArmed = true;
-    }
-
-    public void TriggerSheepSwipeBlast(Vector2Int sheepPosAfterSwap, bool swipedVertically,
-        List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
-    {
-        if (!IsCellInBounds(sheepPosAfterSwap))
-            return;
-
-        // vertical swipe -> ROW
-        // horizontal swipe -> COLUMN
-        var cellsToClear = new List<Vector2Int>();
-
-        if (swipedVertically)
-        {
-            int y = sheepPosAfterSwap.y;
-            for (int x = 0; x < _width; x++)
-                cellsToClear.Add(new Vector2Int(x, y));
-        }
-        else
-        {
-            int x = sheepPosAfterSwap.x;
-            for (int y = 0; y < _height; y++)
-                cellsToClear.Add(new Vector2Int(x, y));
-        }
-
-        ClearCellsAsExplosion(cellsToClear, fallMoves, spawns);
-    }
-
-    private void ClearCellsAsExplosion(List<Vector2Int> cells, List<FallMove> fallMoves, List<SpawnInfo> spawns)
-    {
-        var destroyedByAnimal = new Dictionary<string, int>();
-        int pointsGainedThisClear = 0;
-
-        for (int i = 0; i < cells.Count; i++)
-        {
-            var c = cells[i];
-            var a = _grid[c.x, c.y];
-            if (a == null) continue;
-            if (IsCellLocked(c)) continue;
-
-            // Dont clear bone blocks
-            if (_boneBlock != null && a == _boneBlock)
-                continue;
-
-            _points += a._points;
-            pointsGainedThisClear += a._points;
-            _matchedAnimals++;
-
-            string animalId = a._id;
-            if (destroyedByAnimal.ContainsKey(animalId)) destroyedByAnimal[animalId]++;
-            else destroyedByAnimal[animalId] = 1;
-
-            _grid[c.x, c.y] = null;
-        }
-
-        // destroys bones adjacent to the explosion - Can delete if we don't want that
-        DamageAdjacentBoneBlocks(cells);
-
-        if (pointsGainedThisClear > 0)
-            OnScoreAdded?.Invoke(pointsGainedThisClear);
-
-        foreach (var kvp in destroyedByAnimal)
-            OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
-
-        ApplyGravity(fallMoves);
-        Refill(spawns);
-        //ResolveWolfSheepInteractions();
-    }
-
-    // Helper for gravaity + bone animation
-    private int GetSpawnFromY(Vector2Int target)
-    {
-        // Search upward for the nearest blocker
-        for (int y = target.y - 1; y >= 0; y--)
-        {
-            var above = _grid[target.x, y];
-            if (above != null && !above._affectedByGravity)
-                return y; // blocker location
-        }
-        return -1; // no blocker above -> spawn from above board
-    }
-
-    public void ShuffleSwappablePieces()
-    {
-        var cells = new List<Vector2Int>();
-        var pieces = new List<Animal>();
-
-        for (int x = 0; x < _width; x++)
-        {
-            for (int y = 0; y < _height; y++)
-            {
-                var a = _grid[x, y];
-                if (a == null) continue;
-                if (!a._canSwap) continue;   // keep blockers / bones in place
-
-                cells.Add(new Vector2Int(x, y));
-                pieces.Add(a);
-            }
-        }
-
-        for (int i = pieces.Count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            (pieces[i], pieces[j]) = (pieces[j], pieces[i]);
-        }
-
-        for (int i = 0; i < cells.Count; i++)
-        {
-            var c = cells[i];
-            _grid[c.x, c.y] = pieces[i];
-        }
-    }
-
-    public bool ShuffleUntilPlayable(BoardHintFinder hintFinder, int maxAttempts = 100)
-    {
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            ShuffleSwappablePieces();
-
-            if (HasAnyMatch())
-                continue;
-
-            if (hintFinder.TryFindHint(this, out _))
-                return true;
-        }
-
-        return false;
-    }
-
-    public void ClearCells(IEnumerable<Vector2Int> cells, List<FallMove> fallMoves = null, List<SpawnInfo> spawns = null)
-    {
-        if (cells == null)
-            return;
-
-        var uniqueCells = new HashSet<Vector2Int>(cells);
-        var destroyedByAnimal = new Dictionary<string, int>();
-        var clearedCells = new List<Vector2Int>();
-        int pointsGainedThisClear = 0;
-
-        foreach (var cell in uniqueCells)
-        {
-            if (!IsCellInBounds(cell))
-                continue;
-
-            var a = _grid[cell.x, cell.y];
-            if (a == null)
-                continue;
-            if (IsCellLocked(cell))
-                continue;
-
-            // don't count / clear bone blocks
-            if (_boneBlock != null && a == _boneBlock)
-                continue;
-
-            _points += a._points;
-            pointsGainedThisClear += a._points;
-            _matchedAnimals++;
-
-            if (!string.IsNullOrEmpty(a._id))
-            {
-                if (destroyedByAnimal.ContainsKey(a._id))
-                    destroyedByAnimal[a._id]++;
-                else
-                    destroyedByAnimal[a._id] = 1;
-            }
-
-            _grid[cell.x, cell.y] = null;
-            clearedCells.Add(cell);
-        }
-
-        DamageAdjacentBoneBlocks(clearedCells);
-
-        if (pointsGainedThisClear > 0)
-            OnScoreAdded?.Invoke(pointsGainedThisClear);
-
-        foreach (var kvp in destroyedByAnimal)
-            OnAnimalsDestroyed?.Invoke(kvp.Key, kvp.Value);
-
-        ApplyGravity(fallMoves);
-        Refill(spawns);
-        //ResolveWolfSheepInteractions(fallMoves, spawns);
-    }
+    public bool IsCellInBounds(Vector2Int cell) => _state.InBounds(cell.ToGrid());
 
     public List<Vector2Int> FindCellsWithAnimal(Animal animal)
     {
         var result = new List<Vector2Int>();
-        if (animal == null)
-            return result;
+        if (animal == null) return result;
 
-        for (int x = 0; x < _width; x++)
-        {
-            for (int y = 0; y < _height; y++)
-            {
-                if (_grid[x, y] == animal)
+        int type = _catalog.TypeOf(animal);
+        for (int x = 0; x < Width; x++)
+            for (int y = 0; y < Height; y++)
+                if (_state.TypeAt(new GridPos(x, y)) == type)
                     result.Add(new Vector2Int(x, y));
-            }
-        }
 
         return result;
     }
 
-    public void SetLockedCells(IEnumerable<Vector2Int> cells)
-    {
-        _lockedCells.Clear();
-        if (cells == null)
-            return;
-
-        foreach (var cell in cells)
-        {
-            if (IsCellInBounds(cell))
-                _lockedCells.Add(cell);
-        }
-    }
-
-    public void ClearLockedCells()
-    {
-        _lockedCells.Clear();
-    }
-
-    public bool IsCellLocked(Vector2Int cell)
-    {
-        return _lockedCells.Contains(cell);
-    }
-
-    /// <summary>Debug / cheats only: satisfy the board's primary goal (points or matches).</summary>
-    public void DebugSetSpecialAnimals(Animal blackSheep, Animal boneBlock)
-    {
-        _blackSheep = blackSheep;
-        _boneBlock = boneBlock;
-    }
-    public void DebugCheatFillPrimaryGoal()
-    {
-        if (_goalType == PointsOrMatches.points)
-            _points = Mathf.Max(_points, _goalAmount);
-        else if (_goalType == PointsOrMatches.matches)
-            _matchedAnimals = Mathf.Max(_matchedAnimals, _goalAmount);
-    }
-
-    // Helper method
     public List<Vector2Int> GetAllCells()
     {
-        var cells = new List<Vector2Int>();
-
+        var cells = new List<Vector2Int>(Width * Height);
         for (int x = 0; x < Width; x++)
-        {
             for (int y = 0; y < Height; y++)
-            {
                 cells.Add(new Vector2Int(x, y));
-            }
-        }
-
         return cells;
+    }
+
+    // ---- Setup ----
+
+    /// <summary>Fills the board with no starting matches and no sheep next to a wolf.</summary>
+    public void Initialize() => BoardGenerator.Generate(_state, _random);
+
+    /// <summary>Places a tile directly. For level setup, debug tools and tests, not for gameplay.</summary>
+    public void SetAnimalInCell(Vector2Int cell, Animal animal)
+    {
+        if (IsCellInBounds(cell))
+            _state.Place(cell.ToGrid(), _catalog.TypeOf(animal));
+    }
+
+    /// <summary>Debug only: lets a level without these tiles use them.</summary>
+    public void DebugSetSpecialAnimals(Animal blackSheep, Animal boneBlock)
+    {
+        _state.Specials.BlackSheep = _catalog.TypeOf(blackSheep);
+        _state.Specials.Bone = _catalog.TypeOf(boneBlock);
+    }
+
+    // Kept under this name: tests read it through reflection.
+    private List<Vector2Int> MatchesFound()
+    {
+        var cells = new List<GridPos>();
+        MatchFinder.Find(_state, cells);
+        return cells.ToVectors();
+    }
+
+    private static LevelGoals BuildGoals(BoardConfig config)
+    {
+        var collect = new List<CollectGoal>();
+        if (config.collectGoals != null)
+            foreach (var goal in config.collectGoals)
+                if (goal != null && goal.animal != null)
+                    collect.Add(new CollectGoal(goal.animal._id, goal.amount));
+
+        return new LevelGoals((GoalKind)(int)config.goalType, config.goal, collect);
     }
 }

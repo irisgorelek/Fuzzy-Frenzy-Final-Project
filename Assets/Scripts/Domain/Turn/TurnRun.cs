@@ -3,25 +3,6 @@ using System.Collections.Generic;
 
 namespace FuzzyFrenzy.Domain
 {
-    /// <summary>Something that happens to the board. Applying it changes the board and records a step.</summary>
-    public interface IBoardAction
-    {
-        void Apply(TurnRun run);
-    }
-
-    /// <summary>
-    /// A game rule (an animal ability, an obstacle behaviour). After each action of <see cref="ActionType"/>,
-    /// the rule may react by queuing more actions. Rules never change the board themselves.
-    /// Derive from <see cref="ActionRule{TAction}"/> rather than implementing this directly.
-    /// </summary>
-    public interface IActionRule
-    {
-        /// <summary>The action type this rule reacts to, including derived types. Null means every action.</summary>
-        Type ActionType { get; }
-
-        void React(TurnRun run, IBoardAction applied);
-    }
-
     /// <summary>
     /// One turn's action queue. Takes one action at a time, applies it, records what happened,
     /// and lets every rule react. Only actions in this queue change the board.

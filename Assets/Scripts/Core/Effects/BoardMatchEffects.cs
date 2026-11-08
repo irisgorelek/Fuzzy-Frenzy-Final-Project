@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public enum BoardClearEffect { Match, BlackSheep }
-
 /// <summary>Owns reusable particle instances. It never delays or modifies board resolution.</summary>
 public sealed class BoardMatchEffects : MonoBehaviour
 {
@@ -80,7 +78,7 @@ public sealed class BoardMatchEffects : MonoBehaviour
             BoardEffectsTiming.LineStep * _effectScale);
     }
 
-    public Task WaitForBlackSheepParticles()
+    public Task WaitForLineBlastFx()
     {
         _linePlaying = false;
         return Task.WhenAll(_linePlayback.ToArray());

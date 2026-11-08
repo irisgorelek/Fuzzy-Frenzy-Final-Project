@@ -5,19 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-/// <summary>Sprites and tuning for the tween-based effects. Filled from BoardView's Inspector fields.</summary>
-public sealed class BoardFxSettings
-{
-    public BoardMatchEffects Particles;
-    public BoardClearAnimation ClearAnimation;
-    public Sprite MatchRingSprite;
-    public Sprite SparkleSprite;
-    public Color MatchFxColor;
-    public int SparklesPerMatch;
-    public Sprite BombRingSprite;
-    public Color BombRingColor;
-}
-
 /// <summary>
 /// Clear and booster effects: match pops, the black sheep's line, bone breaks and the bomb. Uses the particle
 /// effects when they are set up and falls back to pooled ring and sparkle images when they are not.
@@ -316,14 +303,14 @@ public sealed class BoardEffectsPlayer
         return tcs.Task;
     }
 
-    public void PlayBoneBreakFx(Vector2Int coord)
+    public void PlayTileBreakFx(Vector2Int coord)
     {
         if (!_cells.TryGetValue(coord, out var cell)) return;
         if (_fx.Particles != null) _fx.Particles.BoneBreak(cell.ImageRect);
         cell.SetImageEnabled(false);
     }
 
-    public Task AnimateSheepAnger(Vector2Int coord)
+    public Task AnimateLineBlastCharge(Vector2Int coord)
     {
         if (_fx.Particles == null || !_cells.TryGetValue(coord, out var cell)) return Task.CompletedTask;
         var bounds = new List<RectTransform>(_cells.Count);
@@ -335,10 +322,10 @@ public sealed class BoardEffectsPlayer
         return tcs.Task;
     }
 
-    public Task WaitForBlackSheepParticles() =>
-        _fx.Particles != null ? _fx.Particles.WaitForBlackSheepParticles() : Task.CompletedTask;
+    public Task WaitForLineBlastFx() =>
+        _fx.Particles != null ? _fx.Particles.WaitForLineBlastFx() : Task.CompletedTask;
 
-    public void PlayBlackSheepFx(Vector2Int coord, bool horizontal, int width, int height)
+    public void PlayLineBlastFx(Vector2Int coord, bool horizontal, int width, int height)
     {
         if (_fx.Particles == null || !_cells.TryGetValue(coord, out var cell)) return;
         float step = 1f;

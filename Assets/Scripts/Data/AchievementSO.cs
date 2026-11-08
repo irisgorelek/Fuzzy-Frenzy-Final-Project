@@ -1,14 +1,5 @@
 using UnityEngine;
 
-public enum AchievementCategory
-{
-    Level,
-    Animal,
-    PowerUp,
-    Score
-}
-
-
 [CreateAssetMenu(fileName = "AchievementSO", menuName = "Scriptable Objects/AchievementSO")]
 public class AchievementSO : ScriptableObject
 {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using FuzzyFrenzy.Domain;
-using UnityEngine;
 
 /// <summary>
 /// Maps Animal assets to the core's tile types and back. This is the boundary where Unity data becomes core data.
@@ -55,31 +54,3 @@ public sealed class AnimalCatalog
     public Animal AnimalOf(int type) => type >= 0 && type < _animals.Count ? _animals[type] : null;
 }
 
-/// <summary>Uses Unity's global random, so gameplay randomness behaves exactly as before.</summary>
-public sealed class UnityRandomSource : IRandomSource
-{
-    public int Range(int minInclusive, int maxExclusive) => Random.Range(minInclusive, maxExclusive);
-    public float Value() => Random.value;
-}
-
-public static class GridPosConversions
-{
-    public static GridPos ToGrid(this Vector2Int v) => new GridPos(v.x, v.y);
-    public static Vector2Int ToVector(this GridPos p) => new Vector2Int(p.X, p.Y);
-
-    public static List<Vector2Int> ToVectors(this IReadOnlyList<GridPos> cells)
-    {
-        var result = new List<Vector2Int>(cells?.Count ?? 0);
-        if (cells == null) return result;
-        for (int i = 0; i < cells.Count; i++) result.Add(cells[i].ToVector());
-        return result;
-    }
-
-    public static GridPos[] ToGrid(this IEnumerable<Vector2Int> cells)
-    {
-        var result = new List<GridPos>();
-        if (cells == null) return result.ToArray();
-        foreach (var c in cells) result.Add(c.ToGrid());
-        return result.ToArray();
-    }
-}

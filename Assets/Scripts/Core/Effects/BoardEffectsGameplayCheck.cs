@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FuzzyFrenzy.Domain;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -66,7 +67,8 @@ public sealed class BoardEffectsGameplayCheck : MonoBehaviour
         cheats.AddBlackSheepToCenter();
         VerifyDebugCenter(controller, view, cheats, "_blackSheep");
         var debugCenter = new Vector2Int(config.weidth / 2, config.height / 2);
-        if (!BoardController.IsBlackSheep(controller.CurrentBoard.GetAnimalFromCell(debugCenter)))
+        var placed = controller.CurrentBoard.GetAnimalFromCell(debugCenter);
+        if (placed == null || !placed.Has(TileTraits.LineBlastOnSwap))
             throw new InvalidOperationException("Placed debug sheep is not recognized by gameplay.");
         cheats.AddBoneToCenter();
         VerifyDebugCenter(controller, view, cheats, "_boneBlock");

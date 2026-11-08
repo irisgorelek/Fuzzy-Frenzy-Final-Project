@@ -74,10 +74,7 @@ public class MovesPowerUp : MonoBehaviour, IPointerClickHandler
 
         RefreshAmount();
 
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySFX(0);
-        }
+        AudioManagerAudio.Instance.PlaySfx(SfxId.AddMove);
     }
 
     //public void OnPointerClick(PointerEventData eventData)

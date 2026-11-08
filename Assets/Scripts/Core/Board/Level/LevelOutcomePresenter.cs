@@ -1,26 +1,12 @@
 using System;
 using UnityEngine;
 
-/// <summary>Scene objects and services the end of a level uses. Filled from BoardController's Inspector fields.</summary>
-public sealed class LevelOutcomeServices
-{
-    public LevelClearedPopupUI ClearedPopup;
-    public GameObject ClearedDimmer;
-    public LevelLostPopupUI LostPopup;
-    public LevelVFXToggle VfxToggle;
-    public RewardsConfig Rewards;
-    public BootstrapperLocator Locator;
-    public LevelCompletedEventChannelSO LevelCompletedChannel;
-}
-
 /// <summary>
 /// What happens when a level ends: rewards, saving, the leaderboard, popups and music.
 /// Knows nothing about turns or the board; the controller decides when a level ends.
 /// </summary>
 public sealed class LevelOutcomePresenter
 {
-    private const int SfxLevelCleared = 16;
-
     private readonly LevelOutcomeServices _services;
 
     public LevelOutcomePresenter(LevelOutcomeServices services)
@@ -48,12 +34,10 @@ public sealed class LevelOutcomePresenter
         else
             Debug.LogError("LevelClearedPopupUI is not assigned on BoardController.");
 
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.ChangeMusicVolume(0.4f);
-            AudioManager.instance.PlaySFX(SfxLevelCleared);
-            AudioManager.instance.ChangeMusicVolume(1f);
-        }
+        var audio = _services.Audio ?? SilentAudio.Instance;
+        audio.SetMusicVolume(0.4f);
+        audio.PlaySfx(SfxId.Win);
+        audio.SetMusicVolume(1f);
     }
 
     public void ShowLose()

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,14 +5,6 @@ public class LevelVFXToggle : MonoBehaviour
 {
     [SerializeField] private BoardController boardController;
     [SerializeField] private List<VFXRoot> roots = new();
-
-    [Serializable]
-    public struct VFXRoot
-    {
-        public VFXKey key;
-        public GameObject root;
-        public bool defaultStateIfMissing;
-    }
 
     private void Start() => ApplyFromConfig();
 

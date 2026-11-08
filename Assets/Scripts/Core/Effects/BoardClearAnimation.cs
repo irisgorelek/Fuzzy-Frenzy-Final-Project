@@ -8,13 +8,6 @@ using UnityEngine.UI;
 /// <summary>Match presentation only: staggered clears and flights to visible animal goals.</summary>
 public sealed class BoardClearAnimation : MonoBehaviour
 {
-    [Serializable]
-    private struct AnimalPalette
-    {
-        public Animal animal;
-        public Color color;
-    }
-
     [SerializeField] private BoardView _view;
     [SerializeField] private BoardMatchEffects _effects;
     [Header("Match timing")]

@@ -2,41 +2,6 @@ using System.Collections.Generic;
 
 namespace FuzzyFrenzy.Domain
 {
-    /// <summary>The level's main goal. Values match the order of the BoardConfig enum.</summary>
-    public enum GoalKind
-    {
-        Points = 0,
-        Matches = 1,
-        CollectAnimals = 2
-    }
-
-    public readonly struct CollectGoal
-    {
-        public readonly string TileId;
-        public readonly int Amount;
-
-        public CollectGoal(string tileId, int amount)
-        {
-            TileId = tileId;
-            Amount = amount;
-        }
-    }
-
-    public sealed class LevelGoals
-    {
-        public LevelGoals(GoalKind primary, int amount, IReadOnlyList<CollectGoal> collect)
-        {
-            Primary = primary;
-            Amount = amount;
-            Collect = collect ?? new List<CollectGoal>();
-        }
-
-        public GoalKind Primary { get; }
-        public int Amount { get; }
-        public IReadOnlyList<CollectGoal> Collect { get; }
-        public bool HasCollectGoals => Collect.Count > 0;
-    }
-
     /// <summary>Score and goal progress for one play of a level. Never stored in a ScriptableObject.</summary>
     public sealed class GameSession
     {

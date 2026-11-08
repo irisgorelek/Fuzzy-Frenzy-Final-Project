@@ -16,9 +16,9 @@ public class BoardRulesTests
 
         var result = game.TrySwap(new GridPos(1, 1), new GridPos(1, 0), TestBoards.LastMove);
 
-        var blast = result.Steps.OfType<BlackSheepBlastStep>().Single();
-        int brokenInWaves = blast.Waves.Sum(w => w.BonesBroken.Count);
-        int brokenAfter = result.Steps.OfType<BonesBrokenStep>().Sum(s => s.Cells.Count);
+        var blast = result.Steps.OfType<LineBlastStep>().Single();
+        int brokenInWaves = blast.Waves.Sum(w => w.TilesBroken.Count);
+        int brokenAfter = result.Steps.OfType<TilesBrokenStep>().Sum(s => s.Cells.Count);
         Assert.That(brokenInWaves, Is.EqualTo(1), "The bone breaks as the wave passes it.");
         Assert.That(brokenAfter, Is.EqualTo(0), "The final line clear must not break it again.");
         Assert.That(game.Session.CollectedCount("bone"), Is.EqualTo(1));
@@ -35,7 +35,7 @@ public class BoardRulesTests
 
         var result = game.ClearCells(new[] { new GridPos(0, 1), new GridPos(1, 0) }, new TurnContext(0, 10, false));
 
-        var broken = result.Steps.OfType<BonesBrokenStep>().First();
+        var broken = result.Steps.OfType<TilesBrokenStep>().First();
         Assert.That(broken.Cells, Is.EqualTo(new[] { new GridPos(1, 1) }));
         Assert.That(game.Session.CollectedCount("bone"), Is.EqualTo(1));
     }

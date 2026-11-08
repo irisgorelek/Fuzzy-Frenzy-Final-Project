@@ -35,4 +35,6 @@ public class Animal : ScriptableObject
 
     [Header("Audio")]
     public int _speakSfxId;
+
+    public bool Has(TileTraits trait) => (_traits & trait) != 0;
 }

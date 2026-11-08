@@ -1,24 +1,6 @@
 using System.Collections.Generic;
 using FuzzyFrenzy.Domain;
 
-/// <summary>Everything one play of a level runs on.</summary>
-public sealed class LevelRuntime
-{
-    public LevelRuntime(Board board, Match3Game game, TurnPresenter presenter)
-    {
-        Board = board;
-        Game = game;
-        Presenter = presenter;
-    }
-
-    /// <summary>Unity-facing board: Animal assets in, core types underneath.</summary>
-    public Board Board { get; }
-    /// <summary>The turn owner.</summary>
-    public Match3Game Game { get; }
-    /// <summary>Replays turn results on the view.</summary>
-    public TurnPresenter Presenter { get; }
-}
-
 /// <summary>
 /// Builds a level's runtime from its config. This is the one place that wires the core to Unity and
 /// decides which rules and step players a level uses, so adding an animal ability means adding its rule
@@ -26,10 +8,13 @@ public sealed class LevelRuntime
 /// </summary>
 public static class LevelFactory
 {
-    public static LevelRuntime Create(BoardConfig config, BoardView view, ITurnPresentationListener listener, IRandomSource random = null)
-    {
-        var board = new Board(config, random ?? new UnityRandomSource());
+    /// <summary>The level's board, session and tile catalog. Built first so the level's listeners can see the session.</summary>
+    public static Board CreateBoard(BoardConfig config, IRandomSource random = null) =>
+        new Board(config, random ?? new UnityRandomSource());
 
+    /// <summary>The turn engine and its presenter for a board made by <see cref="CreateBoard"/>.</summary>
+    public static LevelRuntime Create(Board board, BoardConfig config, IBoardAnimator view, ITurnPresentationListener listener, IGameAudio audio)
+    {
         var game = new Match3Game(
             board.State,
             board.Session,
@@ -37,7 +22,7 @@ public static class LevelFactory
             RulesFor(config),
             new SpecialSpawnSettings(board.Catalog.TypeOf(config.blackSheep), config.blackSheepUnlockAfterMoves, config.blackSheepRollChance));
 
-        var presenter = new TurnPresenter(view, board.Catalog, listener, StepPlayersFor(config));
+        var presenter = new TurnPresenter(view, board.Catalog, listener, audio, StepPlayersFor(config));
         return new LevelRuntime(board, game, presenter);
     }
 

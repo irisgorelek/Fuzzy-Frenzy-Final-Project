@@ -61,7 +61,7 @@ public class ExtensibilityTests
         var game = TestBoards.Game(board);
         var result = game.ResolveBoard(new TurnContext(0, 10, false));
 
-        var broken = result.Steps.OfType<BonesBrokenStep>().First();
+        var broken = result.Steps.OfType<TilesBrokenStep>().First();
         Assert.That(broken.Cells, Is.EqualTo(new[] { new GridPos(3, 0) }));
         Assert.That(broken.Ids, Is.EqualTo(new[] { "ice" }));
         Assert.That(game.Session.CollectedCount("ice"), Is.EqualTo(1));
@@ -113,11 +113,5 @@ public class ExtensibilityTests
             BoardOperations.FindMeals(board, meals);
             Assert.That(meals, Is.Empty, $"seed {seed}");
         }
-    }
-
-    private sealed class CountingRule<TAction> : ActionRule<TAction> where TAction : IBoardAction
-    {
-        public int Count;
-        protected override void React(TurnRun run, TAction applied) => Count++;
     }
 }

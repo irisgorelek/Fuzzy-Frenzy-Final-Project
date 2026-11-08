@@ -1,32 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SpeechBubblePresenter : MonoBehaviour
 {
-    [System.Serializable]
-    private class BubbleModeRefs
-    {
-        public GameObject root;
-        public RectTransform bubbleRect;
-        public Image bubbleImage;
-        public Sprite leftSprite;
-        public Sprite rightSprite;
-        public TextMeshProUGUI speechText;
-        [Tooltip("Fallback if left/right are not assigned.")]
-        public Image speakerImage;
-        [Tooltip("Visual-novel left slot (place at bottom-left).")]
-        public Image speakerImageLeft;
-        [Tooltip("Visual-novel right slot (place at bottom-right).")]
-        public Image speakerImageRight;
-        public UIPopupTween popupTween;
-        public UISlideInTween slideTween;
-    }
-
     [Header("Canvas Space")]
     [SerializeField] private RectTransform _screenBoundsRect;
     [SerializeField] private Camera _uiCamera;
@@ -265,7 +244,7 @@ public class SpeechBubblePresenter : MonoBehaviour
         if (slideTween == null)
             return;
 
-        slideTween.SetFromSide(fromRight ? UISlideInTween.FromSide.Right : UISlideInTween.FromSide.Left);
+        slideTween.SetFromSide(fromRight ? FromSide.Right : FromSide.Left);
     }
 
     public void HideNormalImmediate()

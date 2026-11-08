@@ -10,21 +10,6 @@ using UnityEngine;
 /// </summary>
 public class Board : IAnimalGrid
 {
-    /// <summary>A tile falling from one cell to another, as the view animates it.</summary>
-    public struct FallMove
-    {
-        public Vector2Int from;
-        public Vector2Int to;
-    }
-
-    /// <summary>A new tile entering the board, as the view animates it.</summary>
-    public struct SpawnInfo
-    {
-        public Vector2Int cell;   // where it ends
-        public Animal animal;     // what spawned
-        public int spawnFromY;    // -1 = above board, otherwise y of the blocker above
-    }
-
     private readonly AnimalCatalog _catalog = new AnimalCatalog();
     private readonly BoardState _state;
     private readonly GameSession _session;

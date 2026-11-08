@@ -1,27 +1,5 @@
 using UnityEngine;
 
-public enum CurrencyType
-{
-    Coins
-}
-
-public enum ShopItemType
-{
-    Booster,
-    Lives,
-    ExtraMoves,
-    AvatarItem
-}
-
-public enum BoosterEffectType
-{
-    //FreeSwitch,
-    //SniffCandy,
-    FuzzyBlast,
-    TimerBomb
-}
-
-
 [CreateAssetMenu(menuName = "Game/Shop/Shop Item", fileName = "ShopItem_")]
 public class ShopItemDefinition : ScriptableObject
 {

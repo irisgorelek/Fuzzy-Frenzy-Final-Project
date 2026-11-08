@@ -1,21 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-/// <summary>Scene objects the HUD draws into. Filled from BoardView's Inspector fields.</summary>
-public sealed class BoardHudParts
-{
-    public TextMeshProUGUI LevelNumberText;
-    public Image BackgroundImage;
-    public Transform GoalRowsParent;
-    public GoalRowView AnimalGoalRowPrefab;
-    public GoalRowView PrimaryGoalRowPrefab;
-    public TextMeshProUGUI MovesCountText;
-    public TextMeshProUGUI TimerText;
-    public Image TimerBackground;
-}
 
 /// <summary>
 /// Draws the level's HUD: goal rows (pooled), the moves counter, the timer, the level number and background.
@@ -23,16 +9,6 @@ public sealed class BoardHudParts
 /// </summary>
 public sealed class BoardHud : IBoardHud
 {
-    private struct GoalRowSpec
-    {
-        public bool IsPrimary;
-        public bool AnimateCounter;
-        public Sprite Icon;
-        public string Text;
-        public Color Color;
-        public bool IsComplete;
-    }
-
     private readonly BoardHudParts _parts;
     private readonly List<GoalRowView> _rows = new List<GoalRowView>();
     private readonly Stack<GoalRowView> _animalGoalRowPool = new Stack<GoalRowView>();

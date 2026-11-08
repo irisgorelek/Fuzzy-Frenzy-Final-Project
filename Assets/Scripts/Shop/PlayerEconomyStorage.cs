@@ -1,70 +1,9 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class PlayerEconomyStorage
 {
     private const string Key = "PLAYER_ECONOMY_V1";
-
-    [Serializable]
-    private class BoosterEntry
-    {
-        public BoosterEffectType type;
-        public int count;
-    }
-
-    [Serializable]
-    private class DestroyedAnimalEntry
-    {
-        public string animalId;
-        public int count;
-    }
-
-    [Serializable]
-    private class AvatarSelectionEntry
-    {
-        public AvatarCategoryType category;
-        public int index;
-    }
-
-    [Serializable]
-    private class LevelStarEntry
-    {
-        public int levelIndex;
-        public int stars;
-    }
-
-    [Serializable]
-    private class LevelScoreEntry
-    {
-        public int levelIndex;
-        public int score;
-    }
-
-    [Serializable]
-    private class SaveData
-    {
-        public string playerId;
-        public string playerName;
-        public int coins;
-        public int extraMoveCount;
-        public List<BoosterEntry> boosters = new List<BoosterEntry>();
-        public int maxLives;
-        public int currentLives;
-        public long lastLifeTimestampUtcSeconds;
-        public List<string> unlockedAchievements = new();
-        public List<int> completedLevels = new();
-        public List<string> discoveredAnimals = new();
-        public List<DestroyedAnimalEntry> destroyedAnimals = new();
-        public int totalDestroyedAnimals;
-        public int totalPointsEarned;
-        public List<AvatarSelectionEntry> avatarSelections = new();
-        public List<LevelStarEntry> levelStars = new();
-        public List<string> unlockedAvatarItems = new();
-        public string equippedAccessoryId;
-        public List<LevelScoreEntry> levelBestScores = new();
-        public List<int> claimedRewards = new();
-    }
 
     public static void Save(PlayerEconomyState state)
     {

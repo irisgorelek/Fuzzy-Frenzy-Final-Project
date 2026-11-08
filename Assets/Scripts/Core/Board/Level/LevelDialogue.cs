@@ -7,9 +7,11 @@ public sealed class LevelDialogue
     private readonly AnimalDialogueController _dialogue;
     private readonly BoardConfig _config;
     private readonly float _speakSfxSeconds;
+    private readonly IGameAudio _audio;
 
-    public LevelDialogue(AnimalDialogueController dialogue, BoardConfig config, float speakSfxSeconds)
+    public LevelDialogue(AnimalDialogueController dialogue, BoardConfig config, float speakSfxSeconds, IGameAudio audio)
     {
+        _audio = audio;
         _dialogue = dialogue;
         _config = config;
         _speakSfxSeconds = speakSfxSeconds;
@@ -40,10 +42,10 @@ public sealed class LevelDialogue
 
     private async Task PlaySpeakSfxAsync(Animal animal)
     {
+        // 0 means the animal has no voice.
         if (animal == null || animal._speakSfxId == 0) return;
-        if (AudioManager.instance == null) return;
 
-        AudioManager.instance.PlaySFX(animal._speakSfxId);
+        _audio.PlaySfx((SfxId)animal._speakSfxId);
 
         if (_speakSfxSeconds > 0f)
             await Task.Delay(Mathf.CeilToInt(_speakSfxSeconds * 1000f));

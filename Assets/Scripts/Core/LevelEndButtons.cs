@@ -102,10 +102,7 @@ public class LevelEndButtons : MonoBehaviour
 
     private void CloseWindow()
     {
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySFXPitchAdjusted(9);
-        }
+        AudioManagerAudio.Instance.PlaySfxVaried(SfxId.Pop2);
 
         _noLivesWindow.SetActive(false);
     }

@@ -2,20 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DG.Tweening;
+using FuzzyFrenzy.Domain;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-
-/// <summary>Tuning for how tiles land and enter. Filled from BoardView's Inspector fields.</summary>
-public sealed class TileMotionSettings
-{
-    public float LandingBounceHeight;
-    public float LandingBounceSeconds;
-    public float SpawnFallSeconds;
-    public float SpawnFadeSeconds;
-    public float SpawnStaggerSeconds;
-    public float SpawnEntryHeight;
-}
 
 /// <summary>
 /// Moves tiles: swaps, gravity and refill, shuffles, hints and the small feedback nudges.
@@ -82,7 +72,7 @@ public sealed class BoardTileAnimator
         return tcs.Task;
     }
 
-    public Task AnimateGravity(List<Board.FallMove> moves, List<Board.SpawnInfo> spawns, IAnimalGrid board, float duration)
+    public Task AnimateGravity(IReadOnlyList<FallMove> moves, IReadOnlyList<SpawnedTile> spawns, IAnimalGrid board, float duration)
     {
         bool hasMoves = moves != null && moves.Count > 0;
         bool hasSpawns = spawns != null && spawns.Count > 0;
@@ -97,11 +87,11 @@ public sealed class BoardTileAnimator
         var involved = new HashSet<Vector2Int>();
         if (hasMoves)
         {
-            foreach (var m in moves) { involved.Add(m.from); involved.Add(m.to); }
+            foreach (var m in moves) { involved.Add(m.From.ToVector()); involved.Add(m.To.ToVector()); }
         }
         if (hasSpawns)
         {
-            foreach (var s in spawns) involved.Add(s.cell);
+            foreach (var s in spawns) involved.Add(s.Cell.ToVector());
         }
 
         foreach (var c in involved)
@@ -118,10 +108,7 @@ public sealed class BoardTileAnimator
         {
             foreach (var m in moves)
             {
-                if (!_cells.ContainsKey(m.from) || !_cells.ContainsKey(m.to)) continue;
-
-                var fromView = _cells[m.from];
-                var toView = _cells[m.to];
+                if (!_cells.TryGetValue(m.From.ToVector(), out var fromView) || !_cells.TryGetValue(m.To.ToVector(), out var toView)) continue;
 
                 var temp = _pool.CreateTempImage(fromView);
                 temps.Add(temp);
@@ -135,32 +122,35 @@ public sealed class BoardTileAnimator
         {
             // Feed tiles through one entry below the header, deepest destination first.
             var spawnOrder = new Dictionary<(int column, int blocker), int>();
-            var orderedSpawns = new List<Board.SpawnInfo>(spawns);
-            orderedSpawns.Sort((a, b) => b.cell.y.CompareTo(a.cell.y));
-            foreach (var s in orderedSpawns)
+            var orderedSpawns = new List<SpawnedTile>(spawns);
+            orderedSpawns.Sort((a, b) => b.Cell.Y.CompareTo(a.Cell.Y));
+            foreach (var spawned in orderedSpawns)
             {
-                if (!_cells.ContainsKey(s.cell) || s.animal == null) continue;
+                var cell = spawned.Cell.ToVector();
+                // The landed board shows what entered each cell.
+                var animal = board.GetAnimalFromCell(cell);
+                if (!_cells.TryGetValue(cell, out var targetView) || animal == null) continue;
 
-                var targetView = _cells[s.cell];
-                int entryY = (s.spawnFromY >= 0) ? (s.spawnFromY + 1) : 0;
+                int spawnFromY = spawned.SpawnFromY;
+                int entryY = (spawnFromY >= 0) ? (spawnFromY + 1) : 0;
 
-                var temp = _pool.CreateTempImageFromSprite(s.animal._sprite, s.animal.color, targetView);
+                var temp = _pool.CreateTempImageFromSprite(animal._sprite, animal.color, targetView);
                 temps.Add(temp);
 
-                var entryView = _cells[new Vector2Int(s.cell.x, entryY)];
-                var key = (s.cell.x, s.spawnFromY);
+                var entryView = _cells[new Vector2Int(cell.x, entryY)];
+                var key = (cell.x, spawnFromY);
                 spawnOrder.TryGetValue(key, out int order);
                 spawnOrder[key] = order + 1;
-                Vector3 step = GravityStep(s.cell, targetView);
+                Vector3 step = GravityStep(cell, targetView);
                 // Blockers split columns into separate refill segments; never fly through a bone.
-                float entryOffset = s.spawnFromY < 0 ? _motion.SpawnEntryHeight : .42f;
+                float entryOffset = spawnFromY < 0 ? _motion.SpawnEntryHeight : .42f;
                 temp.rectTransform.position = entryView.ImageRect.position + step * entryOffset;
                 var spawnColor = temp.color;
                 float targetAlpha = spawnColor.a;
                 spawnColor.a = 0;
                 temp.color = spawnColor;
                 float delay = order * _motion.SpawnStaggerSeconds;
-                float fallSeconds = Mathf.Max(duration, _motion.SpawnFallSeconds) + (s.cell.y - entryY) * .035f;
+                float fallSeconds = Mathf.Max(duration, _motion.SpawnFallSeconds) + (cell.y - entryY) * .035f;
                 seq.Insert(delay, temp.DOFade(targetAlpha, Mathf.Min(_motion.SpawnFadeSeconds, fallSeconds)).SetEase(Ease.InOutSine));
                 seq.Insert(delay, BuildTileDrop(temp.rectTransform, targetView, fallSeconds));
             }
@@ -185,41 +175,38 @@ public sealed class BoardTileAnimator
         return tcs.Task;
     }
 
-    public Task AnimateWolfNudge(Vector2Int wolfCell, Vector2Int sheepCell, float duration)
+    public Task AnimatePredatorNudge(Vector2Int predatorCell, Vector2Int preyCell, float duration)
     {
         var tcs = new TaskCompletionSource<bool>();
 
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlaySFXPitchAdjusted(2, 0.5f); // Play bone sound
-
-        if (!_cells.TryGetValue(wolfCell, out var wolfSource) ||
-            !_cells.TryGetValue(sheepCell, out _))
+        if (!_cells.TryGetValue(predatorCell, out var predatorSource) ||
+            !_cells.TryGetValue(preyCell, out _))
         {
             tcs.SetResult(true);
             return tcs.Task;
         }
 
-        RectTransform wolfRt = wolfSource.ImageRect;
+        RectTransform predatorRt = predatorSource.ImageRect;
 
-        wolfRt.DOKill();
+        predatorRt.DOKill();
 
-        Vector2 start = wolfRt.anchoredPosition;
+        Vector2 start = predatorRt.anchoredPosition;
 
         Vector2 dir = new Vector2(
-            Mathf.Clamp(sheepCell.x - wolfCell.x, -1, 1),
-            Mathf.Clamp(sheepCell.y - wolfCell.y, -1, 1)
+            Mathf.Clamp(preyCell.x - predatorCell.x, -1, 1),
+            Mathf.Clamp(preyCell.y - predatorCell.y, -1, 1)
         );
 
         float pixels = 15f;
         Vector2 target = start + dir * pixels;
 
         var seq = DOTween.Sequence();
-        seq.Append(wolfRt.DOAnchorPos(target, duration * 0.45f).SetEase(Ease.OutQuad));
-        seq.Append(wolfRt.DOAnchorPos(start, duration * 0.55f).SetEase(Ease.OutQuad));
+        seq.Append(predatorRt.DOAnchorPos(target, duration * 0.45f).SetEase(Ease.OutQuad));
+        seq.Append(predatorRt.DOAnchorPos(start, duration * 0.55f).SetEase(Ease.OutQuad));
 
         seq.OnComplete(() =>
         {
-            wolfRt.anchoredPosition = start;
+            predatorRt.anchoredPosition = start;
             tcs.TrySetResult(true);
         });
 

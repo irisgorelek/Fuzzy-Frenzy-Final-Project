@@ -1,13 +1,5 @@
 using System;
 
-/// <summary>Where a play of a level is. Every level moves Playing → Won or Playing → Lost, once.</summary>
-public enum LevelPhase
-{
-    Playing,
-    Won,
-    Lost
-}
-
 /// <summary>
 /// The level's state machine. Owns the one-way move to Won or Lost and the input lock that comes with it,
 /// so a level can never be won twice, or won after it was lost.

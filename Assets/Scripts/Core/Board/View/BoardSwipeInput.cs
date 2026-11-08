@@ -8,10 +8,10 @@ using UnityEngine;
 public sealed class BoardSwipeInput
 {
     private const float SwipeThresholdPixels = 45f;
-    private const int SfxCannotSwap = 4;
 
     private readonly BoardView _view;
     private readonly Dictionary<Vector2Int, CellView> _cells;
+    private readonly IGameAudio _audio;
 
     private bool _gestureActive;
     private bool _swipeCommitted;
@@ -20,10 +20,11 @@ public sealed class BoardSwipeInput
     private Vector2 _startScreenPos;
     private Vector2Int? _highlightedCell;
 
-    public BoardSwipeInput(BoardView view, Dictionary<Vector2Int, CellView> cells)
+    public BoardSwipeInput(BoardView view, Dictionary<Vector2Int, CellView> cells, IGameAudio audio)
     {
         _view = view;
         _cells = cells;
+        _audio = audio;
     }
 
     public void Attach(CellView cell)
@@ -115,9 +116,5 @@ public sealed class BoardSwipeInput
             newCell.SetHighlighted(true);
     }
 
-    private static void PlayCannotSwapSfx()
-    {
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlaySFX(SfxCannotSwap);
-    }
+    private void PlayCannotSwapSfx() => _audio.PlaySfx(SfxId.CannotSwap);
 }

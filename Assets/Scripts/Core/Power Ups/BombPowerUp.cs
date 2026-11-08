@@ -190,8 +190,7 @@ public class BombPowerUp : MonoBehaviour, IPointerClickHandler
             if (!_boardView.PlayBombBurstFx(coord))
                 PlayVFX(coord, _bombExplosionPrefab);
 
-            if (AudioManager.instance != null)
-                AudioManager.instance.PlaySFXPitchAdjusted(1, 0.5f);
+            AudioManagerAudio.Instance.PlaySfxVaried(SfxId.Bomb, 0.5f);
 
             await _boardView.AnimateBombImpact(affected, BoardEffectsTiming.BombImpact);
 

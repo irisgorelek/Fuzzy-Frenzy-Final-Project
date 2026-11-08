@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FuzzyFrenzy.Domain;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -95,6 +96,9 @@ public class BoardView : MonoBehaviour, IBoardAnimator, IBoardHud
     int IBoardAnimator.Width => _width;
     int IBoardAnimator.Height => _height;
 
+    /// <summary>Sounds the view plays itself, such as a blocked swipe. Set before the board is built.</summary>
+    public IGameAudio Audio { get; set; } = AudioManagerAudio.Instance;
+
     private TileImagePool Pool => _pool ??= new TileImagePool(_swapOverlay);
     private BoardHud Hud => _hud ??= new BoardHud(new BoardHudParts
     {
@@ -109,7 +113,7 @@ public class BoardView : MonoBehaviour, IBoardAnimator, IBoardHud
     });
     private BoardTileAnimator Tiles => _tiles ??= new BoardTileAnimator(_cells, Pool, FillMotion(), _shufflePopUp, AssignSprites);
     private BoardEffectsPlayer Effects => _effects ??= new BoardEffectsPlayer(_cells, Pool, FillFx(), this);
-    private BoardSwipeInput Swipes => _input ??= new BoardSwipeInput(this, _cells);
+    private BoardSwipeInput Swipes => _input ??= new BoardSwipeInput(this, _cells, Audio);
 
     private void OnValidate()
     {
@@ -250,9 +254,9 @@ public class BoardView : MonoBehaviour, IBoardAnimator, IBoardHud
     // ---------------- Tile animation ----------------
 
     public Task AnimateSwap(Vector2Int a, Vector2Int b, float duration = 0.18f) => Tiles.AnimateSwap(a, b, duration);
-    public Task AnimateGravity(List<Board.FallMove> moves, List<Board.SpawnInfo> spawns, IAnimalGrid board, float duration = 0.20f) =>
-        Tiles.AnimateGravity(moves, spawns, board, duration);
-    public Task AnimateWolfNudge(Vector2Int wolfCell, Vector2Int sheepCell, float duration = 0.10f) => Tiles.AnimateWolfNudge(wolfCell, sheepCell, duration);
+    public Task AnimateGravity(IReadOnlyList<FallMove> falls, IReadOnlyList<SpawnedTile> spawns, IAnimalGrid after, float duration = 0.20f) =>
+        Tiles.AnimateGravity(falls, spawns, after, duration);
+    public Task AnimatePredatorNudge(Vector2Int predatorCell, Vector2Int preyCell, float duration = 0.10f) => Tiles.AnimatePredatorNudge(predatorCell, preyCell, duration);
     public Task AnimateHint(Vector2Int a, Vector2Int b, float duration = 0.2f) => Tiles.AnimateHint(a, b, duration);
     public Task ShowShuffleMessage(float hold = 1.2f) => Tiles.ShowShuffleMessage(hold);
     public Task AnimateShuffle(IAnimalGrid board, float outDuration = 0.08f, float inDuration = 0.1f, float stagger = 0.002f) =>
@@ -267,10 +271,10 @@ public class BoardView : MonoBehaviour, IBoardAnimator, IBoardHud
         Effects.AnimateMatchPopFx(matches, duration, effect);
     public Task AnimateBombImpact(List<Vector2Int> affected, float duration = BoardEffectsTiming.BombImpact) => Effects.AnimateBombImpact(affected, duration);
     public Task AnimateBombWarning(Vector2Int coord, float totalDuration = 1f) => Effects.AnimateBombWarning(coord, totalDuration);
-    public void PlayBoneBreakFx(Vector2Int coord) => Effects.PlayBoneBreakFx(coord);
-    public Task AnimateSheepAnger(Vector2Int coord) => Effects.AnimateSheepAnger(coord);
-    public Task WaitForBlackSheepParticles() => Effects.WaitForBlackSheepParticles();
-    public void PlayBlackSheepFx(Vector2Int coord, bool horizontal, int width, int height) => Effects.PlayBlackSheepFx(coord, horizontal, width, height);
+    public void PlayTileBreakFx(Vector2Int coord) => Effects.PlayTileBreakFx(coord);
+    public Task AnimateLineBlastCharge(Vector2Int coord) => Effects.AnimateLineBlastCharge(coord);
+    public Task WaitForLineBlastFx() => Effects.WaitForLineBlastFx();
+    public void PlayLineBlastFx(Vector2Int coord, bool horizontal, int width, int height) => Effects.PlayLineBlastFx(coord, horizontal, width, height);
     public bool PlayBombBurstFx(Vector2Int coord) => Effects.PlayBombBurstFx(coord);
 
     // ---------------- Settings ----------------

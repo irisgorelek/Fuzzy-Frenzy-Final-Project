@@ -7,15 +7,15 @@ using UnityEngine;
 /// </summary>
 public sealed class TimerBoosterClock
 {
-    private const int SfxTimerStart = 13;
-
     private readonly IBoardHud _hud;
+    private readonly IGameAudio _audio;
     private float _endTime;
     private int _lastShownSecond = -1;
 
-    public TimerBoosterClock(IBoardHud hud)
+    public TimerBoosterClock(IBoardHud hud, IGameAudio audio)
     {
         _hud = hud;
+        _audio = audio;
     }
 
     public bool IsActive { get; private set; }
@@ -33,11 +33,8 @@ public sealed class TimerBoosterClock
         _hud.SetTimerVisible(true);
         RefreshDisplay();
 
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlayTimerMusic();
-            AudioManager.instance.PlaySFX(SfxTimerStart);
-        }
+        _audio.PlayTimerMusic();
+        _audio.PlaySfx(SfxId.TimerTicks);
     }
 
     public void Stop()

@@ -4,8 +4,6 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class UISlideInTween : MonoBehaviour
 {
-    public enum FromSide { Left, Right }
-
     [Header("Refs")]
     [SerializeField] private RectTransform rect;
     [SerializeField] private CanvasGroup canvasGroup;

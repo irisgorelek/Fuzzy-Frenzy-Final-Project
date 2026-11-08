@@ -20,32 +20,14 @@ public sealed class InputGate
         _holders.Add(reason ?? "unnamed");
         if (_holders.Count == 1)
             Changed?.Invoke(false);
-        return new Lock(this, reason ?? "unnamed");
+        return new InputLock(this, reason ?? "unnamed");
     }
 
     public override string ToString() => IsOpen ? "open" : "locked by " + string.Join(", ", _holders);
 
-    private void Release(string reason)
+    internal void Release(string reason)
     {
         if (_holders.Remove(reason) && _holders.Count == 0)
             Changed?.Invoke(true);
-    }
-
-    private sealed class Lock : IDisposable
-    {
-        private InputGate _gate;
-        private readonly string _reason;
-
-        public Lock(InputGate gate, string reason)
-        {
-            _gate = gate;
-            _reason = reason;
-        }
-
-        public void Dispose()
-        {
-            _gate?.Release(_reason);
-            _gate = null;
-        }
     }
 }

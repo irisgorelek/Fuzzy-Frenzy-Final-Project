@@ -2,18 +2,6 @@ using System.Collections.Generic;
 
 namespace FuzzyFrenzy.Domain
 {
-    public readonly struct SwapMove
-    {
-        public readonly GridPos From;
-        public readonly GridPos To;
-
-        public SwapMove(GridPos from, GridPos to)
-        {
-            From = from;
-            To = to;
-        }
-    }
-
     /// <summary>
     /// Finds swaps that would create a match, for hints and the dead-board check. Tries each swap on the
     /// real board and undoes it, so it allocates nothing.

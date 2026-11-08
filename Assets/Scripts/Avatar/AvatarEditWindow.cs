@@ -138,8 +138,7 @@ public class AvatarEditWindow : MonoBehaviour
         if (_activeTabIndex == index) return;
         _activeTabIndex = index;
 
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlaySFXPitchAdjusted(19);
+        AudioManagerAudio.Instance.PlaySfxVaried(SfxId.AvatarTabs);
 
         for (int i = 0; i < _tabs.Count; i++)
             _tabs[i].SetActive(i == index, tabActive, tabInactive);
@@ -221,8 +220,7 @@ public class AvatarEditWindow : MonoBehaviour
 
         OnItemSelected?.Invoke(category.CategoryType, clickedItem);
 
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlaySFXPitchAdjusted(20);
+        AudioManagerAudio.Instance.PlaySfxVaried(SfxId.PickInWindows);
     }
 
     public void Confirm()
